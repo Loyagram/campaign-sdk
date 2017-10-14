@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:layout_gravity="center"
+    tools:context="com.loyagram.campaignsdkdemo.MainActivity">
+
+    <LinearLayout
+        android:id="@+id/mainContianer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/lg_surveybutton"
+        android:orientation="vertical"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:id="@+id/radioGroupcontainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <RadioGroup
+                android:id="@+id/radioGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rdbNps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="NPS" />
+
+                <RadioButton
+                    android:id="@+id/rdbSurvey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Survey" />
+                <RadioButton
+                    android:id="@+id/rdbCsat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CSAT" />
+                <RadioButton
+                    android:id="@+id/rdbCes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CES" />
+            </RadioGroup>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/buttoncontainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnActivity"
+                android:layout_width="150dp"
+                android:layout_height="35dp"
+                android:layout_marginBottom="10dp"
+                android:height="30dp"
+                android:background="@drawable/lg_surveybutton"
+                android:text="Show in Activity"
+                android:textColor="@color/colorAccent" />
+
+            <Button
+                android:id="@+id/btnDialog"
+                android:layout_width="150dp"
+                android:layout_height="35dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/lg_surveybutton"
+                android:text="Show as Dialog"
+                android:textColor="@color/colorAccent" />
+
+            <Button
+                android:id="@+id/fromXml"
+                android:layout_width="150dp"
+                android:layout_height="35dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/lg_surveybutton"
+                android:text="Show From xml"
+                android:textColor="@color/colorAccent" />
+
+            <Button
+                android:id="@+id/btnFromBottom"
+                android:layout_width="150dp"
+                android:layout_height="35dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/lg_surveybutton"
+                android:text="Slide From Bottom"
+                android:textColor="@color/colorAccent" />
+            <Button
+                android:id="@+id/btnPreview"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/lg_surveybutton"
+                android:text="Preview"
+                android:textColor="@color/colorAccent" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/campaignContainer"
+        android:layout_width="match_parent"
+        android:layout_height="330dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+    </LinearLayout>
+</RelativeLayout>

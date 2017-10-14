@@ -1,0 +1,18 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="button_height">35dp</dimen>
+    <dimen name="button_width">120dp</dimen>
+    <dimen name="button_padding">5dp</dimen>
+    <dimen name="button_text">12sp</dimen>
+    <dimen name="navbutton_height">35dp</dimen>
+    <dimen name="navbutton_width">100dp</dimen>
+    <dimen name="text_small">12sp</dimen>
+    <dimen name="text_medium">14sp</dimen>
+    <dimen name="text_large">16sp</dimen>
+    <dimen name="text_brandName">16sp</dimen>
+    <dimen name="dialog_widget_height">320dp</dimen>
+    <dimen name="dialog_widget_height_large">400dp</dimen>
+    <dimen name="dialog_widget_height_landscape">320dp</dimen>
+    <dimen name="stroke_width">1dp</dimen>
+
+</resources>

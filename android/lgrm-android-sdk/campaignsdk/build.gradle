@@ -1,0 +1,67 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+group = 'com.loyagram.android'
+archivesBaseName = 'campaign-sdk'
+version = '0.0.49'
+
+publishing {
+    repositories {
+        maven {
+            url myMavenRepoWriteUrl
+            credentials {
+                username myMavenRepoUserName
+                password myMavenRepoPassword
+            }
+        }
+    }
+
+    publications {
+        aar(MavenPublication) {
+            groupId group
+            artifactId archivesBaseName
+            version project.version
+            artifact("$buildDir/outputs/aar/${archivesBaseName}-release.aar")
+
+            pom.withXml {
+                def dependencies = asNode().appendNode('dependencies')
+                configurations.getByName("_releaseCompile").getResolvedConfiguration().getFirstLevelModuleDependencies().each {
+                    def dependency = dependencies.appendNode('dependency')
+                    dependency.appendNode('groupId', it.moduleGroup)
+                    dependency.appendNode('artifactId', it.moduleName)
+                    dependency.appendNode('version', it.moduleVersion)
+                }
+            }
+        }
+    }
+}
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 25
+        versionCode 49
+        versionName "0.0.49"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+        disable 'RestrictedApi'
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.google.code.gson:gson:2.8.0'
+}

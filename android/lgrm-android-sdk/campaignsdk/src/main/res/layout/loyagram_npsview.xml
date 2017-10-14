@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_margin="0dp"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/npsquestion"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginEnd="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:maxLines="3"
+        android:textColor="#000000"
+        android:textSize="@dimen/text_medium" />
+
+    <LinearLayout
+        android:id="@+id/topRatingContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="0dp"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:id="@+id/ratingContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/ratingView0"
+                style="@style/NPSCircle"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:tag="0"
+                android:text="0" />
+
+            <TextView
+                android:id="@+id/ratingView1"
+                style="@style/NPSCircle"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:tag="1"
+                android:text="1" />
+
+            <TextView
+                android:id="@+id/ratingView2"
+                style="@style/NPSCircle"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:tag="2"
+                android:text="2" />
+
+            <TextView
+                android:id="@+id/ratingView3"
+                style="@style/NPSCircle"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:tag="3"
+                android:text="3" />
+
+            <TextView
+                android:id="@+id/ratingView4"
+                style="@style/NPSCircle"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:tag="4"
+                android:text="4" />
+
+            <TextView
+                android:id="@+id/ratingView5"
+                style="@style/NPSCircle"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:tag="5"
+                android:text="5" />
+
+            <TextView
+                android:id="@+id/ratingView6"
+                style="@style/NPSCircle"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:tag="6"
+                android:text="6" />
+
+            <TextView
+                android:id="@+id/ratingView7"
+                style="@style/NPSCircle"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:tag="7"
+                android:text="7" />
+
+            <TextView
+                android:id="@+id/ratingView8"
+                style="@style/NPSCircle"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:tag="8"
+                android:text="8" />
+
+            <TextView
+                android:id="@+id/ratingView9"
+                style="@style/NPSCircle"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:tag="9"
+                android:text="9" />
+
+            <TextView
+                android:id="@+id/ratingView10"
+                style="@style/NPSCircle"
+                android:layout_marginEnd="0dp"
+                android:layout_marginRight="0dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:tag="10"
+                android:text="10" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/likelyContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtNotLikely"
+                android:layout_width="165dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:gravity="start"
+                android:maxLines="1"
+                android:ellipsize="end"
+                />
+
+            <TextView
+                android:id="@+id/txtVeryLikely"
+                android:layout_width="165dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:gravity="end"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/npsFeedbackHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/txtRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:textSize="@dimen/text_medium" />
+
+            <TextView
+                android:id="@+id/btnRetry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_medium" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/reasonFooter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txtFeedbackQstn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:textColor="#000000"
+                android:textSize="@dimen/text_medium" />
+
+            <EditText
+                android:id="@+id/txtReason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txtFeedbackQstn"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/lg_npssquare"
+                android:gravity="start"
+                android:inputType="textMultiLine"
+                android:lines="3"
+                android:maxLines="3"
+                android:minLines="3"
+                android:textSize="@dimen/text_medium" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/followupContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/followupQstn"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:maxLines="3"
+            android:textColor="#000000"
+            android:textSize="@dimen/text_medium" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:fadingEdgeLength="15dp"
+            android:fillViewport="false"
+            android:overScrollMode="never"
+            android:requiresFadingEdge="vertical"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/optionsContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical">
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</LinearLayout>
