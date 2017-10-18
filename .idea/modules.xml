@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/campaign-sdk.iml" filepath="$PROJECT_DIR$/campaign-sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/campaignsdk/campaignsdk.iml" filepath="$PROJECT_DIR$/campaignsdk/campaignsdk.iml" />
       <module fileurl="file://$PROJECT_DIR$/campaignsdk/campaignsdk.iml" filepath="$PROJECT_DIR$/campaignsdk/campaignsdk.iml" />
       <module fileurl="file://$PROJECT_DIR$/lgrm-android-sdk.iml" filepath="$PROJECT_DIR$/lgrm-android-sdk.iml" />
     </modules>
