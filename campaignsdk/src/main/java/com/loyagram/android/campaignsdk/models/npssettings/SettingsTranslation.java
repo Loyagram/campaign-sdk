@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class SettingsTranslation implements Parcelable {
-    @SerializedName("lang")
+    @SerializedName("language_code")
     private String code = null;
     @SerializedName("text")
     private SettingsBase settingsBase = null;

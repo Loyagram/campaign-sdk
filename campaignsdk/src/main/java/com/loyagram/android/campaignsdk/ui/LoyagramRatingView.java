@@ -116,82 +116,84 @@ public class LoyagramRatingView extends LinearLayout {
         int ratingbarHieght = (int) (45 * scale + 0.5f);
         int txtLeftMargin = (int) (15 * scale + 0.5f);
         int i = 0;
-        for (final QuestionLabel ql : questionLabels) {
-            LinearLayout linearLayout = new LinearLayout(currentContext);
-            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ratingbarHieght);
-            linearLayout.setLayoutParams(params);
-            TextView txtratignTitle = new TextView(currentContext);
-            LinearLayout.LayoutParams txtparams = new LinearLayout.LayoutParams(pixelsTxtWidth, LinearLayout.LayoutParams.WRAP_CONTENT);
-            txtparams.setMargins(txtLeftMargin, 0, 0, 0);
-            txtparams.gravity = Gravity.CENTER_VERTICAL;
-            txtratignTitle.setLayoutParams(txtparams);
-            txtratignTitle.setTag(ql.getId());
-            txtratignTitle.setTextColor(Color.parseColor("#000000"));
-            txtratignTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_medium));
-            if (getTypeFace() != null) {
-                txtratignTitle.setTypeface(typeface);
-            }
-
-            Boolean isLabelSet = false;
-            for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                if (language != null && language.getCode().equals(labelTranslation.getCode())) {
-                    txtratignTitle.setText(labelTranslation.getTranslation());
-                    isLabelSet = true;
-                    break;
+        if(questionLabels != null) {
+            for (final QuestionLabel ql : questionLabels) {
+                LinearLayout linearLayout = new LinearLayout(currentContext);
+                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ratingbarHieght);
+                linearLayout.setLayoutParams(params);
+                TextView txtratignTitle = new TextView(currentContext);
+                LinearLayout.LayoutParams txtparams = new LinearLayout.LayoutParams(pixelsTxtWidth, LinearLayout.LayoutParams.WRAP_CONTENT);
+                txtparams.setMargins(txtLeftMargin, 0, 0, 0);
+                txtparams.gravity = Gravity.CENTER_VERTICAL;
+                txtratignTitle.setLayoutParams(txtparams);
+                txtratignTitle.setTag(ql.getId());
+                txtratignTitle.setTextColor(Color.parseColor("#000000"));
+                txtratignTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_medium));
+                if (getTypeFace() != null) {
+                    txtratignTitle.setTypeface(typeface);
                 }
-            }
-            if(!isLabelSet) {
+
+                Boolean isLabelSet = false;
                 for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                    if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
+                    if (language != null && language.getCode().equals(labelTranslation.getCode())) {
                         txtratignTitle.setText(labelTranslation.getTranslation());
+                        isLabelSet = true;
                         break;
                     }
                 }
-            }
-
-            LinearLayout.LayoutParams ratingBarParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            ratingBarParams.gravity = Gravity.CENTER;
-            ResponseAnswer responseAnswer = getResponseAnswer(ql.getId());
-            //AppCompatRatingBar ratingBar = (AppCompatRatingBar) View.inflate(currentContext, R.layout.loyagram_customratingbar, null);
-            AppCompatRatingBar ratingBar = new AppCompatRatingBar(currentContext);
-            ratingBar.setId(R.id.ratingBarWidget + i);
-            i++;
-            params.gravity = Gravity.CENTER;
-            if (responseAnswer != null && responseAnswer.getQuestionLabelId().equals(ql.getId()) && responseAnswer.getValue() != null) {
-                ratingBar.setRating(Float.parseFloat(responseAnswer.getValue().toString()));
-            } else {
-                ratingBar.setRating(0);
-            }
-            /* Restricted number of stars to 5 curently need to change this max supported stars should be 10 */
-            //ratingBar.setNumStars(ql.getMaxValue().intValue());
-            ratingBar.setNumStars(5);
-            // ratingBar.setMax(5);
-            ratingBar.setPadding(0, 0, 0, 0);
-            ratingBar.setScaleX(.6f);
-            ratingBar.setScaleY(.6f);
-            ratingBar.setStepSize(1);
-            ratingBar.setMax(0);
-            ratingBar.setLayoutParams(ratingBarParams);
-
-            LayerDrawable stars = (LayerDrawable) ratingBar.getProgressDrawable();
-            stars.getDrawable(2).setColorFilter(Color.parseColor(colorprimary), PorterDuff.Mode.SRC_ATOP);
-            stars.getDrawable(1).setColorFilter(Color.parseColor(colorprimary), PorterDuff.Mode.SRC_ATOP);
-            stars.getDrawable(0).setColorFilter(Color.parseColor("#c4c2c2"), PorterDuff.Mode.SRC_ATOP);
-            ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-                @Override
-                public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                    ResponseAnswer responseAnswer = setResponseAnswer(ql.getId(), new BigDecimal(rating));
-                    if (listener != null) {
-                        listener.onRatingSubmit(response);
+                if (!isLabelSet) {
+                    for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
+                        if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
+                            txtratignTitle.setText(labelTranslation.getTranslation());
+                            break;
+                        }
                     }
                 }
-            });
-            if (txtratignTitle.getText() != null && !txtratignTitle.getText().equals("")) {
-                linearLayout.addView(txtratignTitle);
+
+                LinearLayout.LayoutParams ratingBarParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                ratingBarParams.gravity = Gravity.CENTER;
+                ResponseAnswer responseAnswer = getResponseAnswer(ql.getId());
+                //AppCompatRatingBar ratingBar = (AppCompatRatingBar) View.inflate(currentContext, R.layout.loyagram_customratingbar, null);
+                AppCompatRatingBar ratingBar = new AppCompatRatingBar(currentContext);
+                ratingBar.setId(R.id.ratingBarWidget + i);
+                i++;
+                params.gravity = Gravity.CENTER;
+                if (responseAnswer != null && responseAnswer.getQuestionLabelId().equals(ql.getId()) && responseAnswer.getValue() != null) {
+                    ratingBar.setRating(Float.parseFloat(responseAnswer.getValue().toString()));
+                } else {
+                    ratingBar.setRating(0);
+                }
+            /* Restricted number of stars to 5 curently need to change this max supported stars should be 10 */
+                //ratingBar.setNumStars(ql.getMaxValue().intValue());
+                ratingBar.setNumStars(5);
+                // ratingBar.setMax(5);
+                ratingBar.setPadding(0, 0, 0, 0);
+                ratingBar.setScaleX(.6f);
+                ratingBar.setScaleY(.6f);
+                ratingBar.setStepSize(1);
+                ratingBar.setMax(0);
+                ratingBar.setLayoutParams(ratingBarParams);
+
+                LayerDrawable stars = (LayerDrawable) ratingBar.getProgressDrawable();
+                stars.getDrawable(2).setColorFilter(Color.parseColor(colorprimary), PorterDuff.Mode.SRC_ATOP);
+                stars.getDrawable(1).setColorFilter(Color.parseColor(colorprimary), PorterDuff.Mode.SRC_ATOP);
+                stars.getDrawable(0).setColorFilter(Color.parseColor("#c4c2c2"), PorterDuff.Mode.SRC_ATOP);
+                ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                    @Override
+                    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                        ResponseAnswer responseAnswer = setResponseAnswer(ql.getId(), new BigDecimal(rating));
+                        if (listener != null) {
+                            listener.onRatingSubmit(response);
+                        }
+                    }
+                });
+                if (txtratignTitle.getText() != null && !txtratignTitle.getText().equals("")) {
+                    linearLayout.addView(txtratignTitle);
+                }
+                linearLayout.addView(ratingBar);
+                llratingContainer.addView(linearLayout);
             }
-            linearLayout.addView(ratingBar);
-            llratingContainer.addView(linearLayout);
         }
         if (loyagramCampaignView != null) {
             loyagramCampaignView.showSubView(true);
@@ -310,18 +312,20 @@ public class LoyagramRatingView extends LinearLayout {
         String langcode = language.getCode();
         List<QuestionTranslations> questionTranslations = question.getTranslations();
         Boolean isTextChanged = false;
-        for (QuestionTranslations questionTranslation : questionTranslations) {
-            if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
-                if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+        if(questionTranslations != null) {
+            for (QuestionTranslations questionTranslation : questionTranslations) {
+                if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
+                    if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+                        break;
+                    }
+                    isTextChanged = true;
+                    txtQuestion.setText(questionTranslation.getTranslation());
                     break;
                 }
-                isTextChanged = true;
-                txtQuestion.setText(questionTranslation.getTranslation());
-                break;
             }
-        }
-        if(!isTextChanged) {
-            setQuestionToPrimaryLang();
+            if (!isTextChanged) {
+                setQuestionToPrimaryLang();
+            }
         }
     }
 
@@ -342,23 +346,25 @@ public class LoyagramRatingView extends LinearLayout {
     public void setLabelLang() {
         List<QuestionLabel> questionLabel = question.getLabels();
         Boolean isTextChanged = false;
-        for (QuestionLabel ql : questionLabel) {
-            for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                if (language != null && language.getCode().equals(labelTranslation.getCode())) {
-                    if (labelTranslation.getTranslation() == null || labelTranslation.getTranslation().isEmpty()) {
+        if(questionLabel != null) {
+            for (QuestionLabel ql : questionLabel) {
+                for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
+                    if (language != null && language.getCode().equals(labelTranslation.getCode())) {
+                        if (labelTranslation.getTranslation() == null || labelTranslation.getTranslation().isEmpty()) {
+                            break;
+                        }
+                        isTextChanged = true;
+                        TextView txtratignTitle = (TextView) findViewWithTag(ql.getId());
+                        if (txtratignTitle != null) {
+                            txtratignTitle.setText(labelTranslation.getTranslation());
+                        }
                         break;
                     }
-                    isTextChanged = true;
-                    TextView txtratignTitle = (TextView) findViewWithTag(ql.getId());
-                    if (txtratignTitle != null) {
-                        txtratignTitle.setText(labelTranslation.getTranslation());
-                    }
-                    break;
                 }
             }
-        }
-        if(!isTextChanged) {
-            setLabelLangToPrimary();
+            if (!isTextChanged) {
+                setLabelLangToPrimary();
+            }
         }
     }
 

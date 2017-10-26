@@ -498,11 +498,10 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
     public ResponseAnswer setMultiselectResponse(BigDecimal questionId, BigDecimal val) {
         ResponseAnswer resAnswer = getMulResponseAnswer(questionId);
         if (resAnswer != null) {
-            if(val.compareTo(BigDecimal.ONE)==1) {
-            resAnswer.setValue(questionId);
-            return resAnswer;
-            }
-            else {
+            if (val.compareTo(BigDecimal.ONE) == 1) {
+                resAnswer.setValue(questionId);
+                return resAnswer;
+            } else {
                 response.getResponseAnswers().remove(resAnswer);
                 return null;
             }
@@ -619,63 +618,65 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
         llFollowUpContainer.setVisibility(VISIBLE);
         lloptionsContainer.removeAllViews();
         List<QuestionLabel> questionLabels = followUpQuestion.getLabels();
-        for (final QuestionLabel ql : questionLabels) {
-            final AppCompatCheckBox chk = new AppCompatCheckBox(currentContext);
-            LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            buttonLayoutParams.setMargins(0, 0, 0, 0);
-            chk.setLayoutParams(buttonLayoutParams);
-            chk.setTag(ql.getId());
-            if (getTypeFace() != null) {
-                chk.setTypeface(typeface);
-            }
-            Boolean isLabelSet = false;
-            for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                if (language != null && language.getCode().equals(labelTranslation.getCode())) {
-                    chk.setText(labelTranslation.getTranslation());
-                    isLabelSet = true;
-                    break;
+        if (questionLabels != null) {
+            for (final QuestionLabel ql : questionLabels) {
+                final AppCompatCheckBox chk = new AppCompatCheckBox(currentContext);
+                LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                buttonLayoutParams.setMargins(0, 0, 0, 0);
+                chk.setLayoutParams(buttonLayoutParams);
+                chk.setTag(ql.getId());
+                if (getTypeFace() != null) {
+                    chk.setTypeface(typeface);
                 }
-            }
-
-            if (!isLabelSet) {
+                Boolean isLabelSet = false;
                 for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                    if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
+                    if (language != null && language.getCode().equals(labelTranslation.getCode())) {
                         chk.setText(labelTranslation.getTranslation());
+                        isLabelSet = true;
                         break;
                     }
                 }
-            }
-            chk.setId(Integer.parseInt(ql.getId().toString()));
-            ResponseAnswer responseAnswer = getMulResponseAnswer(ql.getId());
-            if (responseAnswer != null && responseAnswer.getQuestionLabelId().equals(ql.getId())) {
-                if (responseAnswer.getValue() != null && responseAnswer.getValue().equals(new BigDecimal(1))) // 1 equals true
-                    chk.setChecked(true);
-            }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                chk.setButtonTintList(getColorStateList());
-            } else {
-                chk.setSupportButtonTintList(getColorStateList());
-            }
-            if (loyagramCampaignView != null) {
-                loyagramCampaignView.showSubView(true);
-                loyagramCampaignView.hideProgress();
-            }
-            chk.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ResponseAnswer respAns;
-                    if (chk.isChecked()) {
-                        respAns = setMultiselectResponse(ql.getId(), new BigDecimal(1));
-                    } else {
-                        respAns = setMultiselectResponse(ql.getId(), new BigDecimal(0));
-                    }
-                    if (listener != null) {
-                        listener.onNPSSubmit(false);
+
+                if (!isLabelSet) {
+                    for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
+                        if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
+                            chk.setText(labelTranslation.getTranslation());
+                            break;
+                        }
                     }
                 }
-            });
-            lloptionsContainer.addView(chk);
+                chk.setId(Integer.parseInt(ql.getId().toString()));
+                ResponseAnswer responseAnswer = getMulResponseAnswer(ql.getId());
+                if (responseAnswer != null && responseAnswer.getQuestionLabelId().equals(ql.getId())) {
+                    if (responseAnswer.getValue() != null && responseAnswer.getValue().equals(ql.getId())) // 1 equals true
+                        chk.setChecked(true);
+                }
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    chk.setButtonTintList(getColorStateList());
+                } else {
+                    chk.setSupportButtonTintList(getColorStateList());
+                }
+                chk.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ResponseAnswer respAns;
+                        if (chk.isChecked()) {
+                            respAns = setMultiselectResponse(ql.getId(), new BigDecimal(1));
+                        } else {
+                            respAns = setMultiselectResponse(ql.getId(), new BigDecimal(0));
+                        }
+                        if (listener != null) {
+                            listener.onNPSSubmit(false);
+                        }
+                    }
+                });
+                lloptionsContainer.addView(chk);
+            }
         }
+//        if (loyagramCampaignView != null) {
+//            loyagramCampaignView.showSubView(true);
+//            loyagramCampaignView.hideProgress();
+//        }
     }
 
 
@@ -739,13 +740,13 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
             @Override
             public void onSubmitPressed(int iterator) {
                 switch (iterator) {
-                    case  0 :
+                    case 0:
                         showFollowUp();
                         break;
-                    case 1 :
+                    case 1:
                         showReasonView();
                         break;
-                    case 2 :
+                    case 2:
                         break;
                 }
                 //showReasonView(6);
@@ -755,14 +756,14 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
             @Override
             public void onPreviousPressed(int iterator) {
                 switch (iterator) {
-                    case  0 :
+                    case 0:
                         break;
-                    case 1 :
+                    case 1:
                         llFollowUpContainer.setVisibility(GONE);
                         llRatingContainer.setVisibility(VISIBLE);
                         txtNPSQuestion.setVisibility(VISIBLE);
                         break;
-                    case 2 :
+                    case 2:
                         llNPSFeedback.setVisibility(GONE);
                         showFollowUp();
                         break;
@@ -789,7 +790,7 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
                 setFeedbackQuestion();
             }
         }
-        if (isFollowUpEnabled) {
+        if (followUpQuestion != null && isFollowUpEnabled) {
             setFollowUpQuestion();
             changeLabelLanguage();
         }
@@ -802,18 +803,20 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
         String langcode = language.getCode();
         Boolean isTextChanged = false;
         List<QuestionTranslations> questionTranslations = question.getTranslations();
-        for (QuestionTranslations questionTranslation : questionTranslations) {
-            if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
-                if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+        if (questionTranslations != null) {
+            for (QuestionTranslations questionTranslation : questionTranslations) {
+                if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
+                    if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+                        break;
+                    }
+                    isTextChanged = true;
+                    txtNPSQuestion.setText(questionTranslation.getTranslation());
                     break;
                 }
-                isTextChanged = true;
-                txtNPSQuestion.setText(questionTranslation.getTranslation());
-                break;
             }
-        }
-        if (!isTextChanged) {
-            setQuestionToPrimaryLang();
+            if (!isTextChanged) {
+                setQuestionToPrimaryLang();
+            }
         }
     }
 
@@ -835,16 +838,17 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
         String langcode = language.getCode();
         Boolean isTextChanged = false;
         List<SettingsTranslation> settingsTranslations = question.getSettingsTranslation();
-        for (SettingsTranslation sT : settingsTranslations) {
-            if (sT.getCode() != null && sT.getCode().equals(langcode)) {
-                RequestReasonSettings rRS = sT.getSettingsBase().getSettings().getNpsSettings().getRequestReasonSettings();
-                if (rRS != null) {
-                    if (rRS.getAll() != null && rRS.getAll().getMessage() != null) {
-                        txtFeedbackQestion.setText(rRS.getAll().getMessage());
-                        isTextChanged = true;
-                        break;
+        if (settingsTranslations != null) {
+            for (SettingsTranslation sT : settingsTranslations) {
+                if (sT.getCode() != null && sT.getCode().equals(langcode)) {
+                    RequestReasonSettings rRS = sT.getSettingsBase().getSettings().getNpsSettings().getRequestReasonSettings();
+                    if (rRS != null) {
+                        if (rRS.getAll() != null && rRS.getAll().getMessage() != null) {
+                            txtFeedbackQestion.setText(rRS.getAll().getMessage());
+                            isTextChanged = true;
+                            break;
+                        }
                     }
-                }
                     /*
                     if (question.getSettings().getNpsSettings().getRequestReasonSettings().getType().equals("all")) {
                         txtFeedbackQestion.setText(rRS.getAll().getMessage());
@@ -866,10 +870,11 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
                         }
                     }
                     */
+                }
             }
-        }
-        if (!isTextChanged) {
-            setFeedbackQuestionToPrimaryLang();
+            if (!isTextChanged) {
+                setFeedbackQuestionToPrimaryLang();
+            }
         }
     }
 
@@ -906,7 +911,7 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
 
                     }
                 */
-                }
+            }
         }
     }
 
@@ -915,18 +920,20 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
         String langcode = language.getCode();
         List<QuestionTranslations> questionTranslations = followUpQuestion.getTranslations();
         Boolean isTextChanged = false;
-        for (QuestionTranslations questionTranslation : questionTranslations) {
-            if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
-                if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+        if (questionTranslations != null) {
+            for (QuestionTranslations questionTranslation : questionTranslations) {
+                if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
+                    if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+                        break;
+                    }
+                    isTextChanged = true;
+                    txtFollowUpQstn.setText(questionTranslation.getTranslation());
                     break;
                 }
-                isTextChanged = true;
-                txtFollowUpQstn.setText(questionTranslation.getTranslation());
-                break;
             }
-        }
-        if (!isTextChanged) {
-            setFollowUpQuestiontoPrimary();
+            if (!isTextChanged) {
+                setFollowUpQuestiontoPrimary();
+            }
         }
     }
 
@@ -948,24 +955,26 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
         String langcode = language.getCode();
         Boolean isTextChanged = false;
         List<SettingsTranslation> settingsTranslations = question.getSettingsTranslation();
-        for (SettingsTranslation settingsTranslation : settingsTranslations) {
-            if (settingsTranslation.getCode() != null && settingsTranslation.getCode().equals(langcode)) {
-                isTextChanged = true;
-                NpsSettings npsSettings = settingsTranslation.getSettingsBase().getSettings().getNpsSettings();
-                Widget widget = npsSettings.getWidget();
-                if (widget.getVeryLikely() == null || widget.getVeryLikely().isEmpty() || widget.getNotLikely() == null || widget.getNotLikely().isEmpty()) {
-                    setLikelyToPrimaryLang();
+        if (settingsTranslations != null) {
+            for (SettingsTranslation settingsTranslation : settingsTranslations) {
+                if (settingsTranslation.getCode() != null && settingsTranslation.getCode().equals(langcode)) {
+                    isTextChanged = true;
+                    NpsSettings npsSettings = settingsTranslation.getSettingsBase().getSettings().getNpsSettings();
+                    Widget widget = npsSettings.getWidget();
+                    if (widget.getVeryLikely() == null || widget.getVeryLikely().isEmpty() || widget.getNotLikely() == null || widget.getNotLikely().isEmpty()) {
+                        setLikelyToPrimaryLang();
+                        break;
+                    }
+                    if (widget.getNotLikely() != null && widget.getVeryLikely() != null) {
+                        txtNotLikely.setText(widget.getNotLikely());
+                        txtVeryLikely.setText(widget.getVeryLikely());
+                    }
                     break;
                 }
-                if (widget.getNotLikely() != null && widget.getVeryLikely() != null) {
-                    txtNotLikely.setText(widget.getNotLikely());
-                    txtVeryLikely.setText(widget.getVeryLikely());
-                }
-                break;
             }
-        }
-        if (!isTextChanged) {
-            setLikelyToPrimaryLang();
+            if (!isTextChanged) {
+                setLikelyToPrimaryLang();
+            }
         }
     }
 
@@ -1023,30 +1032,32 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
     public void changeLabelLanguage() {
         List<QuestionLabel> questionLabel = followUpQuestion.getLabels();
         Boolean isTextChanged = false;
-        for (QuestionLabel ql : questionLabel) {
-            for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                if (language != null && language.getCode().equals(labelTranslation.getCode())) {
-                    if (labelTranslation.getTranslation() == null || labelTranslation.getTranslation().isEmpty()) {
-                        break;
-                    }
-                    isTextChanged = true;
-                    String questionType = followUpQuestion.getType();
-                    if (questionType.equals("SINGLE_SELECT")) {
-                        RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
-                        if (rdb != null) {
-                            rdb.setText(labelTranslation.getTranslation());
+        if (questionLabel != null) {
+            for (QuestionLabel ql : questionLabel) {
+                for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
+                    if (language != null && language.getCode().equals(labelTranslation.getCode())) {
+                        if (labelTranslation.getTranslation() == null || labelTranslation.getTranslation().isEmpty()) {
+                            break;
                         }
-                    } else {
-                        CheckBox chk = (CheckBox) findViewWithTag(ql.getId());
-                        if (chk != null) {
-                            chk.setText(labelTranslation.getTranslation());
+                        isTextChanged = true;
+                        String questionType = followUpQuestion.getType();
+                        if (questionType.equals("SINGLE_SELECT")) {
+                            RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
+                            if (rdb != null) {
+                                rdb.setText(labelTranslation.getTranslation());
+                            }
+                        } else {
+                            CheckBox chk = (CheckBox) findViewWithTag(ql.getId());
+                            if (chk != null) {
+                                chk.setText(labelTranslation.getTranslation());
+                            }
                         }
                     }
                 }
             }
-        }
-        if (!isTextChanged) {
-            changeLabelLanguageToPrimary();
+            if (!isTextChanged) {
+                changeLabelLanguageToPrimary();
+            }
         }
     }
 

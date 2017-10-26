@@ -109,130 +109,137 @@ public class LoyagramTextView extends LinearLayout {
         setQuestionTitle();
         List<QuestionLabel> questionLabels = question.getLabels();
         int i = 0;
-        for (final QuestionLabel ql : questionLabels) {
-            LinearLayout linearLayout = new LinearLayout(currentContext);
-            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.setMargins(0, 10, 0, 0);
-            linearLayout.setLayoutParams(params);
+        if (questionLabels != null) {
+            for (final QuestionLabel ql : questionLabels) {
+                LinearLayout linearLayout = new LinearLayout(currentContext);
+                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                params.setMargins(0, 10, 0, 0);
+                linearLayout.setLayoutParams(params);
 
-            EditText editText = new EditText(currentContext);
-            editText.setBackgroundResource(R.drawable.lg_npssquare);
-            ((GradientDrawable) editText.getBackground()).setStroke(getResources().getDimensionPixelSize(R.dimen.stroke_width), Color.parseColor(colorPrimary));
-            LinearLayout.LayoutParams editTextParams;
-            Boolean isLabelSet = false;
-            String labelText = null;
-            for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                if (language != null && language.getCode().equals(labelTranslation.getCode())) {
-                    labelText = labelTranslation.getTranslation();
-                    isLabelSet = true;
-                    break;
-                }
-            }
-            if (!isLabelSet) {
-                for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                    if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
-                        labelText = labelTranslation.getTranslation();
-                        break;
-                    }
-                }
-            }
+                EditText editText = new EditText(currentContext);
+                editText.setBackgroundResource(R.drawable.lg_npssquare);
+                ((GradientDrawable) editText.getBackground()).setStroke(getResources().getDimensionPixelSize(R.dimen.stroke_width), Color.parseColor(colorPrimary));
+                LinearLayout.LayoutParams editTextParams;
+                Boolean isLabelSet = false;
+                String labelText = null;
 
-            float scale = getContext().getResources().getDisplayMetrics().density;
-            if (labelText != null && !labelText.equals("")) {
-                linearLayout.setWeightSum(100);
-                int txtLeftMargin = (int) (15 * scale + 0.5f);
-                TextView txtLabel = new TextView(currentContext);
-                txtLabel.setTag(ql.getId());
-                txtLabel.setTextColor(Color.parseColor("#000000"));
-                txtLabel.setGravity(Gravity.CENTER_VERTICAL);
-                txtLabel.setText(labelText);
-                LinearLayout.LayoutParams txtparams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 30);
-                txtparams.setMargins(txtLeftMargin, 0, 10, 0);
-                txtparams.gravity = Gravity.CENTER_VERTICAL;
-                String fieldType = ql.getFieldType();
-                editText.setId(R.id.txtWidgetText + i);
-                editTextParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 65);
-                editText.setLayoutParams(editTextParams);
-                txtLabel.setLayoutParams(txtparams);
-                linearLayout.addView(txtLabel);
-                if (getTypeFace() != null) {
-                    editText.setTypeface(typeface);
-                    txtLabel.setTypeface(typeface);
-                }
-
-                switch (fieldType) {
-                    case "number":
-                        editText.setMaxLines(1);
-                        editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                        break;
-                    case "email":
-                        editText.setMaxLines(1);
-                        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                        break;
-                    default:
-                        editText.setMaxLines(3);
-                        editText.setMinLines(3);
-                        break;
-                }
-            } else {
-                params.gravity = Gravity.CENTER;
-                int editTextMargin = (int) (10 * scale + 0.5f);
-                editTextParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                editTextParams.gravity = Gravity.CENTER;
-                editTextParams.setMargins(editTextMargin, editTextMargin, editTextMargin, editTextMargin);
-                editText.setLayoutParams(editTextParams);
-                editText.setLines(3);
-                editText.setMaxLines(3);
-                editText.setMinLines(3);
-            }
-            i++;
-            ResponseAnswer ra = getResponseAnswer(ql.getId());
-            if (ra != null && ra.getQuestionLabelId().equals(ql.getId())) {
-                if (ra.getResponseAnswerText() != null && ra.getResponseAnswerText().getText() != null)
-                    editText.setText(ra.getResponseAnswerText().getText());
-            }
-
-            editText.setOnTouchListener(new OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    isKeyboardShown = true;
-                    return false;
-                }
-            });
-
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                /**
-                 * Response asnwer text will be saved in preference
-                 * @param s REsponse text
-                 * @param start start index
-                 * @param before before index
-                 * @param count count
-                 */
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (s != null) {
-                        ResponseAnswer ra = setTextResponse(ql.getId(), new BigDecimal(1));
-                        if (ra.getResponseAnswerText() != null) {
-                            ra.getResponseAnswerText().setText(s.toString());
+                List<LabelTranslation> labelTranslations = ql.getLabelTranslations();
+                if (labelTranslations != null) {
+                    for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
+                        if (language != null && language.getCode().equals(labelTranslation.getCode())) {
+                            labelText = labelTranslation.getTranslation();
+                            isLabelSet = true;
+                            break;
                         }
-                        if (listener != null)
-                            listener.onTextviewSubmit();
+                    }
+                    if (!isLabelSet) {
+                        for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
+                            if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
+                                labelText = labelTranslation.getTranslation();
+                                break;
+                            }
+                        }
                     }
                 }
 
-                @Override
-                public void afterTextChanged(Editable s) {
+                float scale = getContext().getResources().getDisplayMetrics().density;
+                if (labelText != null && !labelText.equals("")) {
+                    linearLayout.setWeightSum(100);
+                    int txtLeftMargin = (int) (15 * scale + 0.5f);
+                    TextView txtLabel = new TextView(currentContext);
+                    txtLabel.setTag(ql.getId());
+                    txtLabel.setTextColor(Color.parseColor("#000000"));
+                    txtLabel.setGravity(Gravity.CENTER_VERTICAL);
+                    txtLabel.setText(labelText);
+                    LinearLayout.LayoutParams txtparams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 30);
+                    txtparams.setMargins(txtLeftMargin, 0, 10, 0);
+                    txtparams.gravity = Gravity.CENTER_VERTICAL;
+                    String fieldType = ql.getFieldType();
+                    editText.setId(R.id.txtWidgetText + i);
+                    editTextParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 65);
+                    editText.setLayoutParams(editTextParams);
+                    txtLabel.setLayoutParams(txtparams);
+                    linearLayout.addView(txtLabel);
+                    if (getTypeFace() != null) {
+                        editText.setTypeface(typeface);
+                        txtLabel.setTypeface(typeface);
+                    }
 
+                    switch (fieldType) {
+                        case "number":
+                            editText.setMaxLines(1);
+                            editText.setInputType(InputType.TYPE_CLASS_PHONE);
+                            break;
+                        case "email":
+                            editText.setMaxLines(1);
+                            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                            break;
+                        default:
+                            editText.setMaxLines(3);
+                            editText.setMinLines(3);
+                            break;
+                    }
+                } else {
+                    params.gravity = Gravity.CENTER;
+                    int editTextMargin = (int) (10 * scale + 0.5f);
+                    editTextParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                    editTextParams.gravity = Gravity.CENTER;
+                    editTextParams.setMargins(editTextMargin, editTextMargin, editTextMargin, editTextMargin);
+                    editText.setLayoutParams(editTextParams);
+                    editText.setLines(3);
+                    editText.setMaxLines(3);
+                    editText.setMinLines(3);
                 }
-            });
+                i++;
+                ResponseAnswer ra = getResponseAnswer(ql.getId());
+                if (ra != null && ra.getQuestionLabelId().equals(ql.getId())) {
+                    if (ra.getResponseAnswerText() != null && ra.getResponseAnswerText().getText() != null)
+                        editText.setText(ra.getResponseAnswerText().getText());
+                }
 
-            linearLayout.addView(editText);
-            llTextviewcontainer.addView(linearLayout);
+                editText.setOnTouchListener(new OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        isKeyboardShown = true;
+                        return false;
+                    }
+                });
+
+                editText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    /**
+                     * Response asnwer text will be saved in preference
+                     *
+                     * @param s      REsponse text
+                     * @param start  start index
+                     * @param before before index
+                     * @param count  count
+                     */
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        if (s != null) {
+                            ResponseAnswer ra = setTextResponse(ql.getId(), new BigDecimal(1));
+                            if (ra.getResponseAnswerText() != null) {
+                                ra.getResponseAnswerText().setText(s.toString());
+                            }
+                            if (listener != null)
+                                listener.onTextviewSubmit();
+                        }
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                    }
+                });
+
+                linearLayout.addView(editText);
+                llTextviewcontainer.addView(linearLayout);
+            }
         }
         if (loyagramCampaignView != null) {
             loyagramCampaignView.showSubView(true);
@@ -357,18 +364,20 @@ public class LoyagramTextView extends LinearLayout {
         String langcode = language.getCode();
         Boolean isTextChanged = false;
         List<QuestionTranslations> questionTranslations = question.getTranslations();
-        for (QuestionTranslations questionTranslation : questionTranslations) {
-            if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
-                if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+        if (questionTranslations != null) {
+            for (QuestionTranslations questionTranslation : questionTranslations) {
+                if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
+                    if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+                        break;
+                    }
+                    isTextChanged = true;
+                    txtQuestion.setText(questionTranslation.getTranslation());
                     break;
                 }
-                isTextChanged = true;
-                txtQuestion.setText(questionTranslation.getTranslation());
-                break;
             }
-        }
-        if (!isTextChanged) {
-            setQuestionTitleToPrimary();
+            if (!isTextChanged) {
+                setQuestionTitleToPrimary();
+            }
         }
     }
 
@@ -388,20 +397,28 @@ public class LoyagramTextView extends LinearLayout {
     public void changeLabelLanguage() {
         Boolean isTextChanged = false;
         List<QuestionLabel> questionLabel = question.getLabels();
-        for (QuestionLabel ql : questionLabel) {
-            for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                if (language != null && language.getCode().equals(labelTranslation.getCode())) {
-                    if (labelTranslation.getTranslation() == null || labelTranslation.getTranslation().isEmpty()) {
-                        break;
+
+        if (questionLabel != null) {
+            for (QuestionLabel ql : questionLabel) {
+                List<LabelTranslation> labelTranslations = ql.getLabelTranslations();
+                if (labelTranslations != null) {
+                    for (LabelTranslation labelTranslation : labelTranslations) {
+                        if (language != null && language.getCode().equals(labelTranslation.getCode())) {
+                            if (labelTranslation.getTranslation() == null || labelTranslation.getTranslation().isEmpty()) {
+                                break;
+                            }
+                            isTextChanged = true;
+                            TextView txtratignTitle = (TextView) findViewWithTag(ql.getId());
+                            txtratignTitle.setText(labelTranslation.getTranslation());
+                        }
                     }
-                    isTextChanged = true;
-                    TextView txtratignTitle = (TextView) findViewWithTag(ql.getId());
-                    txtratignTitle.setText(labelTranslation.getTranslation());
+                } else {
+                    return;
                 }
             }
-        }
-        if (!isTextChanged) {
-            changeLabelLanguageToPrimary();
+            if (!isTextChanged) {
+                changeLabelLanguageToPrimary();
+            }
         }
     }
 

@@ -11,7 +11,7 @@ import com.loyagram.android.campaignsdk.models.npssettings.ThankYouAndRedirectSe
  */
 
 public class ThankYouTranslation implements Parcelable {
-    @SerializedName("lang")
+    @SerializedName("language_code")
     private String code = null;
     @SerializedName("text")
     private ThankYouAndRedirectSettings thankYouAndRedirectSettings = null;

@@ -114,62 +114,64 @@ public class LoyagramSurveyView extends RelativeLayout {
         lloptionsContainer.removeAllViews();
         setQuestionText();
         List<QuestionLabel> questionLabels = question.getLabels();
-        for (final QuestionLabel ql : questionLabels) {
-            final AppCompatCheckBox chk = new AppCompatCheckBox(currentContext);
-            LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            buttonLayoutParams.setMargins(0, 0, 0, 0);
-            chk.setLayoutParams(buttonLayoutParams);
-            chk.setTag(ql.getId());
-            if (getTypeFace() != null) {
-                chk.setTypeface(typeface);
-            }
-            Boolean isLabelSet = false;
-            for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                if (language != null && language.getCode().equals(labelTranslation.getCode())) {
-                    chk.setText(labelTranslation.getTranslation());
-                    isLabelSet = true;
-                    break;
+        if (questionLabels != null) {
+            for (final QuestionLabel ql : questionLabels) {
+                final AppCompatCheckBox chk = new AppCompatCheckBox(currentContext);
+                LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                buttonLayoutParams.setMargins(0, 0, 0, 0);
+                chk.setLayoutParams(buttonLayoutParams);
+                chk.setTag(ql.getId());
+                if (getTypeFace() != null) {
+                    chk.setTypeface(typeface);
                 }
-            }
-
-            if (!isLabelSet) {
+                Boolean isLabelSet = false;
                 for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                    if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
+                    if (language != null && language.getCode().equals(labelTranslation.getCode())) {
                         chk.setText(labelTranslation.getTranslation());
+                        isLabelSet = true;
                         break;
                     }
                 }
-            }
-            chk.setId(Integer.parseInt(ql.getId().toString()));
-            ResponseAnswer responseAnswer = getResponseAnswer(ql.getId());
-            if (responseAnswer != null && responseAnswer.getQuestionLabelId().equals(ql.getId())) {
-                if (responseAnswer.getValue() != null && responseAnswer.getValue().equals(new BigDecimal(1))) // 1 eaquals true
-                    chk.setChecked(true);
-            }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                chk.setButtonTintList(getColorStateList());
-            } else {
-                chk.setSupportButtonTintList(getColorStateList());
-            }
-            if (loyagramCampaignView != null) {
-                loyagramCampaignView.showSubView(true);
-                loyagramCampaignView.hideProgress();
-            }
-            chk.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ResponseAnswer respAns;
-                    if (chk.isChecked()) {
-                        respAns = setMultiselectResponse(ql.getId(), new BigDecimal(1));
-                    } else {
-                        respAns = setMultiselectResponse(ql.getId(), new BigDecimal(0));
-                    }
-                    if (listener != null) {
-                        listener.onSurveySubmit(response);
+
+                if (!isLabelSet) {
+                    for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
+                        if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
+                            chk.setText(labelTranslation.getTranslation());
+                            break;
+                        }
                     }
                 }
-            });
-            lloptionsContainer.addView(chk);
+                chk.setId(Integer.parseInt(ql.getId().toString()));
+                ResponseAnswer responseAnswer = getResponseAnswer(ql.getId());
+                if (responseAnswer != null && responseAnswer.getQuestionLabelId().equals(ql.getId())) {
+                    if (responseAnswer.getValue() != null && responseAnswer.getValue().equals(ql.getId())) // 1 eaquals true
+                        chk.setChecked(true);
+                }
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    chk.setButtonTintList(getColorStateList());
+                } else {
+                    chk.setSupportButtonTintList(getColorStateList());
+                }
+                chk.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ResponseAnswer respAns;
+                        if (chk.isChecked()) {
+                            respAns = setMultiselectResponse(ql.getId(), new BigDecimal(1));
+                        } else {
+                            respAns = setMultiselectResponse(ql.getId(), new BigDecimal(0));
+                        }
+                        if (listener != null) {
+                            listener.onSurveySubmit(response);
+                        }
+                    }
+                });
+                lloptionsContainer.addView(chk);
+            }
+        }
+        if (loyagramCampaignView != null) {
+            loyagramCampaignView.showSubView(true);
+            loyagramCampaignView.hideProgress();
         }
     }
 
@@ -185,63 +187,62 @@ public class LoyagramSurveyView extends RelativeLayout {
         radioGroup.setLayoutParams(rdgParams);
         radioGroup.setOrientation(RadioGroup.VERTICAL);
         rdgParams.setMargins(0, 0, 0, 0);
-        for (final QuestionLabel ql : questionLabels) {
-            AppCompatRadioButton rdb = new AppCompatRadioButton(currentContext);
-            LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            rdb.setLayoutParams(buttonLayoutParams);
-            rdb.setTag(ql.getId());
-            if (getTypeFace() != null) {
-                rdb.setTypeface(typeface);
-            }
-            ResponseAnswer ra = getResponseAnswer(ql.getId());
-            Boolean isLabelSet = false;
-            for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                if (language != null && language.getCode().equals(labelTranslation.getCode())) {
-                    rdb.setText(labelTranslation.getTranslation());
-                    isLabelSet = true;
-                    break;
+        if (questionLabels != null) {
+            for (final QuestionLabel ql : questionLabels) {
+                AppCompatRadioButton rdb = new AppCompatRadioButton(currentContext);
+                LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                rdb.setLayoutParams(buttonLayoutParams);
+                rdb.setTag(ql.getId());
+                if (getTypeFace() != null) {
+                    rdb.setTypeface(typeface);
                 }
-            }
-
-            if (!isLabelSet) {
+                ResponseAnswer ra = getResponseAnswer(ql.getId());
+                Boolean isLabelSet = false;
                 for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                    if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
+                    if (language != null && language.getCode().equals(labelTranslation.getCode())) {
                         rdb.setText(labelTranslation.getTranslation());
+                        isLabelSet = true;
                         break;
                     }
                 }
-            }
 
-            if (ra != null && ra.getQuestionLabelId().equals(ql.getId())) {
-                if (ra.getValue() != null && ra.getValue().equals(new BigDecimal(1))) // 1 eaquals true
-                    rdb.setChecked(true);
-            }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                rdb.setButtonTintList(getColorStateList());
-            } else {
-                rdb.setSupportButtonTintList(getColorStateList());
-            }
-            rdb.setId(Integer.parseInt(ql.getId().toString()));
-            rdb.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ResponseAnswer sa = setSingleSelectResponse(ql.getId(), new BigDecimal(1));
-                    if (listener != null) {
-                        listener.onSurveySubmit(response);
+                if (!isLabelSet) {
+                    for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
+                        if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
+                            rdb.setText(labelTranslation.getTranslation());
+                            break;
+                        }
                     }
                 }
-            });
-            radioGroup.addView(rdb);
-        }
 
+                if (ra != null && ra.getQuestionLabelId().equals(ql.getId())) {
+                    if (ra.getValue() != null && ra.getValue().equals(ql.getId())) // 1 eaquals true
+                        rdb.setChecked(true);
+                }
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    rdb.setButtonTintList(getColorStateList());
+                } else {
+                    rdb.setSupportButtonTintList(getColorStateList());
+                }
+                rdb.setId(Integer.parseInt(ql.getId().toString()));
+                rdb.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ResponseAnswer sa = setSingleSelectResponse(ql.getId(), new BigDecimal(1));
+                        if (listener != null) {
+                            listener.onSurveySubmit(response);
+                        }
+                    }
+                });
+                radioGroup.addView(rdb);
+            }
+        }
         lloptionsContainer.addView(radioGroup);
         if (loyagramCampaignView != null) {
             loyagramCampaignView.showSubView(true);
             loyagramCampaignView.hideProgress();
         }
     }
-
-
 
 
     /**
@@ -254,7 +255,7 @@ public class LoyagramSurveyView extends RelativeLayout {
     public ResponseAnswer setMultiselectResponse(BigDecimal questionId, BigDecimal val) {
         ResponseAnswer resAnswer = getResponseAnswer(questionId);
         if (resAnswer != null) {
-            if(val.compareTo(BigDecimal.ONE)==1) {
+            if (val.compareTo(BigDecimal.ONE) == 1) {
                 resAnswer.setValue(questionId);
                 return resAnswer;
             } else {
@@ -415,18 +416,20 @@ public class LoyagramSurveyView extends RelativeLayout {
         String langcode = language.getCode();
         List<QuestionTranslations> questionTranslations = question.getTranslations();
         Boolean isTextChanged = false;
-        for (QuestionTranslations questionTranslation : questionTranslations) {
-            if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
-                if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+        if (questionTranslations != null) {
+            for (QuestionTranslations questionTranslation : questionTranslations) {
+                if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
+                    if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+                        break;
+                    }
+                    isTextChanged = true;
+                    txtQuestion.setText(questionTranslation.getTranslation());
                     break;
                 }
-                isTextChanged = true;
-                txtQuestion.setText(questionTranslation.getTranslation());
-                break;
             }
-        }
-        if (!isTextChanged) {
-            setQuestionTextToPrimary();
+            if (!isTextChanged) {
+                setQuestionTextToPrimary();
+            }
         }
     }
 
@@ -447,26 +450,33 @@ public class LoyagramSurveyView extends RelativeLayout {
     public void changeLabelLanguage() {
         List<QuestionLabel> questionLabel = question.getLabels();
         Boolean isTextChanged = false;
-        for (QuestionLabel ql : questionLabel) {
-            for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                if (language != null && language.getCode().equals(labelTranslation.getCode())) {
-                    if (labelTranslation.getTranslation() == null || labelTranslation.getTranslation().isEmpty()) {
-                        break;
+        if (questionLabel != null) {
+            for (QuestionLabel ql : questionLabel) {
+                List<LabelTranslation> labelTranslations = ql.getLabelTranslations();
+                if (labelTranslations != null) {
+                    for (LabelTranslation labelTranslation : labelTranslations) {
+                        if (language != null && language.getCode().equals(labelTranslation.getCode())) {
+                            if (labelTranslation.getTranslation() == null || labelTranslation.getTranslation().isEmpty()) {
+                                break;
+                            }
+                            isTextChanged = true;
+                            String questionType = question.getType();
+                            if (questionType.equals("SINGLE_SELECT")) {
+                                RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
+                                rdb.setText(labelTranslation.getTranslation());
+                            } else {
+                                CheckBox chk = (CheckBox) findViewWithTag(ql.getId());
+                                chk.setText(labelTranslation.getTranslation());
+                            }
+                        }
                     }
-                    isTextChanged = true;
-                    String questionType = question.getType();
-                    if (questionType.equals("SINGLE_SELECT")) {
-                        RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
-                        rdb.setText(labelTranslation.getTranslation());
-                    } else {
-                        CheckBox chk = (CheckBox) findViewWithTag(ql.getId());
-                        chk.setText(labelTranslation.getTranslation());
-                    }
+                } else {
+                    return;
                 }
             }
-        }
-        if (!isTextChanged) {
-            changeLabelLanguageToPrimary();
+            if (!isTextChanged) {
+                changeLabelLanguageToPrimary();
+            }
         }
     }
 

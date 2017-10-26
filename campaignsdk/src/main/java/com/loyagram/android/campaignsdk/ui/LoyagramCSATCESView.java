@@ -264,7 +264,7 @@ public class LoyagramCSATCESView extends LinearLayout {
             setFeedbackQuestion();
             setOptionText();
         }
-        if (isFollowUpEnabled) {
+        if (followUpQuestion != null && isFollowUpEnabled) {
             setFollowUpQuestion();
             changeFollowUPLabelLanguage();
         }
@@ -274,18 +274,20 @@ public class LoyagramCSATCESView extends LinearLayout {
         String langcode = currentLanguage.getCode();
         Boolean isTextChanged = false;
         List<QuestionTranslations> questionTranslations = question.getTranslations();
-        for (QuestionTranslations questionTranslation : questionTranslations) {
-            if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
-                if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+        if (questionTranslations != null) {
+            for (QuestionTranslations questionTranslation : questionTranslations) {
+                if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
+                    if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+                        break;
+                    }
+                    isTextChanged = true;
+                    txtquestion.setText(questionTranslation.getTranslation());
                     break;
                 }
-                isTextChanged = true;
-                txtquestion.setText(questionTranslation.getTranslation());
-                break;
             }
-        }
-        if (!isTextChanged) {
-            setQuestionToPrimaryLang();
+            if (!isTextChanged) {
+                setQuestionToPrimaryLang();
+            }
         }
     }
 
@@ -308,109 +310,111 @@ public class LoyagramCSATCESView extends LinearLayout {
         radioGroup.setLayoutParams(rdgParams);
         radioGroup.setOrientation(RadioGroup.VERTICAL);
         rdgParams.setMargins(0, 0, 0, 0);
-        for (final QuestionLabel ql : questionLabels) {
-            AppCompatRadioButton rdb = new AppCompatRadioButton(currentContext);
-            LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            rdb.setLayoutParams(buttonLayoutParams);
-            rdb.setTag(ql.getId());
-            rdb.setGravity(Gravity.CENTER);
-            if (getTypeface() != null) {
-                rdb.setTypeface(typeface);
-            }
-            ResponseAnswer ra = getResponseAnswerByLAbel(ql.getId());
-            Boolean isLabelSet = false;
-            for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                if (currentLanguage != null && currentLanguage.getCode().equals(labelTranslation.getCode())) {
-                    rdb.setText(labelTranslation.getTranslation());
-                    isLabelSet = true;
-                    break;
+        if (questionLabels != null) {
+            for (final QuestionLabel ql : questionLabels) {
+                AppCompatRadioButton rdb = new AppCompatRadioButton(currentContext);
+                LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                rdb.setLayoutParams(buttonLayoutParams);
+                rdb.setTag(ql.getId());
+                rdb.setGravity(Gravity.CENTER);
+                if (getTypeface() != null) {
+                    rdb.setTypeface(typeface);
                 }
-            }
-
-            if (!isLabelSet) {
+                ResponseAnswer ra = getResponseAnswerByLAbel(ql.getId());
+                Boolean isLabelSet = false;
                 for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                    if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
+                    if (currentLanguage != null && currentLanguage.getCode().equals(labelTranslation.getCode())) {
                         rdb.setText(labelTranslation.getTranslation());
+                        isLabelSet = true;
                         break;
                     }
                 }
-            }
 
-            if (ra != null && ra.getQuestionLabelId().equals(ql.getId())) {
-                if (ra.getValue() != null && ra.getValue().equals(new BigDecimal(1))) // 1 equals true
-                    rdb.setChecked(true);
-            }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                rdb.setButtonTintList(getColorStateList());
-            } else {
-                rdb.setSupportButtonTintList(getColorStateList());
-            }
-            rdb.setId(Integer.parseInt(ql.getId().toString()));
-            rdb.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    final RadioButton radioButton = (RadioButton) findViewWithTag(ql.getId());
-                    ResponseAnswer sa = setCSATCESResponse(ql.getId(), new BigDecimal(1));
-                    currentOption = ql.getName();
-                    if (listener != null) {
-                        listener.onCSATCESSubmit(true);
-                        listener.hideSubmitButton(false);
-
-                        String option = "";
-                        switch (ql.getName()) {
-                            case "very_dissatisfied":
-                                option = "dissatisfied";
-                                break;
-                            case "somewhat_dissatisfied":
-                                option = "dissatisfied";
-                                break;
-                            case "neither_satisfied_nor_dissatisfied":
-                                option = "neutral";
-                                break;
-                            case "somewhat_satisfied":
-                                option = "satisfied";
-                                break;
-                            case "very_satisfied":
-                                option = "satisfied";
-                                break;
-                            case "very_easy":
-                                option = "agree";
-                                break;
-                            case "easy":
-                                option = "agree";
-                                break;
-                            case "neither_easy_nor_difficult":
-                                option = "neutral";
-                                break;
-                            case "difficult":
-                                option = "disagree";
-                                break;
-                            case "very_difficult":
-                                option = "disagree";
-                                break;
+                if (!isLabelSet) {
+                    for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
+                        if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
+                            rdb.setText(labelTranslation.getTranslation());
+                            break;
                         }
-
-                        listener.setOptions(option);
                     }
-
-                    //Shows feedback view with a delay
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (radioButton != null) {
-                                // showReasontitle(radioButton.getText().toString());
-                            }
-                            //showReasonView();
-
-                        }
-                    }, 100);
-
-
                 }
-            });
-            radioGroup.addView(rdb);
+
+                if (ra != null && ra.getQuestionLabelId().equals(ql.getId())) {
+                    if (ra.getValue() != null && ra.getValue().equals(ql.getId())) // 1 equals true
+                        rdb.setChecked(true);
+                }
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    rdb.setButtonTintList(getColorStateList());
+                } else {
+                    rdb.setSupportButtonTintList(getColorStateList());
+                }
+                rdb.setId(Integer.parseInt(ql.getId().toString()));
+                rdb.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        final RadioButton radioButton = (RadioButton) findViewWithTag(ql.getId());
+                        ResponseAnswer sa = setCSATCESResponse(ql.getId(), new BigDecimal(1));
+                        currentOption = ql.getName();
+                        if (listener != null) {
+                            listener.onCSATCESSubmit(true);
+                            listener.hideSubmitButton(false);
+
+                            String option = "";
+                            switch (ql.getName()) {
+                                case "very_dissatisfied":
+                                    option = "dissatisfied";
+                                    break;
+                                case "somewhat_dissatisfied":
+                                    option = "dissatisfied";
+                                    break;
+                                case "neither_dissatisfied_nor_satisfied":
+                                    option = "neutral";
+                                    break;
+                                case "somewhat_satisfied":
+                                    option = "satisfied";
+                                    break;
+                                case "very_satisfied":
+                                    option = "satisfied";
+                                    break;
+                                case "agree":
+                                    option = "agree";
+                                    break;
+                                case "somewhat_agree":
+                                    option = "agree";
+                                    break;
+                                case "neither_disagree_nor_agree":
+                                    option = "neutral";
+                                    break;
+                                case "somewhat_disagree":
+                                    option = "disagree";
+                                    break;
+                                case "disagree":
+                                    option = "disagree";
+                                    break;
+                            }
+
+                            listener.setOptions(option);
+                        }
+
+                        //Shows feedback view with a delay
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (radioButton != null) {
+                                    // showReasontitle(radioButton.getText().toString());
+                                }
+                                //showReasonView();
+
+                            }
+                        }, 100);
+
+
+                    }
+                });
+                radioGroup.addView(rdb);
+            }
         }
         llOptionsContainer.addView(radioGroup);
         if (loyagramCampaignView != null) {
@@ -427,62 +431,64 @@ public class LoyagramCSATCESView extends LinearLayout {
         llfolloUpOptions.removeAllViews();
         llfollowUpContainer.setVisibility(VISIBLE);
         List<QuestionLabel> questionLabels = followUpQuestion.getLabels();
-        for (final QuestionLabel ql : questionLabels) {
-            final AppCompatCheckBox chk = new AppCompatCheckBox(currentContext);
-            LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            buttonLayoutParams.setMargins(0, 0, 0, 0);
-            chk.setLayoutParams(buttonLayoutParams);
-            chk.setTag(ql.getId());
-            if (getTypeface() != null) {
-                chk.setTypeface(typeface);
-            }
-            Boolean isLabelSet = false;
-            for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                if (currentLanguage != null && currentLanguage.getCode().equals(labelTranslation.getCode())) {
-                    chk.setText(labelTranslation.getTranslation());
-                    isLabelSet = true;
-                    break;
+        if (questionLabels != null) {
+            for (final QuestionLabel ql : questionLabels) {
+                final AppCompatCheckBox chk = new AppCompatCheckBox(currentContext);
+                LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                buttonLayoutParams.setMargins(0, 0, 0, 0);
+                chk.setLayoutParams(buttonLayoutParams);
+                chk.setTag(ql.getId());
+                if (getTypeface() != null) {
+                    chk.setTypeface(typeface);
                 }
-            }
-
-            if (!isLabelSet) {
+                Boolean isLabelSet = false;
                 for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                    if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
+                    if (currentLanguage != null && currentLanguage.getCode().equals(labelTranslation.getCode())) {
                         chk.setText(labelTranslation.getTranslation());
+                        isLabelSet = true;
                         break;
                     }
                 }
-            }
-            chk.setId(Integer.parseInt(ql.getId().toString()));
-            ResponseAnswer responseAnswer = getMulResponseAnswer(ql.getId());
-            if (responseAnswer != null && responseAnswer.getQuestionLabelId().equals(ql.getId())) {
-                if (responseAnswer.getValue() != null && responseAnswer.getValue().equals(new BigDecimal(1))) // 1 eaquals true
-                    chk.setChecked(true);
-            }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                chk.setButtonTintList(getColorStateList());
-            } else {
-                chk.setSupportButtonTintList(getColorStateList());
-            }
-            if (loyagramCampaignView != null) {
-                loyagramCampaignView.showSubView(true);
-                loyagramCampaignView.hideProgress();
-            }
-            chk.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ResponseAnswer respAns;
-                    if (chk.isChecked()) {
-                        respAns = setMultiselectResponse(ql.getId(), new BigDecimal(1));
-                    } else {
-                        respAns = setMultiselectResponse(ql.getId(), new BigDecimal(0));
-                    }
-                    if (listener != null) {
-                        listener.onCSATCESSubmit(true);
+
+                if (!isLabelSet) {
+                    for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
+                        if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
+                            chk.setText(labelTranslation.getTranslation());
+                            break;
+                        }
                     }
                 }
-            });
-            llfolloUpOptions.addView(chk);
+                chk.setId(Integer.parseInt(ql.getId().toString()));
+                ResponseAnswer responseAnswer = getMulResponseAnswer(ql.getId());
+                if (responseAnswer != null && responseAnswer.getQuestionLabelId().equals(ql.getId())) {
+                    if (responseAnswer.getValue() != null && responseAnswer.getValue().equals(ql.getId())) // 1 eaquals true
+                        chk.setChecked(true);
+                }
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    chk.setButtonTintList(getColorStateList());
+                } else {
+                    chk.setSupportButtonTintList(getColorStateList());
+                }
+//            if (loyagramCampaignView != null) {
+//                loyagramCampaignView.showSubView(true);
+//                loyagramCampaignView.hideProgress();
+//            }
+                chk.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ResponseAnswer respAns;
+                        if (chk.isChecked()) {
+                            respAns = setMultiselectResponse(ql.getId(), new BigDecimal(1));
+                        } else {
+                            respAns = setMultiselectResponse(ql.getId(), new BigDecimal(0));
+                        }
+                        if (listener != null) {
+                            listener.onCSATCESSubmit(true);
+                        }
+                    }
+                });
+                llfolloUpOptions.addView(chk);
+            }
         }
     }
 
@@ -490,18 +496,20 @@ public class LoyagramCSATCESView extends LinearLayout {
         String langcode = currentLanguage.getCode();
         List<QuestionTranslations> questionTranslations = followUpQuestion.getTranslations();
         Boolean isTextChanged = false;
-        for (QuestionTranslations questionTranslation : questionTranslations) {
-            if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
-                if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+        if (questionTranslations != null) {
+            for (QuestionTranslations questionTranslation : questionTranslations) {
+                if (questionTranslation.getCode() != null && questionTranslation.getCode().equals(langcode)) {
+                    if (questionTranslation.getTranslation() == null || questionTranslation.getTranslation().isEmpty()) {
+                        break;
+                    }
+                    isTextChanged = true;
+                    txtFollowUpQstn.setText(questionTranslation.getTranslation());
                     break;
                 }
-                isTextChanged = true;
-                txtFollowUpQstn.setText(questionTranslation.getTranslation());
-                break;
             }
-        }
-        if (!isTextChanged) {
-            setFollowUpQuestiontoPrimary();
+            if (!isTextChanged) {
+                setFollowUpQuestiontoPrimary();
+            }
         }
     }
 
@@ -533,22 +541,24 @@ public class LoyagramCSATCESView extends LinearLayout {
     public void changeLabelLanguage() {
         List<QuestionLabel> questionLabel = question.getLabels();
         Boolean isTextChanged = false;
-        for (QuestionLabel ql : questionLabel) {
-            for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                if (currentLanguage != null && currentLanguage.getCode().equals(labelTranslation.getCode())) {
-                    if (labelTranslation.getTranslation() == null || labelTranslation.getTranslation().isEmpty()) {
-                        break;
-                    }
-                    isTextChanged = true;
-                    RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
-                    if (rdb != null) {
-                        rdb.setText(labelTranslation.getTranslation());
+        if (questionLabel != null) {
+            for (QuestionLabel ql : questionLabel) {
+                for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
+                    if (currentLanguage != null && currentLanguage.getCode().equals(labelTranslation.getCode())) {
+                        if (labelTranslation.getTranslation() == null || labelTranslation.getTranslation().isEmpty()) {
+                            break;
+                        }
+                        isTextChanged = true;
+                        RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
+                        if (rdb != null) {
+                            rdb.setText(labelTranslation.getTranslation());
+                        }
                     }
                 }
             }
-        }
-        if (!isTextChanged) {
-            changeLabelLanguageToPrimary();
+            if (!isTextChanged) {
+                changeLabelLanguageToPrimary();
+            }
         }
     }
 
@@ -572,28 +582,30 @@ public class LoyagramCSATCESView extends LinearLayout {
     public void changeFollowUPLabelLanguage() {
         List<QuestionLabel> questionLabel = followUpQuestion.getLabels();
         Boolean isTextChanged = false;
-        for (QuestionLabel ql : questionLabel) {
-            for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                if (currentLanguage != null && currentLanguage.getCode().equals(labelTranslation.getCode())) {
-                    if (labelTranslation.getTranslation() == null || labelTranslation.getTranslation().isEmpty()) {
-                        break;
-                    }
-                    isTextChanged = true;
-                    String questionType = followUpQuestion.getType();
-                    if (questionType.equals("SINGLE_SELECT")) {
-                        RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
-                        rdb.setText(labelTranslation.getTranslation());
-                    } else {
-                        CheckBox chk = (CheckBox) findViewWithTag(ql.getId());
-                        if (chk != null) {
-                            chk.setText(labelTranslation.getTranslation());
+        if (questionLabel != null) {
+            for (QuestionLabel ql : questionLabel) {
+                for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
+                    if (currentLanguage != null && currentLanguage.getCode().equals(labelTranslation.getCode())) {
+                        if (labelTranslation.getTranslation() == null || labelTranslation.getTranslation().isEmpty()) {
+                            break;
+                        }
+                        isTextChanged = true;
+                        String questionType = followUpQuestion.getType();
+                        if (questionType.equals("SINGLE_SELECT")) {
+                            RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
+                            rdb.setText(labelTranslation.getTranslation());
+                        } else {
+                            CheckBox chk = (CheckBox) findViewWithTag(ql.getId());
+                            if (chk != null) {
+                                chk.setText(labelTranslation.getTranslation());
+                            }
                         }
                     }
                 }
             }
-        }
-        if (!isTextChanged) {
-            changeFollowUpLabelLanguageToPrimary();
+            if (!isTextChanged) {
+                changeFollowUpLabelLanguageToPrimary();
+            }
         }
     }
 
@@ -728,7 +740,7 @@ public class LoyagramCSATCESView extends LinearLayout {
     public ResponseAnswer setMultiselectResponse(BigDecimal questionId, BigDecimal val) {
         ResponseAnswer resAnswer = getMulResponseAnswer(questionId);
         if (resAnswer != null) {
-            if(val.compareTo(BigDecimal.ONE)==1) {
+            if (val.compareTo(BigDecimal.ONE) == 1) {
                 resAnswer.setValue(questionId);
                 return resAnswer;
             } else {
@@ -799,23 +811,24 @@ public class LoyagramCSATCESView extends LinearLayout {
         Boolean isTextChanged = false;
         String feedback = null;
         List<SettingsTranslation> settingsTranslations = question.getSettingsTranslation();
-        for (SettingsTranslation sT : settingsTranslations) {
-            if (sT.getCode() != null && sT.getCode().equals(langcode)) {
-                CsatCesReasonSettings reasonSettings;
-                CsatCesReasonSettings qReasonSettings;
-                if (isCsat) {
-                    reasonSettings = sT.getSettingsBase().getSettings().getCsatSettings().getRequestReasonSettings();
-                    qReasonSettings = question.getSettings().getCsatSettings().getRequestReasonSettings();
-                } else {
-                    reasonSettings = sT.getSettingsBase().getSettings().getCesSettings().getRequestReasonSettings();
-                    qReasonSettings = question.getSettings().getCesSettings().getRequestReasonSettings();
-                }
+        if (settingsTranslations != null) {
+            for (SettingsTranslation sT : settingsTranslations) {
+                if (sT.getCode() != null && sT.getCode().equals(langcode)) {
+                    CsatCesReasonSettings reasonSettings;
+                    CsatCesReasonSettings qReasonSettings;
+                    if (isCsat) {
+                        reasonSettings = sT.getSettingsBase().getSettings().getCsatSettings().getRequestReasonSettings();
+                        qReasonSettings = question.getSettings().getCsatSettings().getRequestReasonSettings();
+                    } else {
+                        reasonSettings = sT.getSettingsBase().getSettings().getCesSettings().getRequestReasonSettings();
+                        qReasonSettings = question.getSettings().getCesSettings().getRequestReasonSettings();
+                    }
 
-                if (reasonSettings != null && reasonSettings.getAll() != null) {
-                    feedback = reasonSettings.getAll().getMessage();
-                    isTextChanged = true;
-                    txtFeedbackQuestion.setText(feedback);
-                }
+                    if (reasonSettings != null && reasonSettings.getAll() != null) {
+                        feedback = reasonSettings.getAll().getMessage();
+                        isTextChanged = true;
+                        txtFeedbackQuestion.setText(feedback);
+                    }
 
                /*
                 if (qReasonSettings.getType().equals("all")) {
@@ -880,11 +893,12 @@ public class LoyagramCSATCESView extends LinearLayout {
                     break;
                 } */
 
+                }
             }
-        }
 
-        if (!isTextChanged) {
-            setFeedbackQuestionToPrimaryLang();
+            if (!isTextChanged) {
+                setFeedbackQuestionToPrimaryLang();
+            }
         }
     }
 
@@ -973,15 +987,17 @@ public class LoyagramCSATCESView extends LinearLayout {
     public void setOptionText() {
         txtRetry.setText(staticTextes.get("CHANGE_SCORE_BUTTON_TEXT"));
         List<QuestionLabel> questionLabels = question.getLabels();
-        for (final QuestionLabel ql : questionLabels) {
-            if (ql.getName().equals(currentOption)) {
-                for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                    if (currentLanguage != null && currentLanguage.getCode().equals(labelTranslation.getCode())) {
-                        txtOptions.setText(labelTranslation.getTranslation());
-                        break;
+        if (questionLabels != null) {
+            for (final QuestionLabel ql : questionLabels) {
+                if (ql.getName().equals(currentOption)) {
+                    for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
+                        if (currentLanguage != null && currentLanguage.getCode().equals(labelTranslation.getCode())) {
+                            txtOptions.setText(labelTranslation.getTranslation());
+                            break;
+                        }
                     }
+                    break;
                 }
-                break;
             }
         }
 

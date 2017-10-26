@@ -14,7 +14,7 @@ public class StaticTextTransalation implements Parcelable {
 
     @SerializedName("static_text_id")
     private String staticTextId = null;
-    @SerializedName("lang")
+    @SerializedName("language_code")
     private String code = null;
     @SerializedName("text")
     private String translation = null;

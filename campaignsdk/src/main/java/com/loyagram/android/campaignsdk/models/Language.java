@@ -15,7 +15,7 @@ public class Language implements Parcelable {
     private String status = null;
     @SerializedName("selected")
     private Boolean selected = null;
-    @SerializedName("code")
+    @SerializedName("language_code")
     private String code = null;
     @SerializedName("name")
     private String name = null;

@@ -15,7 +15,7 @@ public class LabelTranslation implements Parcelable {
 
     @SerializedName("l_id")
     private BigDecimal labelId = null;
-    @SerializedName("lang")
+    @SerializedName("language_code")
     private String code = null;
     @SerializedName("name")
     private String name = null;

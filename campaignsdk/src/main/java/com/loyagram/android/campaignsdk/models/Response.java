@@ -44,7 +44,7 @@ public class Response implements Parcelable {
     private String channel = null;
     @SerializedName("sub_channel")
     private String subChannel = null;
-    @SerializedName("lang")
+    @SerializedName("language_code")
     private String language = null;
     @SerializedName("attr")
     private HashMap<String, String> attributes = null;

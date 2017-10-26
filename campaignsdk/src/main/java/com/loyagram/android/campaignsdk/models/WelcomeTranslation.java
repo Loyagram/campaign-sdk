@@ -11,7 +11,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class WelcomeTranslation implements Parcelable {
 
-    @SerializedName("lang")
+    @SerializedName("language_code")
     private String code = null;
     @SerializedName("text")
     private String translation = null;

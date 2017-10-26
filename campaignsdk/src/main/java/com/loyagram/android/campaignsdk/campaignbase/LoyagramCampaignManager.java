@@ -415,7 +415,7 @@ public class LoyagramCampaignManager {
      *
      * @param context context
      */
-    private static void sendPendingResponses(Context context) {
+    public static void sendPendingResponses(Context context) {
         String prefName = getAppname(context) + "responseList";
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         Gson gson = new Gson();

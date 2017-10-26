@@ -15,7 +15,7 @@ public class QuestionTranslations implements Parcelable {
 
     @SerializedName("q_id")
     private BigDecimal questionId = null;
-    @SerializedName("lang")
+    @SerializedName("language_code")
     private String code = null;
     @SerializedName("name")
     private String name = null;

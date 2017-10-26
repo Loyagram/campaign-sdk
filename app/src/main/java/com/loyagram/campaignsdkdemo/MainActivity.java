@@ -32,11 +32,11 @@ public class MainActivity extends AppCompatActivity {
     RadioButton rdbNps = null;
     RadioButton rdbSurvey = null;
     String logo = "logo.png";
-    String campaignId = "1002_b78c8ed4-5488-41c6-b650-2aefbf832564";
+    String campaignId = "1020-c70727e6-f326-41fd-9614-41b40d80c15f";
     String colorPrimary = "#1abc9c";
     HashMap<String, String> customAttributes = new HashMap<>();
-    String apiKey = "c4cb1be2-cbe6-42e8-9d8c-5fb0b1018b26";
-    String accessSecret = "52cdf0d7-8f66-4218-aa5e-c8526bdd0a80";
+    String apiKey = "faa733e7-a9b0-453d-8a77-aa881909bbb0";
+    String accessSecret = "3dc8b3f2-141e-44de-babb-f0eadb9b6359";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,13 +151,13 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
 
                 if (checkedId == R.id.rdbNps) {
-                    campaignId = "1002_b78c8ed4-5488-41c6-b650-2aefbf832564";
+                    campaignId = "1020-c70727e6-f326-41fd-9614-41b40d80c15f";
                 } else if (checkedId == R.id.rdbCsat) {
-                    campaignId = "1002_de93559f-5889-40b8-91d8-3d4454f84e18";
+                    campaignId = "1020-d2f170cc-403c-42ec-bfcd-460b411cb601";
                 } else if (checkedId == R.id.rdbSurvey) {
-                    campaignId = "1002_4034e24d-16b6-4a34-95e8-8e0f3e351a88";
+                    campaignId = "1020-b9ef1429-dbbf-47a9-8397-3e892742b283";
                 } else if(checkedId == R.id.rdbCes) {
-                    campaignId = "1002_61915db5-4915-408e-9ae5-c44fe33ef72a";
+                    campaignId = "1020-c5b8702f-c2e4-4adc-afe8-e5b931b8ae24";
                 }
             }
         });

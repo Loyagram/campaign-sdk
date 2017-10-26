@@ -22,7 +22,6 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -580,7 +579,7 @@ public class LoyagramCampaignView extends LinearLayout {
 
         Question followUpQuestion = null;
         isFollowUpEnabled = campaign.getLanguageBase().getFollowUpEnabled();
-        if (isFollowUpEnabled) {
+        if (!campaign.getType().equals("SURVEY") && isFollowUpEnabled) {
             followUpQuestion = campaign.getResults().get(1);
             btnNext.setText(staticTextes.get("CAMPAIGN_MODE_NEXT_BUTTON_TEXT"));
         }
@@ -689,7 +688,7 @@ public class LoyagramCampaignView extends LinearLayout {
 
         Question followUpQuestion = null;
         isFollowUpEnabled = campaign.getLanguageBase().getFollowUpEnabled();
-        if (isFollowUpEnabled) {
+        if (!campaign.getType().equals("SURVEY") && isFollowUpEnabled) {
             followUpQuestion = campaign.getResults().get(1);
             btnNext.setText(staticTextes.get("CAMPAIGN_MODE_NEXT_BUTTON_TEXT"));
         }
@@ -745,7 +744,7 @@ public class LoyagramCampaignView extends LinearLayout {
         btnNext.setTextColor(Color.parseColor("#FFFFFF"));
 
         /* Handle Follow up for NPS CSAT and CES */
-        if (isFollowUpEnabled) {
+        if (!campaign.getType().equals("SURVEY") && isFollowUpEnabled) {
             switch (followUpIterator) {
                 case 0:
                     if (submitPressListener != null) {
@@ -793,7 +792,7 @@ public class LoyagramCampaignView extends LinearLayout {
         ((GradientDrawable) btnNext.getBackground()).setColor(Color.parseColor("#FFFFFF"));
         btnNext.setTextColor(Color.parseColor(colorPrimary));
         /* Handle Follow up for NPS CSAT and CES */
-        if (isFollowUpEnabled) {
+        if (!campaign.getType().equals("SURVEY") && isFollowUpEnabled) {
             switch (followUpIterator) {
                 case 0:
                     break;
@@ -1152,6 +1151,7 @@ public class LoyagramCampaignView extends LinearLayout {
                 JSONObject sendJson = new JSONObject();
                 sendJson.put("data", jsonObject);
                 submitCampaigntoLoyagram(sendJson.toString());
+                LoyagramCampaignManager.sendPendingResponses(currentContext);
             }
         } catch (Exception ignored) {
             refreshCampaignButtonStyle();
@@ -1328,43 +1328,48 @@ public class LoyagramCampaignView extends LinearLayout {
     public void loadLanguage() {
         int loopCounter = 0;
         int spinnerIndex = loopCounter;
-        LanguageBase languageBase = campaign.getLanguageBase();
-        final List<Language> languages = languageBase.getLanguage();
         spinnerLang.setSupportBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
-        if (languages.size() == 1) {
-            this.currentLanguage = languages.get(0);
-            this.primaryLanguage = languages.get(0);
-            return;
-        }
-        String[] langs = new String[languages.size()];
-        int i = 0;
-        for (Language lang : languages) {
-            langs[i] = lang.getName();
-            i++;
-            if (lang.getPrimary() != null && lang.getPrimary()) {
-                this.currentLanguage = lang;
-                this.primaryLanguage = lang;
-                spinnerIndex = loopCounter;
-            }
-            loopCounter++;
-        }
-        spinnerLang.setAdapter(new SpinnerAdapter(currentContext, R.layout.loyagram_spinnertext, langs, colorPrimary, typeFace));
-        spinnerLang.setSelection(spinnerIndex);
-        spinnerLang.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (position > -1 && isSpinnerChanged) {
-                    changeLanguage(languages.get(position));
+        LanguageBase languageBase = campaign.getLanguageBase();
+        if (languageBase != null) {
+            final List<Language> languages = languageBase.getLanguage();
+            if (languages != null) {
+                if (languages.size() == 1) {
+                    this.currentLanguage = languages.get(0);
+                    this.primaryLanguage = languages.get(0);
+                    return;
                 }
-                isSpinnerChanged = true;
-            }
+                String[] langs = new String[languages.size()];
+                int i = 0;
+                for (Language lang : languages) {
+                    langs[i] = lang.getName();
+                    i++;
+                    if (lang.getPrimary() != null && lang.getPrimary()) {
+                        this.currentLanguage = lang;
+                        this.primaryLanguage = lang;
+                        spinnerIndex = loopCounter;
+                    }
+                    loopCounter++;
+                }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
-            }
+                spinnerLang.setAdapter(new SpinnerAdapter(currentContext, R.layout.loyagram_spinnertext, langs, colorPrimary, typeFace));
+                spinnerLang.setSelection(spinnerIndex);
+                spinnerLang.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                        if (position > -1 && isSpinnerChanged) {
+                            changeLanguage(languages.get(position));
+                        }
+                        isSpinnerChanged = true;
+                    }
 
-        });
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parentView) {
+                        // your code here
+                    }
+
+                });
+            }
+        }
     }
 
     /**
@@ -1484,42 +1489,7 @@ public class LoyagramCampaignView extends LinearLayout {
         List<Link> links = null;
         SpannableString spannableStringLinks = null;
         String lang = currentLanguage.getCode();
-        for (ThankYouTranslation thankYouTranslation : thankYouTranslations) {
-            if (thankYouTranslation.getCode() != null && thankYouTranslation.getCode().equals(lang)) {
-                ThankYouAndRedirectSettings thankYouAndRedirectSettings = thankYouTranslation.getThankYouAndRedirectSettings();
-                if (thankYouAndRedirectSettings != null && thankYouAndRedirectSettings.getType() != null) {
-                    switch (thankYouAndRedirectSettings.getType()) {
-                        case "all":
-                            if (thankYouAndRedirectSettings.getAll() != null) {
-                                thankYouString = thankYouAndRedirectSettings.getAll().getMessage();
-                                // links = thankYouAndRedirectSettings.getAll().getLinks();
-                            }
-                            break;
-                        case "score":
-                            CustomThankYouAndRedirectSettings cTY = thankYouAndRedirectSettings.getCustom();
-                            if (cTY != null) {
-                                if (npsRating <= 6) {
-                                    thankYouString = cTY.getDetractors().getMessage();
-                                    //  links = cTY.getDetractors().getLinks();
-                                } else if (npsRating <= 8) {
-                                    thankYouString = cTY.getPassives().getMessage();
-                                    // links = cTY.getPassives().getLinks();
-                                } else {
-                                    thankYouString = cTY.getPromoters().getMessage();
-                                    //links = cTY.getPromoters().getLinks();
-                                }
-                            }
-                            break;
-                    }
-                }
-
-                break;
-            }
-        }
-
-        //Get thank you from primary language
-        if (thankYouString == null || thankYouString.isEmpty()) {
-            lang = primaryLanguage.getCode();
+        if (thankYouTranslations != null) {
             for (ThankYouTranslation thankYouTranslation : thankYouTranslations) {
                 if (thankYouTranslation.getCode() != null && thankYouTranslation.getCode().equals(lang)) {
                     ThankYouAndRedirectSettings thankYouAndRedirectSettings = thankYouTranslation.getThankYouAndRedirectSettings();
@@ -1536,7 +1506,7 @@ public class LoyagramCampaignView extends LinearLayout {
                                 if (cTY != null) {
                                     if (npsRating <= 6) {
                                         thankYouString = cTY.getDetractors().getMessage();
-                                        // links = cTY.getDetractors().getLinks();
+                                        //  links = cTY.getDetractors().getLinks();
                                     } else if (npsRating <= 8) {
                                         thankYouString = cTY.getPassives().getMessage();
                                         // links = cTY.getPassives().getLinks();
@@ -1548,12 +1518,51 @@ public class LoyagramCampaignView extends LinearLayout {
                                 break;
                         }
                     }
+
+                    break;
                 }
             }
-        }
+
+            //Get thank you from primary language
+            if (thankYouString == null || thankYouString.isEmpty()) {
+                lang = primaryLanguage.getCode();
+                for (ThankYouTranslation thankYouTranslation : thankYouTranslations) {
+                    if (thankYouTranslation.getCode() != null && thankYouTranslation.getCode().equals(lang)) {
+                        ThankYouAndRedirectSettings thankYouAndRedirectSettings = thankYouTranslation.getThankYouAndRedirectSettings();
+                        if (thankYouAndRedirectSettings != null && thankYouAndRedirectSettings.getType() != null) {
+                            switch (thankYouAndRedirectSettings.getType()) {
+                                case "all":
+                                    if (thankYouAndRedirectSettings.getAll() != null) {
+                                        thankYouString = thankYouAndRedirectSettings.getAll().getMessage();
+                                        // links = thankYouAndRedirectSettings.getAll().getLinks();
+                                    }
+                                    break;
+                                case "score":
+                                    CustomThankYouAndRedirectSettings cTY = thankYouAndRedirectSettings.getCustom();
+                                    if (cTY != null) {
+                                        if (npsRating <= 6) {
+                                            thankYouString = cTY.getDetractors().getMessage();
+                                            // links = cTY.getDetractors().getLinks();
+                                        } else if (npsRating <= 8) {
+                                            thankYouString = cTY.getPassives().getMessage();
+                                            // links = cTY.getPassives().getLinks();
+                                        } else {
+                                            thankYouString = cTY.getPromoters().getMessage();
+                                            //links = cTY.getPromoters().getLinks();
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
 //        if (links != null && links.size() > 0) {
 //            spannableStringLinks = getSpannableString(links);
 //        }
+
+
+        }
         if (thankYouString != null) {
             SpannableString thankYouStringSpannable = new SpannableString(thankYouString);
             thankYou.put("thankyouString", thankYouStringSpannable);
@@ -1570,92 +1579,7 @@ public class LoyagramCampaignView extends LinearLayout {
         List<Link> links = null;
         SpannableString spannableStringLinks = null;
         String lang = currentLanguage.getCode();
-        for (ThankYouTranslation thankYouTranslation : thankYouTranslations) {
-            if (thankYouTranslation.getCode() != null && thankYouTranslation.getCode().equals(lang)) {
-                ThankYouAndRedirectSettings thankYouAndRedirectSettings = thankYouTranslation.getThankYouAndRedirectSettings();
-                if (thankYouAndRedirectSettings != null && thankYouAndRedirectSettings.getType() != null) {
-                    switch (thankYouAndRedirectSettings.getType()) {
-                        case "all":
-                            if (thankYouAndRedirectSettings.getAll() != null) {
-                                thankYouString = thankYouAndRedirectSettings.getAll().getMessage();
-                                // links = thankYouAndRedirectSettings.getAll().getLinks();
-                            }
-                            break;
-                        case "custom":
-                            CustomThankYouAndRedirectSettings cTY = thankYouAndRedirectSettings.getCustom();
-                            if (cTY != null) {
-                                switch (csatCesOption) {
-                                    case "very_dissatisfied":
-                                        thankYouString = cTY.getVeryDissatisfied().getMessage();
-                                        //  links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-                                    case "somewhat_dissatisfied":
-                                        thankYouString = cTY.getSomewhatDissatisfied().getMessage();
-                                        // links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-                                    case "neither_satisfied_nor_dissatisfied":
-                                        thankYouString = cTY.getNeitherSatisfiedNorDissatisfied().getMessage();
-                                        //  links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-                                    case "somewhat_satisfied":
-                                        thankYouString = cTY.getSomewhatSatisfied().getMessage();
-                                        //  links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-                                    case "very_satisfied":
-                                        thankYouString = cTY.getVerySatisfied().getMessage();
-                                        // links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-
-                                    case "neither_easy_nor_difficult":
-                                        thankYouString = cTY.getNeither().getMessage();
-                                        //  links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-                                    case "easy":
-                                        thankYouString = cTY.getVeryEasy().getMessage();
-                                        //  links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-                                    case "difficult":
-                                        thankYouString = cTY.getVeryDifficult().getMessage();
-                                        // links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-                                    case "dissatisfied":
-                                        thankYouString = cTY.getUnsatisfied().getMessage();
-                                        // links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-                                    case "neutral":
-                                        thankYouString = cTY.getNeutral().getMessage();
-                                        // links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-                                    case "satisfied":
-                                        thankYouString = cTY.getSatisfied().getMessage();
-                                        // links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-                                    case "disagree":
-                                        thankYouString = cTY.getDisagree().getMessage();
-                                        // links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-                                    case "neither_disagree_or_agree":
-                                        thankYouString = cTY.getNeitherDisagreeOrAgree().getMessage();
-                                        // links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-                                    case "agree":
-                                        thankYouString = cTY.getAgree().getMessage();
-                                        // links = cTY.getVeryDissatisfied().getLinks();
-                                        break;
-
-
-                                }
-
-                            }
-                    }
-                }
-                break;
-            }
-        }
-
-        //Get thank you from primary language
-        if (thankYouString == null || thankYouString.isEmpty()) {
-            lang = primaryLanguage.getCode();
+        if (thankYouTranslations != null) {
             for (ThankYouTranslation thankYouTranslation : thankYouTranslations) {
                 if (thankYouTranslation.getCode() != null && thankYouTranslation.getCode().equals(lang)) {
                     ThankYouAndRedirectSettings thankYouAndRedirectSettings = thankYouTranslation.getThankYouAndRedirectSettings();
@@ -1673,7 +1597,7 @@ public class LoyagramCampaignView extends LinearLayout {
                                     switch (csatCesOption) {
                                         case "very_dissatisfied":
                                             thankYouString = cTY.getVeryDissatisfied().getMessage();
-                                            // links = cTY.getVeryDissatisfied().getLinks();
+                                            //  links = cTY.getVeryDissatisfied().getLinks();
                                             break;
                                         case "somewhat_dissatisfied":
                                             thankYouString = cTY.getSomewhatDissatisfied().getMessage();
@@ -1681,49 +1605,135 @@ public class LoyagramCampaignView extends LinearLayout {
                                             break;
                                         case "neither_satisfied_nor_dissatisfied":
                                             thankYouString = cTY.getNeitherSatisfiedNorDissatisfied().getMessage();
-                                            //links = cTY.getVeryDissatisfied().getLinks();
+                                            //  links = cTY.getVeryDissatisfied().getLinks();
                                             break;
                                         case "somewhat_satisfied":
                                             thankYouString = cTY.getSomewhatSatisfied().getMessage();
-                                            //links = cTY.getVeryDissatisfied().getLinks();
+                                            //  links = cTY.getVeryDissatisfied().getLinks();
                                             break;
                                         case "very_satisfied":
                                             thankYouString = cTY.getVerySatisfied().getMessage();
                                             // links = cTY.getVeryDissatisfied().getLinks();
                                             break;
+
                                         case "neither_easy_nor_difficult":
                                             thankYouString = cTY.getNeither().getMessage();
                                             //  links = cTY.getVeryDissatisfied().getLinks();
                                             break;
                                         case "easy":
-                                            thankYouString = cTY.getEasy().getMessage();
-                                            //  links = cTY.getVeryDissatisfied().getLinks();
-                                            break;
-                                        case "difficult":
-                                            thankYouString = cTY.getDifficult().getMessage();
-                                            // links = cTY.getVeryDissatisfied().getLinks();
-                                            break;
-                                        case "very_easy":
                                             thankYouString = cTY.getVeryEasy().getMessage();
                                             //  links = cTY.getVeryDissatisfied().getLinks();
                                             break;
-                                        case "very_difficult":
+                                        case "difficult":
                                             thankYouString = cTY.getVeryDifficult().getMessage();
                                             // links = cTY.getVeryDissatisfied().getLinks();
                                             break;
+                                        case "dissatisfied":
+                                            thankYouString = cTY.getUnsatisfied().getMessage();
+                                            // links = cTY.getVeryDissatisfied().getLinks();
+                                            break;
+                                        case "neutral":
+                                            thankYouString = cTY.getNeutral().getMessage();
+                                            // links = cTY.getVeryDissatisfied().getLinks();
+                                            break;
+                                        case "satisfied":
+                                            thankYouString = cTY.getSatisfied().getMessage();
+                                            // links = cTY.getVeryDissatisfied().getLinks();
+                                            break;
+                                        case "disagree":
+                                            thankYouString = cTY.getDisagree().getMessage();
+                                            // links = cTY.getVeryDissatisfied().getLinks();
+                                            break;
+                                        case "neither_disagree_or_agree":
+                                            thankYouString = cTY.getNeitherDisagreeOrAgree().getMessage();
+                                            // links = cTY.getVeryDissatisfied().getLinks();
+                                            break;
+                                        case "agree":
+                                            thankYouString = cTY.getAgree().getMessage();
+                                            // links = cTY.getVeryDissatisfied().getLinks();
+                                            break;
+
 
                                     }
+
                                 }
                         }
                     }
                     break;
                 }
             }
-        }
+
+            //Get thank you from primary language
+            if (thankYouString == null || thankYouString.isEmpty()) {
+                lang = primaryLanguage.getCode();
+                for (ThankYouTranslation thankYouTranslation : thankYouTranslations) {
+                    if (thankYouTranslation.getCode() != null && thankYouTranslation.getCode().equals(lang)) {
+                        ThankYouAndRedirectSettings thankYouAndRedirectSettings = thankYouTranslation.getThankYouAndRedirectSettings();
+                        if (thankYouAndRedirectSettings != null && thankYouAndRedirectSettings.getType() != null) {
+                            switch (thankYouAndRedirectSettings.getType()) {
+                                case "all":
+                                    if (thankYouAndRedirectSettings.getAll() != null) {
+                                        thankYouString = thankYouAndRedirectSettings.getAll().getMessage();
+                                        // links = thankYouAndRedirectSettings.getAll().getLinks();
+                                    }
+                                    break;
+                                case "custom":
+                                    CustomThankYouAndRedirectSettings cTY = thankYouAndRedirectSettings.getCustom();
+                                    if (cTY != null) {
+                                        switch (csatCesOption) {
+                                            case "very_dissatisfied":
+                                                thankYouString = cTY.getVeryDissatisfied().getMessage();
+                                                // links = cTY.getVeryDissatisfied().getLinks();
+                                                break;
+                                            case "somewhat_dissatisfied":
+                                                thankYouString = cTY.getSomewhatDissatisfied().getMessage();
+                                                // links = cTY.getVeryDissatisfied().getLinks();
+                                                break;
+                                            case "neither_satisfied_nor_dissatisfied":
+                                                thankYouString = cTY.getNeitherSatisfiedNorDissatisfied().getMessage();
+                                                //links = cTY.getVeryDissatisfied().getLinks();
+                                                break;
+                                            case "somewhat_satisfied":
+                                                thankYouString = cTY.getSomewhatSatisfied().getMessage();
+                                                //links = cTY.getVeryDissatisfied().getLinks();
+                                                break;
+                                            case "very_satisfied":
+                                                thankYouString = cTY.getVerySatisfied().getMessage();
+                                                // links = cTY.getVeryDissatisfied().getLinks();
+                                                break;
+                                            case "neither_easy_nor_difficult":
+                                                thankYouString = cTY.getNeither().getMessage();
+                                                //  links = cTY.getVeryDissatisfied().getLinks();
+                                                break;
+                                            case "easy":
+                                                thankYouString = cTY.getEasy().getMessage();
+                                                //  links = cTY.getVeryDissatisfied().getLinks();
+                                                break;
+                                            case "difficult":
+                                                thankYouString = cTY.getDifficult().getMessage();
+                                                // links = cTY.getVeryDissatisfied().getLinks();
+                                                break;
+                                            case "very_easy":
+                                                thankYouString = cTY.getVeryEasy().getMessage();
+                                                //  links = cTY.getVeryDissatisfied().getLinks();
+                                                break;
+                                            case "very_difficult":
+                                                thankYouString = cTY.getVeryDifficult().getMessage();
+                                                // links = cTY.getVeryDissatisfied().getLinks();
+                                                break;
+
+                                        }
+                                    }
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
 //        if (links != null && links.size() > 0) {
 //            spannableStringLinks = getSpannableString(links);
 //        }
-
+        }
         if (thankYouString != null) {
             SpannableString thankYouStringSpannable = new SpannableString(thankYouString);
             thankYou.put("thankyouString", thankYouStringSpannable);
@@ -1740,21 +1750,7 @@ public class LoyagramCampaignView extends LinearLayout {
         List<Link> links = null;
         SpannableString spannableStringLinks = null;
         String lang = currentLanguage.getCode();
-        for (ThankYouTranslation thankYouTranslation : thankYouTranslations) {
-            if (thankYouTranslation.getCode() != null && thankYouTranslation.getCode().equals(lang)) {
-                ThankYouAndRedirectSettings thankYouAndRedirectSettings = thankYouTranslation.getThankYouAndRedirectSettings();
-                if (thankYouAndRedirectSettings != null && thankYouAndRedirectSettings.getAll() != null) {
-                    thankYouString = thankYouAndRedirectSettings.getAll().getMessage();
-                    // links = thankYouAndRedirectSettings.getAll().getLinks();
-                }
-
-                break;
-            }
-        }
-
-        //Get thank you from primary language
-        if (thankYouString == null || thankYouString.isEmpty()) {
-            lang = primaryLanguage.getCode();
+        if(thankYouTranslations != null) {
             for (ThankYouTranslation thankYouTranslation : thankYouTranslations) {
                 if (thankYouTranslation.getCode() != null && thankYouTranslation.getCode().equals(lang)) {
                     ThankYouAndRedirectSettings thankYouAndRedirectSettings = thankYouTranslation.getThankYouAndRedirectSettings();
@@ -1762,13 +1758,29 @@ public class LoyagramCampaignView extends LinearLayout {
                         thankYouString = thankYouAndRedirectSettings.getAll().getMessage();
                         // links = thankYouAndRedirectSettings.getAll().getLinks();
                     }
+
                     break;
                 }
             }
-        }
+
+            //Get thank you from primary language
+            if (thankYouString == null || thankYouString.isEmpty()) {
+                lang = primaryLanguage.getCode();
+                for (ThankYouTranslation thankYouTranslation : thankYouTranslations) {
+                    if (thankYouTranslation.getCode() != null && thankYouTranslation.getCode().equals(lang)) {
+                        ThankYouAndRedirectSettings thankYouAndRedirectSettings = thankYouTranslation.getThankYouAndRedirectSettings();
+                        if (thankYouAndRedirectSettings != null && thankYouAndRedirectSettings.getAll() != null) {
+                            thankYouString = thankYouAndRedirectSettings.getAll().getMessage();
+                            // links = thankYouAndRedirectSettings.getAll().getLinks();
+                        }
+                        break;
+                    }
+                }
+            }
 //        if (links != null && links.size() > 0) {
 //            spannableStringLinks = getSpannableString(links);
 //        }
+        }
         if (thankYouString != null) {
             SpannableString thankYouStringSpannable = new SpannableString(thankYouString);
             thankYou.put("thankyouString", thankYouStringSpannable);
@@ -2225,45 +2237,47 @@ public class LoyagramCampaignView extends LinearLayout {
 
         List<StaticTextTransalation> staticTextTransalations = campaign.getStaticTextTranslations();
         String transalatedString;
-        for (StaticTextTransalation staticTextTransalation : staticTextTransalations) {
-            if (currentLanguage != null && staticTextTransalation.getCode().equals(currentLanguage.getCode())) {
-                transalatedString = staticTextTransalation.getTranslation();
-                switch (staticTextTransalation.getStaticTextId()) {
+        if(staticTextTransalations != null) {
+            for (StaticTextTransalation staticTextTransalation : staticTextTransalations) {
+                if (currentLanguage != null && staticTextTransalation.getCode().equals(currentLanguage.getCode())) {
+                    transalatedString = staticTextTransalation.getTranslation();
+                    switch (staticTextTransalation.getStaticTextId()) {
 
-                    case "CAMPAIGN_MODE_BACK_BUTTON_TEXT":
-                        staticTextes.put("CAMPAIGN_MODE_BACK_BUTTON_TEXT", transalatedString);
-                        break;
-                    case "CAMPAIGN_MODE_NEXT_BUTTON_TEXT":
-                        staticTextes.put("CAMPAIGN_MODE_NEXT_BUTTON_TEXT", transalatedString);
-                        break;
-                    case "CAMPAIGN_MODE_START_BUTTON_TEXT":
-                        staticTextes.put("CAMPAIGN_MODE_START_BUTTON_TEXT", transalatedString);
-                        break;
-                    case "CAMPAIGN_MODE_SUBMIT_BUTTON_TEXT":
-                        staticTextes.put("CAMPAIGN_MODE_SUBMIT_BUTTON_TEXT", transalatedString);
-                        break;
-                    case "CHANGE_SCORE_BUTTON_TEXT":
-                        staticTextes.put("CHANGE_SCORE_BUTTON_TEXT", transalatedString);
-                        break;
-                    case "POWERED_BY":
-                        staticTextes.put("POWERED_BY", transalatedString);
-                        break;
-                    case "SCORE_MESSAGE_TEXT":
-                        staticTextes.put("SCORE_MESSAGE_TEXT", transalatedString);
-                        break;
-                    case "CAMPAIGN_MODE_EXIT_DIALOG_TEXT":
-                        staticTextes.put("CAMPAIGN_MODE_EXIT_DIALOG_TEXT", transalatedString);
-                        break;
-                    case "CAMPAIGN_MODE_ANSWER_REQUIRED_DIALOG_TEXT":
-                        staticTextes.put("CAMPAIGN_MODE_ANSWER_REQUIRED_DIALOG_TEXT", transalatedString);
-                        break;
-                    default:
-                        break;
+                        case "CAMPAIGN_MODE_BACK_BUTTON_TEXT":
+                            staticTextes.put("CAMPAIGN_MODE_BACK_BUTTON_TEXT", transalatedString);
+                            break;
+                        case "CAMPAIGN_MODE_NEXT_BUTTON_TEXT":
+                            staticTextes.put("CAMPAIGN_MODE_NEXT_BUTTON_TEXT", transalatedString);
+                            break;
+                        case "CAMPAIGN_MODE_START_BUTTON_TEXT":
+                            staticTextes.put("CAMPAIGN_MODE_START_BUTTON_TEXT", transalatedString);
+                            break;
+                        case "CAMPAIGN_MODE_SUBMIT_BUTTON_TEXT":
+                            staticTextes.put("CAMPAIGN_MODE_SUBMIT_BUTTON_TEXT", transalatedString);
+                            break;
+                        case "CHANGE_SCORE_BUTTON_TEXT":
+                            staticTextes.put("CHANGE_SCORE_BUTTON_TEXT", transalatedString);
+                            break;
+                        case "POWERED_BY":
+                            staticTextes.put("POWERED_BY", transalatedString);
+                            break;
+                        case "SCORE_MESSAGE_TEXT":
+                            staticTextes.put("SCORE_MESSAGE_TEXT", transalatedString);
+                            break;
+                        case "CAMPAIGN_MODE_EXIT_DIALOG_TEXT":
+                            staticTextes.put("CAMPAIGN_MODE_EXIT_DIALOG_TEXT", transalatedString);
+                            break;
+                        case "CAMPAIGN_MODE_ANSWER_REQUIRED_DIALOG_TEXT":
+                            staticTextes.put("CAMPAIGN_MODE_ANSWER_REQUIRED_DIALOG_TEXT", transalatedString);
+                            break;
+                        default:
+                            break;
+                    }
+
                 }
-
             }
         }
-        Log.i("Static texts", staticTextes.toString());
+        //Log.i("Static texts", staticTextes.toString());
     }
 
     /**
