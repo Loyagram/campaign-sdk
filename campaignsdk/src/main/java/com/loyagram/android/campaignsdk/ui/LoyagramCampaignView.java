@@ -1,6 +1,7 @@
 package com.loyagram.android.campaignsdk.ui;
 
 
+import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
@@ -45,6 +47,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.loyagram.android.campaignsdk.animation.AnimationCheckMark;
 import com.loyagram.android.campaignsdk.globals.LoyagramAttributes;
 import com.loyagram.android.campaignsdk.globals.QuestionStatus;
 import com.loyagram.android.campaignsdk.R;
@@ -117,6 +120,7 @@ public class LoyagramCampaignView extends LinearLayout {
     TextView questionCount;
     TextView txtFooterCredit;
     TextView txtBrandName;
+    TextView txtValidation;
     Context currentContext;
     RelativeLayout spinnerContainer;
     AppCompatSpinner spinnerLang;
@@ -150,9 +154,12 @@ public class LoyagramCampaignView extends LinearLayout {
     TextView txtWelcomeMessage;
     HashMap<String, String> staticTextes = new HashMap<>();
     Boolean isSpinnerChanged = false;
+    Boolean isEmailFollowUpEnabled = false;
+    String followUpEmail = null;
     Language primaryLanguage;
     String csatCesOption;
     int followUpIterator = 0;
+    int pStatus = 0;
 
     /**
      * enumarator to define type of campaign view selected
@@ -334,6 +341,7 @@ public class LoyagramCampaignView extends LinearLayout {
         spinnerContainer = (RelativeLayout) findViewById(R.id.spinnerContainer);
         btnExit = (ImageView) findViewById(R.id.closeButton);
         txtBrandName = (TextView) findViewById(R.id.brandName);
+        txtValidation = (TextView) findViewById(R.id.txtValidationMsg);
         initCampaignButton();
         initCampaignStartButton();
         hideSubView();
@@ -564,6 +572,15 @@ public class LoyagramCampaignView extends LinearLayout {
             @Override
             public void onSurveySubmit(Response resp) {
                 saveResponseToPreference();
+                if (currentQuestion.getType() != null && currentQuestion.getType().equals("SINGLE_SELECT")) {
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            showNextQuestion();
+                        }
+                    }, 100);
+                }
             }
 
         });
@@ -575,7 +592,7 @@ public class LoyagramCampaignView extends LinearLayout {
      * @param context      Application context
      * @param campaignType Type of campaign.
      */
-    public void showNPSView(Context context, String campaignType, Boolean isFromRight) {
+    public void showNPSView(Context context, final String campaignType, Boolean isFromRight) {
 
         Question followUpQuestion = null;
         isFollowUpEnabled = campaign.getLanguageBase().getFollowUpEnabled();
@@ -609,6 +626,14 @@ public class LoyagramCampaignView extends LinearLayout {
             public void setRating(int rating) {
                 npsRating = rating;
                 saveResponseToPreference();
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        showNextQuestion();
+                    }
+                }, 100);
+
 
             }
 
@@ -619,6 +644,21 @@ public class LoyagramCampaignView extends LinearLayout {
 //                } else {
 //                    btnNext.setVisibility(GONE);
 //                }
+            }
+
+            @Override
+            public void enableFollowUp(Boolean enable) {
+                isEmailFollowUpEnabled = enable;
+            }
+
+            @Override
+            public void setFollowUpemail(String email) {
+                followUpEmail = email;
+            }
+
+            @Override
+            public void hideValidationMessage() {
+                txtValidation.setVisibility(INVISIBLE);
             }
 
         });
@@ -708,6 +748,13 @@ public class LoyagramCampaignView extends LinearLayout {
             @Override
             public void setOptions(String option) {
                 csatCesOption = option;
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        showNextQuestion();
+                    }
+                }, 100);
             }
 
             @Override
@@ -723,6 +770,21 @@ public class LoyagramCampaignView extends LinearLayout {
             public void onCSATCESSubmit(Boolean show) {
                 saveResponseToPreference();
             }
+
+            @Override
+            public void enableFollowUp(Boolean enable) {
+                isEmailFollowUpEnabled = enable;
+            }
+
+            @Override
+            public void setFollowUpemail(String email) {
+                followUpEmail = email;
+            }
+
+            @Override
+            public void hideValidationMessage() {
+                txtValidation.setVisibility(INVISIBLE);
+            }
         });
     }
 
@@ -733,8 +795,12 @@ public class LoyagramCampaignView extends LinearLayout {
     public void showNextQuestion() {
         if (!currentQuestion.getOptional()) {
             if (!questionAttended(currentQuestion)) {
-                showAlertDialog("Please attend the current question");
+                //showAlertDialog("Please attend the current question");
+                txtValidation.setText("Please attend the current question");
+                txtValidation.setVisibility(VISIBLE);
                 return;
+            } else {
+                txtValidation.setVisibility(INVISIBLE);
             }
         }
 
@@ -761,6 +827,16 @@ public class LoyagramCampaignView extends LinearLayout {
                     followUpIterator++;
                     break;
                 case 2:
+
+                    if (isEmailFollowUpEnabled) {
+                        if (!isValidEmail(followUpEmail)) {
+                            txtValidation.setText("Please enter a valid email");
+                            txtValidation.setVisibility(VISIBLE);
+                            break;
+                        } else {
+                            txtValidation.setVisibility(INVISIBLE);
+                        }
+                    }
                     followUpIterator = 0;
                     submitCampaign();
             }
@@ -786,7 +862,7 @@ public class LoyagramCampaignView extends LinearLayout {
      * Loads previous question
      */
     public void showPreviousQuestion() {
-
+        txtValidation.setVisibility(INVISIBLE);
         ((GradientDrawable) btnPrev.getBackground()).setColor(Color.parseColor(colorPrimary));
         btnPrev.setTextColor(Color.parseColor("#FFFFFF"));
         ((GradientDrawable) btnNext.getBackground()).setColor(Color.parseColor("#FFFFFF"));
@@ -1146,6 +1222,7 @@ public class LoyagramCampaignView extends LinearLayout {
                 Gson gson = new Gson();
                 response.setEndedAt(System.currentTimeMillis());
                 response.setLanguage(currentLanguage.getCode());
+                response.setEmail(followUpEmail);
                 String jsonResponse = gson.toJson(response);
                 JSONObject jsonObject = new JSONObject(jsonResponse);
                 JSONObject sendJson = new JSONObject();
@@ -1327,11 +1404,11 @@ public class LoyagramCampaignView extends LinearLayout {
      */
     public void loadLanguage() {
         int loopCounter = 0;
-        int spinnerIndex = loopCounter;
+        final int[] spinnerIndex = {loopCounter};
         spinnerLang.setSupportBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
-        LanguageBase languageBase = campaign.getLanguageBase();
-        if (languageBase != null) {
-            final List<Language> languages = languageBase.getLanguage();
+        final LanguageBase[] languageBase = {campaign.getLanguageBase()};
+        if (languageBase[0] != null) {
+            final List<Language> languages = languageBase[0].getLanguage();
             if (languages != null) {
                 if (languages.size() == 1) {
                     this.currentLanguage = languages.get(0);
@@ -1346,18 +1423,19 @@ public class LoyagramCampaignView extends LinearLayout {
                     if (lang.getPrimary() != null && lang.getPrimary()) {
                         this.currentLanguage = lang;
                         this.primaryLanguage = lang;
-                        spinnerIndex = loopCounter;
+                        spinnerIndex[0] = loopCounter;
                     }
                     loopCounter++;
                 }
 
-                spinnerLang.setAdapter(new SpinnerAdapter(currentContext, R.layout.loyagram_spinnertext, langs, colorPrimary, typeFace));
-                spinnerLang.setSelection(spinnerIndex);
+                spinnerLang.setAdapter(new SpinnerAdapter(currentContext, R.layout.loyagram_spinnertext, langs, colorPrimary, typeFace, spinnerIndex));
+                spinnerLang.setSelection(spinnerIndex[0]);
                 spinnerLang.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                         if (position > -1 && isSpinnerChanged) {
                             changeLanguage(languages.get(position));
+                            spinnerIndex[0] = position;
                         }
                         isSpinnerChanged = true;
                     }
@@ -1449,22 +1527,15 @@ public class LoyagramCampaignView extends LinearLayout {
             llWidgetcontainer.removeAllViews();
             rrbottomButtonContainer.setVisibility(GONE);
             llWidgetcontainer.setVisibility(GONE);
+            final RelativeLayout rrThankYou = new RelativeLayout(currentContext);
             final TextView txtThankYou = new TextView(currentContext);
-            LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            txtThankYou.setGravity(CENTER);
-            float scale = getContext().getResources().getDisplayMetrics().density;
-            int txtMargin = (int) (5 * scale + 0.5f);
-            layoutParams.setMargins(txtMargin, txtMargin, txtMargin, 0);
-            txtThankYou.setLayoutParams(layoutParams);
-            txtThankYou.setText(thankYouString);
-            txtThankYou.setTypeface(typeFace);
-            txtThankYou.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-            llWidgetcontainerMain.addView(txtThankYou);
+            final LinearLayout llThankyouContainer = new LinearLayout(currentContext);
+            animateThankYou(llThankyouContainer, thankYouString);
             final Handler thankyouHandler = new Handler();
             thankyouHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    llWidgetcontainerMain.removeView(txtThankYou);
+                    llWidgetcontainerMain.removeView(llThankyouContainer);
                     if (isRepeatable || isPreview) {
                         resetCampaign();
                         return;
@@ -1479,6 +1550,93 @@ public class LoyagramCampaignView extends LinearLayout {
             }
             exitCampaign();
         }
+    }
+
+    public void animateThankYou(LinearLayout llThankyouContainer, String thankYouString) {
+
+        int thankyouHeight = getResources().getDimensionPixelSize(R.dimen.thank_you_layout_height);
+        final RelativeLayout rrThankYou = new RelativeLayout(currentContext);
+        LayoutParams rrlayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, thankyouHeight);
+        rrlayoutParams.setMargins(10,10,10,10);
+        rrThankYou.setLayoutParams(rrlayoutParams);
+        final ProgressBar thankYouProgress = new ProgressBar(currentContext, null, android.R.attr.progressBarStyleHorizontal);
+        thankYouProgress.setProgressDrawable(ContextCompat.getDrawable(currentContext, R.drawable.lg_circular_progress));
+        thankYouProgress.setRotation(0);
+        thankYouProgress.setMax(100);
+        thankYouProgress.setIndeterminate(false);
+        thankYouProgress.setProgress(0);
+        thankYouProgress.getProgressDrawable().setColorFilter(
+                Color.parseColor(colorPrimary), android.graphics.PorterDuff.Mode.SRC_IN);
+        int progressSize = getResources().getDimensionPixelSize(R.dimen.thank_you_progress_height);
+        RelativeLayout.LayoutParams progressParams = new RelativeLayout.LayoutParams(progressSize, progressSize);
+        final AnimationCheckMark animationCheckMark = new AnimationCheckMark(currentContext);
+        animationCheckMark.setAnimDuration(200);
+        animationCheckMark.setCircleColor(Color.parseColor(colorPrimary));
+        animationCheckMark.setUnCheckColor(Color.parseColor(colorPrimary));
+        animationCheckMark.setLineColor(Color.WHITE);
+        animationCheckMark.setCorrectWidth(2);
+
+        int checkMarkSize = getResources().getDimensionPixelSize(R.dimen.thank_you_checkmark_height);
+        RelativeLayout.LayoutParams checkMarkParams = new RelativeLayout.LayoutParams(checkMarkSize, checkMarkSize);
+        progressParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        checkMarkParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+
+        thankYouProgress.setLayoutParams(progressParams);
+        animationCheckMark.setLayoutParams(checkMarkParams);
+
+        final TextView txtThankYou = new TextView(currentContext);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        txtThankYou.setGravity(CENTER);
+        float scale = getContext().getResources().getDisplayMetrics().density;
+        int txtMargin = (int) (5 * scale + 0.5f);
+        layoutParams.setMargins(txtMargin, 0, txtMargin, 0);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        txtThankYou.setLayoutParams(layoutParams);
+        txtThankYou.setText(thankYouString);
+        txtThankYou.setTypeface(typeFace);
+        txtThankYou.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+
+
+        LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        llParams.gravity = Gravity.CENTER;
+        llThankyouContainer.setOrientation(LinearLayout.VERTICAL);
+        llThankyouContainer.setLayoutParams(llParams);
+        rrThankYou.addView(thankYouProgress);
+        rrThankYou.addView(animationCheckMark);
+        llThankyouContainer.addView(rrThankYou);
+        llThankyouContainer.addView(txtThankYou);
+        llWidgetcontainerMain.addView(llThankyouContainer);
+        final Handler handler = new Handler();
+        pStatus = 0;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                while (pStatus < 100) {
+                    pStatus += 4;
+
+                    handler.post(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            // TODO Auto-generated method stub
+                            thankYouProgress.setProgress(pStatus);
+                            ;
+                            if (pStatus >= 96) {
+                                animationCheckMark.showCheck();
+                            }
+                        }
+                    });
+                    try {
+                        Thread.sleep(16); //thread will take approx 3 seconds to finish
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+
+
     }
 
 
@@ -1750,7 +1908,7 @@ public class LoyagramCampaignView extends LinearLayout {
         List<Link> links = null;
         SpannableString spannableStringLinks = null;
         String lang = currentLanguage.getCode();
-        if(thankYouTranslations != null) {
+        if (thankYouTranslations != null) {
             for (ThankYouTranslation thankYouTranslation : thankYouTranslations) {
                 if (thankYouTranslation.getCode() != null && thankYouTranslation.getCode().equals(lang)) {
                     ThankYouAndRedirectSettings thankYouAndRedirectSettings = thankYouTranslation.getThankYouAndRedirectSettings();
@@ -2237,7 +2395,7 @@ public class LoyagramCampaignView extends LinearLayout {
 
         List<StaticTextTransalation> staticTextTransalations = campaign.getStaticTextTranslations();
         String transalatedString;
-        if(staticTextTransalations != null) {
+        if (staticTextTransalations != null) {
             for (StaticTextTransalation staticTextTransalation : staticTextTransalations) {
                 if (currentLanguage != null && staticTextTransalation.getCode().equals(currentLanguage.getCode())) {
                     transalatedString = staticTextTransalation.getTranslation();
@@ -2301,5 +2459,9 @@ public class LoyagramCampaignView extends LinearLayout {
             btnStartCampaign.setText(staticTextes.get("CAMPAIGN_MODE_START_BUTTON_TEXT"));
         }
 
+    }
+
+    public boolean isValidEmail(CharSequence target) {
+        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 }

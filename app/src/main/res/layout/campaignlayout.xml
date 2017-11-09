@@ -25,6 +25,6 @@
         android:layout_height="330dp"
         android:layout_gravity="center"
         app:campaignColor="#1abc9c"
-        app:campaignId="1020-c70727e6-f326-41fd-9614-41b40d80c15f">
+        app:campaignId="1020-158fff1e-b6be-4368-ba42-68cc4e76770a">
     </com.loyagram.android.campaignsdk.ui.LoyagramCampaignView>
 </FrameLayout>

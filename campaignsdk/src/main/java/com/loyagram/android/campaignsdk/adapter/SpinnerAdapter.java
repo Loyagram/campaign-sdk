@@ -26,6 +26,7 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
     private String[] spinnerItems;
     private String colorPrimary;
     private Typeface typeface;
+    private int[] currentIndex;
 
     /**
      * @param context            context
@@ -34,12 +35,13 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
      * @param colorPrimary       dropdown item text color
      * @param typeface           drop down item custom font
      */
-    public SpinnerAdapter(Context context, int textViewResourceId, String[] objects, String colorPrimary, Typeface typeface) {
+    public SpinnerAdapter(Context context, int textViewResourceId, String[] objects, String colorPrimary, Typeface typeface, int[] currentIndex) {
         super(context, textViewResourceId, objects);
         this.context = context;
         spinnerItems = objects;
         this.colorPrimary = colorPrimary;
         this.typeface = typeface;
+        this.currentIndex = currentIndex;
     }
 
     @Override
@@ -64,9 +66,9 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
         TextView label = new TextView(context);
         label.setMaxLines(1);
         label.setEllipsize(TextUtils.TruncateAt.END);
-        label.setGravity(Gravity.CENTER_VERTICAL);
-        label.setPadding(10, 0, 10, 0);
-        ListView.LayoutParams params = new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, 70);
+        label.setGravity(Gravity.START);
+        label.setPadding(5, 5, 0, 0);
+        ListView.LayoutParams params = new ListView.LayoutParams(200, 50);
         label.setText(spinnerItems[position]);
         label.setTextColor(Color.parseColor("#FFFFFF"));
         label.setBackgroundColor(Color.TRANSPARENT);
@@ -91,12 +93,18 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
     private View getCustomView(int position, View convertView, ViewGroup parent) {
         TextView label = new TextView(context);
         label.setGravity(Gravity.CENTER_VERTICAL);
-        label.setPadding(10, 0, 10, 0);
-        ListView.LayoutParams params = new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT, 70);
+        label.setPadding(5, 5, 0, 0);
+        label.setGravity(Gravity.START);
+        ListView.LayoutParams params = new ListView.LayoutParams(300, 50);
         label.setText(spinnerItems[position]);
-        label.setTextColor(Color.parseColor(colorPrimary));
-        label.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        label.setLayoutParams(params);
+        if(position == currentIndex[0]) {
+            label.setTextColor(Color.parseColor(colorPrimary));
+            label.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        } else {
+            label.setTextColor(Color.parseColor("#FFFFFF"));
+            label.setBackgroundColor(Color.parseColor(colorPrimary));
+        }
+       label.setLayoutParams(params);
         if(Build.VERSION.SDK_INT > 16 ){
             label.setTextDirection(TEXT_DIRECTION_LTR);
         }
@@ -105,4 +113,5 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
         }
         return label;
     }
+
 }

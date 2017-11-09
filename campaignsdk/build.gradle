@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 group = 'com.loyagram.android'
 archivesBaseName = 'campaign-sdk'
-version = '0.0.2'
+version = '0.0.54'
 
 publishing {
     repositories {
@@ -34,7 +34,30 @@ publishing {
         }
     }
 }
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'campaign-sdk'
+    bintrayOrg = 'loyagram'
+    publishedGroupId = 'com.loyagram.android'
+    libraryName = 'Campaign Sdk'
+    artifact = 'campaign-sdk'
 
+    libraryDescription = 'Loyagram android sdk'
+
+    siteUrl = 'https://github.com/Loyagram/campaign-sdk'
+    gitUrl = 'https://github.com/Loyagram/campaign-sdk.git'
+    githubRepository= 'Loyagram/campaign-sdk'
+
+    libraryVersion = '0.0.54'
+
+    developerId = 'sandhil'
+    developerName = 'sandhil eldhose'
+    developerEmail = 'sandhil@loyagram.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.2"
@@ -42,8 +65,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 2
-        versionName "0.0.2"
+        versionCode 54
+        versionName "0.0.54"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -65,3 +88,6 @@ dependencies {
     compile 'com.android.support:design:26.1.0'
     compile 'com.google.code.gson:gson:2.8.0'
 }
+
+apply from: 'bintray.gradle'
+apply from: 'install.gradle'

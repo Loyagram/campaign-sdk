@@ -85,44 +85,89 @@
 
         </LinearLayout>
 
-        <RelativeLayout
-            android:id="@+id/reasonFooter"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:fadingEdgeLength="15dp"
+            android:fillViewport="false"
+            android:overScrollMode="never"
+            android:requiresFadingEdge="vertical"
+            android:scrollbars="none">
 
-            <TextView
-                android:id="@+id/txtFeedbackQstn"
+            <RelativeLayout
+                android:id="@+id/reasonFooter"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_marginBottom="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginStart="10dp"
-                android:gravity="center"
-                android:textColor="#000000"
-                android:textSize="@dimen/text_medium" />
+                android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/txtReason"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/txtFeedbackQstn"
-                android:layout_marginBottom="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginStart="10dp"
-                android:background="@drawable/lg_npssquare"
-                android:gravity="start"
-                android:inputType="textMultiLine"
-                android:lines="3"
-                android:maxLines="3"
-                android:minLines="3"
-                android:textSize="@dimen/text_medium" />
+                <TextView
+                    android:id="@+id/txtFeedbackQstn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginStart="10dp"
+                    android:gravity="center"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/text_medium" />
 
-        </RelativeLayout>
+                <EditText
+                    android:id="@+id/txtReason"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txtFeedbackQstn"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/lg_npssquare"
+                    android:gravity="start"
+                    android:inputType="textMultiLine"
+                    android:lines="3"
+                    android:maxLines="3"
+                    android:minLines="3"
+                    android:textSize="@dimen/text_medium" />
+
+                <LinearLayout
+                    android:id="@+id/emailFollowUpContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txtReason"
+                    android:animateLayoutChanges="true"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <android.support.v7.widget.AppCompatCheckBox
+                        android:id="@+id/chkEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:text="Submit Email" />
+
+                    <EditText
+                        android:id="@+id/txtEmail"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="5dp"
+                        android:background="@drawable/lg_npssquare"
+                        android:inputType="textWebEmailAddress"
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:minLines="1"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+            </RelativeLayout>
+        </ScrollView>
     </LinearLayout>
 
     <LinearLayout

@@ -54,6 +54,9 @@ public class LoyagramCSATCESView extends LinearLayout {
         void hideSubmitButton(Boolean show);
 
         void onCSATCESSubmit(Boolean isSubmit);
+        void enableFollowUp(Boolean enable);
+        void setFollowUpemail(String email);
+        void hideValidationMessage();
     }
 
     Response response;
@@ -70,16 +73,20 @@ public class LoyagramCSATCESView extends LinearLayout {
     TextView txtOptions;
     TextView txtFollowUpQstn;
     EditText txtReason;
+    EditText txtEmail;
+    AppCompatCheckBox chkEmail;
     TextView txtFeedbackQuestion;
     LinearLayout llFeedbackContainer;
     LinearLayout llOptionsContainer;
     LinearLayout llfolloUpOptions;
     LinearLayout llfollowUpContainer;
+    LinearLayout llEmailFollowUpContainer;
     RelativeLayout rrReasonFooter;
     Typeface typeface;
     Boolean isKeyboardShown = false;
     Boolean isCsat;
     Boolean isFollowUpEnabled = false;
+    Boolean isEmailFollowupEnabled = false;
     String currentOption;
     HashMap<String, String> staticTextes;
     ScrollView topOptionsContainer;
@@ -124,6 +131,12 @@ public class LoyagramCSATCESView extends LinearLayout {
             int stroke = getResources().getDimensionPixelSize(R.dimen.stroke_width);
             ((GradientDrawable) txtReason.getBackground()).setStroke(stroke, Color.parseColor(colorPrimary));
             txtRetry.setTextColor(Color.parseColor(colorPrimary));
+            ((GradientDrawable) txtEmail.getBackground()).setStroke(stroke, Color.parseColor(colorPrimary));
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                chkEmail.setButtonTintList(getColorStateList());
+            } else {
+                chkEmail.setSupportButtonTintList(getColorStateList());
+            }
         }
 
     }
@@ -141,12 +154,17 @@ public class LoyagramCSATCESView extends LinearLayout {
         llfollowUpContainer = (LinearLayout) findViewById(R.id.followupContainer);
         llfolloUpOptions = (LinearLayout) findViewById(R.id.followUpOptionsContainer);
         topOptionsContainer = (ScrollView) findViewById(R.id.topOptionsContainer);
+        llEmailFollowUpContainer = (LinearLayout)findViewById(R.id.emailFollowUpContainer);
+        txtEmail = (EditText) findViewById(R.id.txtEmail);
+        chkEmail = (AppCompatCheckBox) findViewById(R.id.chkEmail);
         if (getTypeface() != null) {
             txtRetry.setTypeface(typeface);
             txtFeedbackQuestion.setTypeface(typeface);
             txtquestion.setTypeface(typeface);
             txtReason.setTypeface(typeface);
             txtOptions.setTypeface(typeface);
+            chkEmail.setTypeface(typeface);
+            txtEmail.setTypeface(typeface);
         }
         setQuestion();
         showOptions();
@@ -187,6 +205,50 @@ public class LoyagramCSATCESView extends LinearLayout {
             @Override
             public void afterTextChanged(Editable editable) {
 
+            }
+        });
+
+        chkEmail.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (chkEmail.isChecked()) {
+                    txtEmail.setVisibility(VISIBLE);
+                    if(listener != null) {
+                        listener.enableFollowUp(true);
+                    }
+                } else {
+                    txtEmail.setVisibility(GONE);
+                    if(listener != null) {
+                        listener.enableFollowUp(false);
+                        listener.hideValidationMessage();
+                    }
+                }
+
+            }
+        });
+
+        txtEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                listener.setFollowUpemail(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        txtEmail.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                isKeyboardShown = true;
+                return false;
             }
         });
 
@@ -368,7 +430,7 @@ public class LoyagramCSATCESView extends LinearLayout {
                                 case "somewhat_dissatisfied":
                                     option = "dissatisfied";
                                     break;
-                                case "neither_dissatisfied_nor_satisfied":
+                                case "neither_satisfied_nor_dissatisfied":
                                     option = "neutral";
                                     break;
                                 case "somewhat_satisfied":
@@ -383,7 +445,7 @@ public class LoyagramCSATCESView extends LinearLayout {
                                 case "somewhat_agree":
                                     option = "agree";
                                     break;
-                                case "neither_disagree_nor_agree":
+                                case "neither_agree_nor_disagree":
                                     option = "neutral";
                                     break;
                                 case "somewhat_disagree":
@@ -760,6 +822,9 @@ public class LoyagramCSATCESView extends LinearLayout {
 
     public void showReasonView() {
         setFeedbackQuestion();
+        if(isEmailFollowupEnabled) {
+            llEmailFollowUpContainer.setVisibility(VISIBLE);
+        }
         txtquestion.setVisibility(GONE);
         llfollowUpContainer.setVisibility(GONE);
         llFeedbackContainer.setVisibility(VISIBLE);

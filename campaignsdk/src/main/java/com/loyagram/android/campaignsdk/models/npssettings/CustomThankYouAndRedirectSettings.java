@@ -43,7 +43,7 @@ public class CustomThankYouAndRedirectSettings implements Parcelable {
     private ThankYouAndRedirectSetting satisfied = null;
     @SerializedName("disagree")
     private ThankYouAndRedirectSetting disagree = null;
-    @SerializedName("neither_disagree_or_agree")
+    @SerializedName("neither_agree_nor_disagree")
     private ThankYouAndRedirectSetting neitherDisagreeOrAgree = null;
     @SerializedName("agree")
     private ThankYouAndRedirectSetting agree = null;

@@ -14,5 +14,10 @@
     <dimen name="dialog_widget_height_large">400dp</dimen>
     <dimen name="dialog_widget_height_landscape">320dp</dimen>
     <dimen name="stroke_width">1dp</dimen>
+    <dimen name="thank_you_progress_width">150dp</dimen>
+    <dimen name="thank_you_progress_height">150dp</dimen>
+    <dimen name="thank_you_checkmark_height">60dp</dimen>
+    <dimen name="thank_you_checkmark_width">60dp</dimen>
+    <dimen name="thank_you_layout_height">60dp</dimen>
 
 </resources>

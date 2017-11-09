@@ -48,6 +48,8 @@ public class Response implements Parcelable {
     private String language = null;
     @SerializedName("attr")
     private HashMap<String, String> attributes = null;
+    @SerializedName("email")
+    private String email = null;
 
 
     /**
@@ -181,6 +183,14 @@ public class Response implements Parcelable {
         this.responseAnswers = responseAnswers;
     }
 
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     /**
      **/
@@ -388,6 +398,13 @@ public class Response implements Parcelable {
             dest.writeString(entry.getKey());
             dest.writeString(entry.getValue());
         }
+
+        if (this.email == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeString(this.email);
+        }
     }
 
     public Response(Parcel in) {
@@ -526,6 +543,13 @@ public class Response implements Parcelable {
             final String value = in.readString();
             this.attributes.put(key, value);
         }
+
+        isPresent = in.readByte() == 1;
+        if (isPresent) {
+            this.email = in.readString();
+        } else {
+            this.email = null;
+        }
     }
 
 
@@ -550,6 +574,7 @@ public class Response implements Parcelable {
         sb.append("  channel: ").append(channel).append("\n");
         sb.append("  subChannel: ").append(subChannel).append("\n");
         sb.append("  language: ").append(language).append("\n");
+        sb.append("  email: ").append(email).append("\n");
         sb.append("}\n");
         return sb.toString();
     }
