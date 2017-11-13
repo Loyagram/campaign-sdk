@@ -35,9 +35,9 @@ public class AsyncTaskGetImage extends AsyncTask<String, Void, Bitmap> {
      * @return brand logo
      */
     protected Bitmap doInBackground(String... urls) {
-        String urldisplay = urls[0];
         Bitmap mIcon11 = null;
         try {
+            String urldisplay = urls[0];
             InputStream in = new java.net.URL(urldisplay).openStream();
             mIcon11 = BitmapFactory.decodeStream(in);
         } catch (Exception e) {

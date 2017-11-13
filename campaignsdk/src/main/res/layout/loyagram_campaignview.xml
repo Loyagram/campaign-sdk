@@ -113,6 +113,7 @@
             android:background="@android:color/transparent"
             android:gravity="center"
             android:orientation="vertical"
+            android:animateLayoutChanges="true"
             android:weightSum="4">
 
             <LinearLayout

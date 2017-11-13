@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     RadioButton rdbNps = null;
     RadioButton rdbSurvey = null;
     String logo = "logo.png";
-    String campaignId = "1020-158fff1e-b6be-4368-ba42-68cc4e76770a";
+    String campaignId = "1020-107bd176-a959-48ba-8ff2-25cd4aa03f69";
     String colorPrimary = "#1abc9c";
     HashMap<String, String> customAttributes = new HashMap<>();
     String apiKey = "faa733e7-a9b0-453d-8a77-aa881909bbb0";
@@ -151,13 +151,13 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
 
                 if (checkedId == R.id.rdbNps) {
-                    campaignId = "1020-158fff1e-b6be-4368-ba42-68cc4e76770a";
+                    campaignId = "1020-107bd176-a959-48ba-8ff2-25cd4aa03f69";
                 } else if (checkedId == R.id.rdbCsat) {
-                    campaignId = "1020-a23e9b80-9472-4acf-ad96-f87ce8d726b9";
+                    campaignId = "1020-7bf6100e-e3b2-4854-818d-42265e71acf2";
                 } else if (checkedId == R.id.rdbSurvey) {
-                    campaignId = "1020-9676007e-33d8-4b8e-a44c-34813b59f63b";
+                    campaignId = "1020-106184f5-85da-482b-8b6d-dbd67f7d1751";
                 } else if(checkedId == R.id.rdbCes) {
-                    campaignId = "1020-ce0f118e-0425-4c94-b510-5148aa7268e6";
+                    campaignId = "1020-edfa6cbf-cd95-4a1b-beb0-543b12bfc34b";
                 }
             }
         });

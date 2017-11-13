@@ -5,7 +5,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Handler;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,7 +12,6 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -30,7 +28,6 @@ import com.loyagram.android.campaignsdk.models.Response;
 import com.loyagram.android.campaignsdk.models.ResponseAnswer;
 import com.loyagram.android.campaignsdk.models.ResponseAnswerText;
 import com.loyagram.android.campaignsdk.models.npssettings.NpsSettings;
-import com.loyagram.android.campaignsdk.models.npssettings.ReasonSetting;
 import com.loyagram.android.campaignsdk.models.npssettings.RequestReasonSettings;
 import com.loyagram.android.campaignsdk.models.npssettings.Settings;
 import com.loyagram.android.campaignsdk.models.npssettings.SettingsTranslation;
@@ -89,8 +86,7 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
     int ratingViewType = 0; // 0 for circle
     String campaignType = null;
     Boolean isKeyboardShown = false;
-    Boolean isFollowUpEnabled = false;
-    Boolean isEmailFollowupEnabled = false;
+    Boolean isEmailFollowUpEnabled = false;
     LoyagramCampaignView loyagramCampaignView = null;
     String colorPrimary = null;
     Context currentContext = null;
@@ -99,12 +95,12 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
     Language primaryLanguage;
 
 
-    public LoyagramNPSView(Context context, String campaigntype, Question question, Question followUpQuestion, Boolean isFollowUpEnabled, Response response, LoyagramCampaignView loyagramCampaignView, String colorPrimary, Language language, HashMap<String, String> staticTextes, Language primaryLanguage) {
+    public LoyagramNPSView(Context context, String campaigntype, Question question, Question followUpQuestion, Boolean isEmailFollowUpEnabled, Response response, LoyagramCampaignView loyagramCampaignView, String colorPrimary, Language language, HashMap<String, String> staticTextes, Language primaryLanguage) {
         super(context);
         this.response = response;
         this.question = question;
         this.followUpQuestion = followUpQuestion;
-        this.isFollowUpEnabled = isFollowUpEnabled;
+        this.isEmailFollowUpEnabled = isEmailFollowUpEnabled;
         this.campaignType = campaigntype;
         this.loyagramCampaignView = loyagramCampaignView;
         this.colorPrimary = colorPrimary;
@@ -203,17 +199,6 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
             loyagramCampaignView.showSubView(true);
             loyagramCampaignView.hideProgress();
         }
-        /*
-        btnRetry.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeRating();
-                if (listener != null) {
-                    listener.hideSubmitButton(false);
-                }
-            }
-        });
-        */
         txtReason.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -629,45 +614,14 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
      */
     public void showReasonView() {
         setFeedbackQuestion();
-       /* currentRating = "" + rating;
-        String txtTag = "" + rating;
-        TextView selectedTextView = (TextView) findViewWithTag(txtTag);
-        selectedTextView.setTextColor(Color.parseColor("#FFFFFF"));
-        int stroke = getResources().getDimensionPixelSize(R.dimen.stroke_width);
-        if (ratingViewType == 0) {
-            selectedTextView.setBackgroundResource(R.drawable.lg_npscircleselected);
-            ((GradientDrawable) selectedTextView.getBackground()).setColor(Color.parseColor(colorPrimary));
-            ((GradientDrawable) selectedTextView.getBackground()).setStroke(stroke, Color.parseColor(colorPrimary));
-
-        } else {
-            selectedTextView.setBackgroundResource(R.drawable.lg_npssquareselected);
-            ((GradientDrawable) selectedTextView.getBackground()).setColor(Color.parseColor(colorPrimary));
-            ((GradientDrawable) selectedTextView.getBackground()).setStroke(stroke, Color.parseColor(colorPrimary));
-
-        }
-        // txtRating.setText("Your rating is " + rating);
-        //String ratingMsg = statictextes.get("SCORE_MESSAGE_TEXT") + rating;
-        setRatingText();
-        */
-        if (isEmailFollowupEnabled) {
+        if (isEmailFollowUpEnabled) {
             llEmailFollowUpContainer.setVisibility(VISIBLE);
         }
         llFollowUpContainer.setVisibility(GONE);
-        //llNPSFeedback.setVisibility(VISIBLE);
         rrReasonContainer.setVisibility(VISIBLE);
 
     }
 
-    /**
-     * method to change the current rating
-     */
-    public void changeRating() {
-        refreshNPS();
-        //llNPSFeedback.setVisibility(GONE);
-        rrReasonContainer.setVisibility(GONE);
-        llRatingContainer.setVisibility(VISIBLE);
-        txtNPSQuestion.setVisibility(VISIBLE);
-    }
 
 
     public void showFollowUp() {
@@ -732,10 +686,6 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
                 lloptionsContainer.addView(chk);
             }
         }
-//        if (loyagramCampaignView != null) {
-//            loyagramCampaignView.showSubView(true);
-//            loyagramCampaignView.hideProgress();
-//        }
     }
 
 
@@ -850,7 +800,7 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
                 setFeedbackQuestion();
             }
         }
-        if (followUpQuestion != null && isFollowUpEnabled) {
+        if (followUpQuestion != null) {
             setFollowUpQuestion();
             changeLabelLanguage();
         }

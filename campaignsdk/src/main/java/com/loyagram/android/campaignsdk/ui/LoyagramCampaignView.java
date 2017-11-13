@@ -1,7 +1,6 @@
 package com.loyagram.android.campaignsdk.ui;
 
 
-import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -13,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -595,14 +595,15 @@ public class LoyagramCampaignView extends LinearLayout {
     public void showNPSView(Context context, final String campaignType, Boolean isFromRight) {
 
         Question followUpQuestion = null;
-        isFollowUpEnabled = campaign.getLanguageBase().getFollowUpEnabled();
-        if (!campaign.getType().equals("SURVEY") && isFollowUpEnabled) {
+        Boolean hasEmailFollowup = campaign.getLanguageBase().getEmailFollowUpEnabled();
+        if (!campaign.getType().equals("SURVEY")) {
             followUpQuestion = campaign.getResults().get(1);
             btnNext.setText(staticTextes.get("CAMPAIGN_MODE_NEXT_BUTTON_TEXT"));
         }
-        LoyagramNPSView loyagramNPSView = new LoyagramNPSView(context, campaignType, currentQuestion, followUpQuestion, isFollowUpEnabled, response, this, colorPrimary, currentLanguage, staticTextes, primaryLanguage);
+        LoyagramNPSView loyagramNPSView = new LoyagramNPSView(context, campaignType, currentQuestion, followUpQuestion, hasEmailFollowup, response, this, colorPrimary, currentLanguage, staticTextes, primaryLanguage);
         llWidgetcontainer.addView(loyagramNPSView);
-        animateContentView(isFromRight);
+        if(campaign.getType().equals("SURVEY")) animateContentView(isFromRight);
+
         loyagramNPSView.setNPSListener(new LoyagramNPSView.LoyagramNPSListener() {
             @Override
             public void onNPSBackPress() {
@@ -727,14 +728,14 @@ public class LoyagramCampaignView extends LinearLayout {
     public void showCSATCES(Context context, Boolean isFromRight, Boolean isCsat) {
 
         Question followUpQuestion = null;
-        isFollowUpEnabled = campaign.getLanguageBase().getFollowUpEnabled();
-        if (!campaign.getType().equals("SURVEY") && isFollowUpEnabled) {
+        Boolean hasEmailFollowup = campaign.getLanguageBase().getEmailFollowUpEnabled();
+        if (!campaign.getType().equals("SURVEY")) {
             followUpQuestion = campaign.getResults().get(1);
             btnNext.setText(staticTextes.get("CAMPAIGN_MODE_NEXT_BUTTON_TEXT"));
         }
-        LoyagramCSATCESView loyagramCSATCESView = new LoyagramCSATCESView(context, currentQuestion, followUpQuestion, isFollowUpEnabled, response, this, colorPrimary, currentLanguage, primaryLanguage, isCsat, staticTextes);
+        LoyagramCSATCESView loyagramCSATCESView = new LoyagramCSATCESView(context, currentQuestion, followUpQuestion, hasEmailFollowup, response, this, colorPrimary, currentLanguage, primaryLanguage, isCsat, staticTextes);
         llWidgetcontainer.addView(loyagramCSATCESView);
-        animateContentView(isFromRight);
+        if (campaign.getType().equals("SURVEY")) animateContentView(isFromRight);
         loyagramCSATCESView.setCSATCESListener(new LoyagramCSATCESView.LoyagramCSATCESListener() {
             @Override
             public void onCSATCESBackPress() {
@@ -783,7 +784,7 @@ public class LoyagramCampaignView extends LinearLayout {
 
             @Override
             public void hideValidationMessage() {
-                txtValidation.setVisibility(INVISIBLE);
+                txtValidation.setVisibility(GONE);
             }
         });
     }
@@ -800,7 +801,7 @@ public class LoyagramCampaignView extends LinearLayout {
                 txtValidation.setVisibility(VISIBLE);
                 return;
             } else {
-                txtValidation.setVisibility(INVISIBLE);
+                txtValidation.setVisibility(GONE);
             }
         }
 
@@ -810,7 +811,7 @@ public class LoyagramCampaignView extends LinearLayout {
         btnNext.setTextColor(Color.parseColor("#FFFFFF"));
 
         /* Handle Follow up for NPS CSAT and CES */
-        if (!campaign.getType().equals("SURVEY") && isFollowUpEnabled) {
+        if (!campaign.getType().equals("SURVEY")) {
             switch (followUpIterator) {
                 case 0:
                     if (submitPressListener != null) {
@@ -834,7 +835,7 @@ public class LoyagramCampaignView extends LinearLayout {
                             txtValidation.setVisibility(VISIBLE);
                             break;
                         } else {
-                            txtValidation.setVisibility(INVISIBLE);
+                            txtValidation.setVisibility(GONE);
                         }
                     }
                     followUpIterator = 0;
@@ -862,13 +863,13 @@ public class LoyagramCampaignView extends LinearLayout {
      * Loads previous question
      */
     public void showPreviousQuestion() {
-        txtValidation.setVisibility(INVISIBLE);
+        txtValidation.setVisibility(GONE);
         ((GradientDrawable) btnPrev.getBackground()).setColor(Color.parseColor(colorPrimary));
         btnPrev.setTextColor(Color.parseColor("#FFFFFF"));
         ((GradientDrawable) btnNext.getBackground()).setColor(Color.parseColor("#FFFFFF"));
         btnNext.setTextColor(Color.parseColor(colorPrimary));
         /* Handle Follow up for NPS CSAT and CES */
-        if (!campaign.getType().equals("SURVEY") && isFollowUpEnabled) {
+        if (!campaign.getType().equals("SURVEY")) {
             switch (followUpIterator) {
                 case 0:
                     break;
@@ -1527,14 +1528,13 @@ public class LoyagramCampaignView extends LinearLayout {
             llWidgetcontainer.removeAllViews();
             rrbottomButtonContainer.setVisibility(GONE);
             llWidgetcontainer.setVisibility(GONE);
-            final RelativeLayout rrThankYou = new RelativeLayout(currentContext);
-            final TextView txtThankYou = new TextView(currentContext);
             final LinearLayout llThankyouContainer = new LinearLayout(currentContext);
             animateThankYou(llThankyouContainer, thankYouString);
             final Handler thankyouHandler = new Handler();
             thankyouHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    llThankyouContainer.removeAllViews();
                     llWidgetcontainerMain.removeView(llThankyouContainer);
                     if (isRepeatable || isPreview) {
                         resetCampaign();
@@ -1555,9 +1555,9 @@ public class LoyagramCampaignView extends LinearLayout {
     public void animateThankYou(LinearLayout llThankyouContainer, String thankYouString) {
 
         int thankyouHeight = getResources().getDimensionPixelSize(R.dimen.thank_you_layout_height);
-        final RelativeLayout rrThankYou = new RelativeLayout(currentContext);
+        RelativeLayout rrThankYou = new RelativeLayout(currentContext);
         LayoutParams rrlayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, thankyouHeight);
-        rrlayoutParams.setMargins(10,10,10,10);
+        rrlayoutParams.setMargins(10, 10, 10, 10);
         rrThankYou.setLayoutParams(rrlayoutParams);
         final ProgressBar thankYouProgress = new ProgressBar(currentContext, null, android.R.attr.progressBarStyleHorizontal);
         thankYouProgress.setProgressDrawable(ContextCompat.getDrawable(currentContext, R.drawable.lg_circular_progress));
@@ -1584,12 +1584,12 @@ public class LoyagramCampaignView extends LinearLayout {
         thankYouProgress.setLayoutParams(progressParams);
         animationCheckMark.setLayoutParams(checkMarkParams);
 
-        final TextView txtThankYou = new TextView(currentContext);
+        TextView txtThankYou = new TextView(currentContext);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         txtThankYou.setGravity(CENTER);
         float scale = getContext().getResources().getDisplayMetrics().density;
         int txtMargin = (int) (5 * scale + 0.5f);
-        layoutParams.setMargins(txtMargin, 0, txtMargin, 0);
+        layoutParams.setMargins(txtMargin, 0, txtMargin, txtMargin);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         txtThankYou.setLayoutParams(layoutParams);
         txtThankYou.setText(thankYouString);
@@ -1606,36 +1606,30 @@ public class LoyagramCampaignView extends LinearLayout {
         llThankyouContainer.addView(rrThankYou);
         llThankyouContainer.addView(txtThankYou);
         llWidgetcontainerMain.addView(llThankyouContainer);
-        final Handler handler = new Handler();
         pStatus = 0;
         new Thread(new Runnable() {
             @Override
             public void run() {
-                // TODO Auto-generated method stub
+                Handler handler = new Handler(Looper.getMainLooper());
                 while (pStatus < 100) {
-                    pStatus += 4;
-
                     handler.post(new Runnable() {
-
                         @Override
                         public void run() {
-                            // TODO Auto-generated method stub
                             thankYouProgress.setProgress(pStatus);
-                            ;
-                            if (pStatus >= 96) {
+                            pStatus += 2;
+                            if (pStatus >= 98) {
                                 animationCheckMark.showCheck();
                             }
                         }
                     });
                     try {
-                        Thread.sleep(16); //thread will take approx 3 seconds to finish
+                        Thread.sleep(6);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }
         }).start();
-
 
     }
 
@@ -2444,7 +2438,7 @@ public class LoyagramCampaignView extends LinearLayout {
     public void setStaticTextes() {
         if (noOfQuestions == 1 || questionNumber == noOfQuestions) {
             btnNext.setText(staticTextes.get("CAMPAIGN_MODE_SUBMIT_BUTTON_TEXT"));
-        } else if (isFollowUpEnabled) {
+        } else if (!campaign.getType().equals("SURVEY")) {
             if (followUpIterator == 2) {
                 btnNext.setText(staticTextes.get("CAMPAIGN_MODE_SUBMIT_BUTTON_TEXT"));
             } else {
@@ -2453,6 +2447,7 @@ public class LoyagramCampaignView extends LinearLayout {
         } else {
             btnNext.setText(staticTextes.get("CAMPAIGN_MODE_NEXT_BUTTON_TEXT"));
         }
+
         btnPrev.setText(staticTextes.get("CAMPAIGN_MODE_BACK_BUTTON_TEXT"));
         txtFooterCredit.setText(staticTextes.get("POWERED_BY"));
         if (btnStartCampaign != null) {

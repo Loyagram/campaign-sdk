@@ -18,6 +18,8 @@ public class LanguageBase implements Parcelable{
     private List<Language> language = null;
     @SerializedName("follow_up_question_enabled")
     private Boolean isFollowUpEnabled = false;
+    @SerializedName("follow_up_request_enabled")
+    private Boolean isEmailFollowUpEnabled = false;
 
     public LanguageBase() {
     }
@@ -38,6 +40,13 @@ public class LanguageBase implements Parcelable{
         isFollowUpEnabled = followUpEnabled;
     }
 
+    public Boolean getEmailFollowUpEnabled() {
+        return isEmailFollowUpEnabled;
+    }
+
+    public void setEmailFollowUpEnabled(Boolean emailFollowUpEnabled) {
+        isEmailFollowUpEnabled = emailFollowUpEnabled;
+    }
 
     protected LanguageBase(Parcel in) {
         if (in.readByte() == 0x01) {
@@ -48,7 +57,7 @@ public class LanguageBase implements Parcelable{
         }
 
         isFollowUpEnabled = (Boolean) in.readValue(Boolean.class.getClassLoader());
-
+        isEmailFollowUpEnabled = (Boolean) in.readValue(Boolean.class.getClassLoader());
     }
 
     public static final Creator<LanguageBase> CREATOR = new Creator<LanguageBase>() {
@@ -78,5 +87,6 @@ public class LanguageBase implements Parcelable{
         }
 
         dest.writeValue(this.isFollowUpEnabled);
+        dest.writeValue(this.isEmailFollowUpEnabled);
     }
 }

@@ -85,8 +85,7 @@ public class LoyagramCSATCESView extends LinearLayout {
     Typeface typeface;
     Boolean isKeyboardShown = false;
     Boolean isCsat;
-    Boolean isFollowUpEnabled = false;
-    Boolean isEmailFollowupEnabled = false;
+    Boolean isEmailFollowUpEnabled = false;
     String currentOption;
     HashMap<String, String> staticTextes;
     ScrollView topOptionsContainer;
@@ -96,12 +95,12 @@ public class LoyagramCSATCESView extends LinearLayout {
         init(context);
     }
 
-    public LoyagramCSATCESView(Context context, Question question, Question followUpQuestion, Boolean isFollowUpEnabled, Response response, LoyagramCampaignView loyagramCampaignView, String colorPrimary, Language language, Language primaryLanguage, Boolean isCsat, HashMap<String, String> staticTextes) {
+    public LoyagramCSATCESView(Context context, Question question, Question followUpQuestion, Boolean isEmailFollowUpEnabled, Response response, LoyagramCampaignView loyagramCampaignView, String colorPrimary, Language language, Language primaryLanguage, Boolean isCsat, HashMap<String, String> staticTextes) {
         super(context);
         this.response = response;
         this.question = question;
         this.followUpQuestion = followUpQuestion;
-        this.isFollowUpEnabled = isFollowUpEnabled;
+        this.isEmailFollowUpEnabled = isEmailFollowUpEnabled;
         this.colorPrimary = colorPrimary;
         this.loyagramCampaignView = loyagramCampaignView;
         this.primaryLanguage = primaryLanguage;
@@ -170,15 +169,6 @@ public class LoyagramCSATCESView extends LinearLayout {
         showOptions();
         setLanguageListener();
         setSubmitListener();
-//        txtRetry.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (listener != null) {
-//                    listener.hideSubmitButton(true);
-//                }
-//                changeOptions();
-//            }
-//        });
         txtReason.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -326,7 +316,7 @@ public class LoyagramCSATCESView extends LinearLayout {
             setFeedbackQuestion();
             setOptionText();
         }
-        if (followUpQuestion != null && isFollowUpEnabled) {
+        if (followUpQuestion != null) {
             setFollowUpQuestion();
             changeFollowUPLabelLanguage();
         }
@@ -458,21 +448,6 @@ public class LoyagramCSATCESView extends LinearLayout {
 
                             listener.setOptions(option);
                         }
-
-                        //Shows feedback view with a delay
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (radioButton != null) {
-                                    // showReasontitle(radioButton.getText().toString());
-                                }
-                                //showReasonView();
-
-                            }
-                        }, 100);
-
-
                     }
                 });
                 radioGroup.addView(rdb);
@@ -490,8 +465,8 @@ public class LoyagramCSATCESView extends LinearLayout {
         setFollowUpQuestion();
         llOptionsContainer.setVisibility(GONE);
         txtquestion.setVisibility(GONE);
-        llfolloUpOptions.removeAllViews();
         llfollowUpContainer.setVisibility(VISIBLE);
+        llfolloUpOptions.removeAllViews();
         List<QuestionLabel> questionLabels = followUpQuestion.getLabels();
         if (questionLabels != null) {
             for (final QuestionLabel ql : questionLabels) {
@@ -822,30 +797,17 @@ public class LoyagramCSATCESView extends LinearLayout {
 
     public void showReasonView() {
         setFeedbackQuestion();
-        if(isEmailFollowupEnabled) {
+        if(isEmailFollowUpEnabled) {
             llEmailFollowUpContainer.setVisibility(VISIBLE);
         }
-        txtquestion.setVisibility(GONE);
+        //txtquestion.setVisibility(GONE);
         llfollowUpContainer.setVisibility(GONE);
         llFeedbackContainer.setVisibility(VISIBLE);
         // topOptionsContainer.setVisibility(VISIBLE);
 
     }
 
-    public void changeOptions() {
-        llFeedbackContainer.setVisibility(GONE);
-        //rrReasonFooter.setVisibility(GONE);
-        topOptionsContainer.setVisibility(VISIBLE);
-        txtquestion.setVisibility(VISIBLE);
 
-    }
-
-    public void showReasontitle(String selectedItem) {
-
-        setFeedbackQuestion();
-        // setOptionText();
-        //txtOptions.setText(selectedItem);
-    }
 
     /**
      * Handles OS backpress. if softkeyboard is shown it hides other wise backpress call back wil be called.
