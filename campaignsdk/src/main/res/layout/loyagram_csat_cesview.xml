@@ -150,7 +150,8 @@
                         android:layout_marginBottom="5dp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
-                        android:text="Submit Email" />
+                        android:text="I would like to receive a follow up"
+                        android:textSize="@dimen/text_medium"/>
 
                     <EditText
                         android:id="@+id/txtEmail"
@@ -163,7 +164,8 @@
                         android:lines="1"
                         android:maxLines="1"
                         android:minLines="1"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        android:textSize="@dimen/text_medium"/>
                 </LinearLayout>
 
             </RelativeLayout>

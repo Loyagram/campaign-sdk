@@ -2,4 +2,6 @@
 <resources>
     <color name="lg_primaryTextColor">#000000</color>
     <color name="lg_defaulColor">#1abc9c</color>
+    <color name="lg_textBlack">#2c3e50</color>
+    <color name="lg_lightGray">#cccccc</color>
 </resources>

@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 group = 'com.loyagram.android'
 archivesBaseName = 'campaign-sdk'
-version = '0.0.55'
+version = '0.0.56'
 
 publishing {
     repositories {
@@ -48,7 +48,7 @@ ext {
     gitUrl = 'https://github.com/Loyagram/campaign-sdk.git'
     githubRepository= 'Loyagram/campaign-sdk'
 
-    libraryVersion = '0.0.55'
+    libraryVersion = '0.0.56'
 
     developerId = 'sandhil'
     developerName = 'sandhil eldhose'
@@ -65,8 +65,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 55
-        versionName "0.0.55"
+        versionCode 56
+        versionName "0.0.56"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 

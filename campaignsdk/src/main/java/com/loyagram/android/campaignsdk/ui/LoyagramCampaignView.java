@@ -152,6 +152,7 @@ public class LoyagramCampaignView extends LinearLayout {
     BigDecimal locationId;
     HashMap<String, String> customAttributes = null;
     TextView txtWelcomeMessage;
+    TextView txtWelcomeTip;
     HashMap<String, String> staticTextes = new HashMap<>();
     Boolean isSpinnerChanged = false;
     Boolean isEmailFollowUpEnabled = false;
@@ -160,6 +161,9 @@ public class LoyagramCampaignView extends LinearLayout {
     String csatCesOption;
     int followUpIterator = 0;
     int pStatus = 0;
+    String textAnswer = null;
+    String questionType = null;
+    String currentValidationMsg = null;
 
     /**
      * enumarator to define type of campaign view selected
@@ -432,10 +436,7 @@ public class LoyagramCampaignView extends LinearLayout {
             @Override
             public void onClick(View v) {
                 if (noOfQuestions > 0) {
-                    btnStartCampaign.setVisibility(GONE);
-                    if (txtWelcomeMessage != null) {
-                        txtWelcomeMessage.setVisibility(GONE);
-                    }
+                    hideWelcomeView();
                     rrbottomButtonContainer.setVisibility(VISIBLE);
                     llWidgetcontainer.setVisibility(VISIBLE);
                     questionNumber = 1;
@@ -461,6 +462,36 @@ public class LoyagramCampaignView extends LinearLayout {
         txtWelcomeMessage.setTypeface(typeFace);
         txtWelcomeMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         txtWelcomeMessage.setGravity(Gravity.CENTER);
+        txtWelcomeMessage.setTextColor(ContextCompat.getColor(currentContext, R.color.lg_textBlack));
+    }
+
+    public void initWelcomeTip() {
+        txtWelcomeTip = new TextView(currentContext);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        params.gravity = CENTER;
+        params.setMargins(20, 50, 20, 50);
+        txtWelcomeTip.setLayoutParams(params);
+        txtWelcomeTip.setTypeface(typeFace);
+        txtWelcomeTip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        txtWelcomeTip.setGravity(Gravity.CENTER);
+        txtWelcomeTip.setTextColor(ContextCompat.getColor(currentContext, R.color.lg_lightGray));
+
+    }
+
+    public void showWelcomeView() {
+        btnStartCampaign.setVisibility(VISIBLE);
+        txtWelcomeMessage.setVisibility(VISIBLE);
+        txtWelcomeTip.setVisibility(VISIBLE);
+    }
+
+    public void hideWelcomeView() {
+        btnStartCampaign.setVisibility(GONE);
+        if (txtWelcomeMessage != null) {
+            txtWelcomeMessage.setVisibility(GONE);
+        }
+        if (txtWelcomeTip != null) {
+            txtWelcomeTip.setVisibility(GONE);
+        }
     }
 
     /**
@@ -602,7 +633,7 @@ public class LoyagramCampaignView extends LinearLayout {
         }
         LoyagramNPSView loyagramNPSView = new LoyagramNPSView(context, campaignType, currentQuestion, followUpQuestion, hasEmailFollowup, response, this, colorPrimary, currentLanguage, staticTextes, primaryLanguage);
         llWidgetcontainer.addView(loyagramNPSView);
-        if(campaign.getType().equals("SURVEY")) animateContentView(isFromRight);
+        if (campaign.getType().equals("SURVEY")) animateContentView(isFromRight);
 
         loyagramNPSView.setNPSListener(new LoyagramNPSView.LoyagramNPSListener() {
             @Override
@@ -699,7 +730,7 @@ public class LoyagramCampaignView extends LinearLayout {
      */
     public void showTextView(Context context, Boolean isFromRight) {
 
-        LoyagramTextView loyagramTextView = new LoyagramTextView(context, currentQuestion, response, this, colorPrimary, currentLanguage, primaryLanguage);
+        LoyagramTextView loyagramTextView = new LoyagramTextView(context, currentQuestion, response, this, colorPrimary, currentLanguage, staticTextes, primaryLanguage);
         llWidgetcontainer.addView(loyagramTextView);
         animateContentView(isFromRight);
         loyagramTextView.setTextViewListener(new LoyagramTextView.LoyagramTextviewListener() {
@@ -713,9 +744,11 @@ public class LoyagramCampaignView extends LinearLayout {
             }
 
             @Override
-            public void onTextviewSubmit() {
+            public void onTextviewSubmit(String text) {
                 saveResponseToPreference();
+                textAnswer = text;
             }
+
         });
     }
 
@@ -784,7 +817,7 @@ public class LoyagramCampaignView extends LinearLayout {
 
             @Override
             public void hideValidationMessage() {
-                txtValidation.setVisibility(GONE);
+                txtValidation.setVisibility(INVISIBLE);
             }
         });
     }
@@ -797,11 +830,12 @@ public class LoyagramCampaignView extends LinearLayout {
         if (!currentQuestion.getOptional()) {
             if (!questionAttended(currentQuestion)) {
                 //showAlertDialog("Please attend the current question");
-                txtValidation.setText("Please attend the current question");
+                txtValidation.setText(staticTextes.get("MANDATORY_QUESTION_TEXT"));
+                currentValidationMsg = "MANDATORY_QUESTION_TEXT";
                 txtValidation.setVisibility(VISIBLE);
                 return;
             } else {
-                txtValidation.setVisibility(GONE);
+                txtValidation.setVisibility(INVISIBLE);
             }
         }
 
@@ -831,18 +865,45 @@ public class LoyagramCampaignView extends LinearLayout {
 
                     if (isEmailFollowUpEnabled) {
                         if (!isValidEmail(followUpEmail)) {
-                            txtValidation.setText("Please enter a valid email");
+                            txtValidation.setText(staticTextes.get("EMAIL_NOT_VALID_TEXT"));
                             txtValidation.setVisibility(VISIBLE);
+                            currentValidationMsg = "EMAIL_NOT_VALID_TEXT";
                             break;
                         } else {
-                            txtValidation.setVisibility(GONE);
+                            txtValidation.setVisibility(INVISIBLE);
                         }
                     }
                     followUpIterator = 0;
                     submitCampaign();
             }
             return;
+        } else if (questionType != null) {
+            //Validation for email and number
+            switch (questionType) {
+                case "EMAIL":
+                    if (!isValidEmail(getCurrentQuestionText())) {
+                        txtValidation.setText(staticTextes.get("EMAIL_NOT_VALID_TEXT"));
+                        txtValidation.setVisibility(VISIBLE);
+                        currentValidationMsg = "EMAIL_NOT_VALID_TEXT";
+                        return;
+                    } else {
+                        txtValidation.setVisibility(INVISIBLE);
+                    }
+                    break;
+                case "NUMBER":
+                    if (!isValidNumber(getCurrentQuestionText())) {
+                        txtValidation.setText(staticTextes.get("VALIDATION_FAILED_TEXT"));
+                        txtValidation.setVisibility(VISIBLE);
+                        currentValidationMsg = "VALIDATION_FAILED_TEXT";
+                        return;
+                    } else {
+                        txtValidation.setVisibility(INVISIBLE);
+                    }
+                    break;
+            }
+
         }
+
         questionNumber++;
         if (btnNext.getText().equals(staticTextes.get("CAMPAIGN_MODE_SUBMIT_BUTTON_TEXT"))) {
             submitCampaign();
@@ -863,7 +924,7 @@ public class LoyagramCampaignView extends LinearLayout {
      * Loads previous question
      */
     public void showPreviousQuestion() {
-        txtValidation.setVisibility(GONE);
+        txtValidation.setVisibility(INVISIBLE);
         ((GradientDrawable) btnPrev.getBackground()).setColor(Color.parseColor(colorPrimary));
         btnPrev.setTextColor(Color.parseColor("#FFFFFF"));
         ((GradientDrawable) btnNext.getBackground()).setColor(Color.parseColor("#FFFFFF"));
@@ -903,6 +964,18 @@ public class LoyagramCampaignView extends LinearLayout {
         QuestionStatus.getInstance().setCampaignId(campaign.getStringId());
         showQuestion(false);
 
+    }
+
+
+    public String getCurrentQuestionText() {
+        String text = null;
+        List<ResponseAnswer> responseAnswers = response.getResponseAnswers();
+        for (ResponseAnswer responseAnswer : responseAnswers) {
+            if (currentQuestion.getId().equals(responseAnswer.getQuestionId())) {
+                text = responseAnswer.getResponseAnswerText().getText();
+            }
+        }
+        return text;
     }
 
     /**
@@ -962,8 +1035,9 @@ public class LoyagramCampaignView extends LinearLayout {
             showCSATCES(currentContext, isFromRight, false);
         } else {
             if (currentQuestion != null) {
-                String questiontype = currentQuestion.getType();
-                switch (questiontype) {
+                questionType = currentQuestion.getType();
+
+                switch (questionType) {
                     case "SINGLE_SELECT":
                         showSurveyView(currentContext, isFromRight);
                         break;
@@ -976,7 +1050,10 @@ public class LoyagramCampaignView extends LinearLayout {
                     case "NPS":
                         showNPSView(currentContext, campaignType, isFromRight);
                         break;
-                    case "TEXT":
+                    case "PARAGRAPH":
+                    case "SHORT_ANSWER":
+                    case "EMAIL":
+                    case "NUMBER":
                         showTextView(currentContext, isFromRight);
                         break;
                 }
@@ -1107,11 +1184,14 @@ public class LoyagramCampaignView extends LinearLayout {
                 Boolean isWelcomeEnabled = campaign.getWelcomeEnabled();
                 if (isWelcomeEnabled != null && isWelcomeEnabled) {
                     initWelcomeTextView();
+                    initWelcomeTip();
                     txtWelcomeMessage.setText(getWelcomeMessage());
+                    txtWelcomeTip.setText(staticTextes.get("WIDGET_WELCOME_TIP"));
                     llWidgetcontainerMain.addView(txtWelcomeMessage);
                     llWidgetcontainerMain.addView(btnStartCampaign);
-                    btnStartCampaign.setVisibility(VISIBLE);
-                    txtWelcomeMessage.setVisibility(VISIBLE);
+                    llWidgetcontainerMain.addView(txtWelcomeTip);
+                    showWelcomeView();
+
                 } else if (isRepeatable || isPreview) {
                     llWidgetcontainerMain.addView(btnStartCampaign);
                     btnStartCampaign.setVisibility(VISIBLE);
@@ -1366,10 +1446,7 @@ public class LoyagramCampaignView extends LinearLayout {
         }
         rrbottomButtonContainer.setVisibility(GONE);
         llWidgetcontainer.setVisibility(GONE);
-        btnStartCampaign.setVisibility(VISIBLE);
-        if (txtWelcomeMessage != null) {
-            txtWelcomeMessage.setVisibility(VISIBLE);
-        }
+        showWelcomeView();
         questionNumber = -1;
         QuestionStatus.getInstance().resetQuestionStats();
     }
@@ -1463,8 +1540,14 @@ public class LoyagramCampaignView extends LinearLayout {
         if (txtWelcomeMessage != null) {
             txtWelcomeMessage.setText(getWelcomeMessage());
         }
+        if (txtWelcomeTip != null) {
+            txtWelcomeTip.setText(staticTextes.get("WIDGET_WELCOME_TIP"));
+        }
         if (languageChangeListener != null) {
             languageChangeListener.onLanguageChanged(currentLanguage);
+        }
+        if(currentValidationMsg != null) {
+            txtValidation.setText(staticTextes.get(currentValidationMsg));
         }
 
     }
@@ -1623,7 +1706,7 @@ public class LoyagramCampaignView extends LinearLayout {
                         }
                     });
                     try {
-                        Thread.sleep(6);
+                        Thread.sleep(8);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -2008,22 +2091,16 @@ public class LoyagramCampaignView extends LinearLayout {
                 }
                 break;
 
+            case "PARAGRAPH":
+            case "EMAIL":
+            case "NUMBER":
+            case "SHORT_ANSWER":
             case "TEXT":
-                int textLabelCount = 0;
-                for (QuestionLabel questionLabel : question.getLabels()) {
-                    for (ResponseAnswer responseAnswer : responseAnswers) {
-                        if (questionLabel.getId().equals(responseAnswer.getQuestionLabelId())) {
-                            if (responseAnswer.getResponseAnswerText() != null && responseAnswer.getResponseAnswerText().getText() != null) {
-                                String text = responseAnswer.getResponseAnswerText().getText();
-                                if (text.length() > 0) {
-                                    textLabelCount++;
-                                }
-                            }
-                        }
+                for (ResponseAnswer responseAnswer : responseAnswers) {
+                    if (question.getId().equals(responseAnswer.getQuestionId())) {
+                        isAttended = true;
+                        break;
                     }
-                }
-                if (textLabelCount == question.getLabels().size()) {
-                    isAttended = true;
                 }
                 break;
         }
@@ -2422,6 +2499,33 @@ public class LoyagramCampaignView extends LinearLayout {
                         case "CAMPAIGN_MODE_ANSWER_REQUIRED_DIALOG_TEXT":
                             staticTextes.put("CAMPAIGN_MODE_ANSWER_REQUIRED_DIALOG_TEXT", transalatedString);
                             break;
+                        case "FOLLOW_UP_REQUEST_CHECKBOX_LABEL":
+                            staticTextes.put("FOLLOW_UP_REQUEST_CHECKBOX_LABEL", transalatedString);
+                            break;
+                        case "PLUGIN_DIALOGUE_BOX_ACTIVE_BUTTON_TEXT":
+                            staticTextes.put("PLUGIN_DIALOGUE_BOX_ACTIVE_BUTTON_TEXT", transalatedString);
+                            break;
+                        case "PLUGIN_DIALOGUE_BOX_PASSIVE_BUTTON_TEXT":
+                            staticTextes.put("PLUGIN_DIALOGUE_BOX_PASSIVE_BUTTON_TEXT", transalatedString);
+                            break;
+                        case "EMAIL_ADDRESS_PLACEHOLDER_TEXT":
+                            staticTextes.put("EMAIL_ADDRESS_PLACEHOLDER_TEXT", transalatedString);
+                            break;
+                        case "INPUT_PLACEHOLDER_TEXT":
+                            staticTextes.put("INPUT_PLACEHOLDER_TEXT", transalatedString);
+                            break;
+                        case "VALIDATION_FAILED_TEXT":
+                            staticTextes.put("VALIDATION_FAILED_TEXT", transalatedString);
+                            break;
+                        case "WIDGET_WELCOME_TIP":
+                            staticTextes.put("WIDGET_WELCOME_TIP", transalatedString);
+                            break;
+                        case "MANDATORY_QUESTION_TEXT":
+                            staticTextes.put("MANDATORY_QUESTION_TEXT", transalatedString);
+                            break;
+                        case "EMAIL_NOT_VALID_TEXT":
+                            staticTextes.put("EMAIL_NOT_VALID_TEXT", transalatedString);
+                            break;
                         default:
                             break;
                     }
@@ -2458,5 +2562,9 @@ public class LoyagramCampaignView extends LinearLayout {
 
     public boolean isValidEmail(CharSequence target) {
         return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+    public boolean isValidNumber(CharSequence target) {
+        return target != null && android.util.Patterns.PHONE.matcher(target).matches();
     }
 }

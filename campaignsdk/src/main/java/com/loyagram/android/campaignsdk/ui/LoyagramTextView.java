@@ -28,6 +28,7 @@ import com.loyagram.android.campaignsdk.models.ResponseAnswerText;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,7 +42,7 @@ public class LoyagramTextView extends LinearLayout {
     interface LoyagramTextviewListener {
         void onTextviewBackPress();
 
-        void onTextviewSubmit();
+        void onTextviewSubmit(String text);
     }
 
     Language language = null;
@@ -56,14 +57,17 @@ public class LoyagramTextView extends LinearLayout {
     String colorPrimary = null;
     Typeface typeface;
     Language primaryLanguage;
+    HashMap<String, String> staticTextes;
+    EditText txtAnswer = null;
 
-    public LoyagramTextView(Context context, Question question, Response response, LoyagramCampaignView loyagramCampaignView, String colorPrimary, Language language, Language primaryLanguage) {
+    public LoyagramTextView(Context context, Question question, Response response, LoyagramCampaignView loyagramCampaignView, String colorPrimary, Language language, HashMap<String, String> staticTextes, Language primaryLanguage) {
         super(context);
         this.response = response;
         this.question = question;
         this.loyagramCampaignView = loyagramCampaignView;
         this.colorPrimary = colorPrimary;
         this.language = language;
+        this.staticTextes = staticTextes;
         this.primaryLanguage = primaryLanguage;
         init(context);
     }
@@ -108,138 +112,95 @@ public class LoyagramTextView extends LinearLayout {
         txtQuestion.setVisibility(VISIBLE);
         setQuestionTitle();
         List<QuestionLabel> questionLabels = question.getLabels();
-        int i = 0;
-        if (questionLabels != null) {
-            for (final QuestionLabel ql : questionLabels) {
-                LinearLayout linearLayout = new LinearLayout(currentContext);
-                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                params.setMargins(0, 10, 0, 0);
-                linearLayout.setLayoutParams(params);
-
-                EditText editText = new EditText(currentContext);
-                editText.setBackgroundResource(R.drawable.lg_npssquare);
-                ((GradientDrawable) editText.getBackground()).setStroke(getResources().getDimensionPixelSize(R.dimen.stroke_width), Color.parseColor(colorPrimary));
-                LinearLayout.LayoutParams editTextParams;
-                Boolean isLabelSet = false;
-                String labelText = null;
-
-                List<LabelTranslation> labelTranslations = ql.getLabelTranslations();
-                if (labelTranslations != null) {
-                    for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                        if (language != null && language.getCode().equals(labelTranslation.getCode())) {
-                            labelText = labelTranslation.getTranslation();
-                            isLabelSet = true;
-                            break;
-                        }
-                    }
-                    if (!isLabelSet) {
-                        for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                            if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
-                                labelText = labelTranslation.getTranslation();
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                float scale = getContext().getResources().getDisplayMetrics().density;
-                if (labelText != null && !labelText.equals("")) {
-                    linearLayout.setWeightSum(100);
-                    int txtLeftMargin = (int) (15 * scale + 0.5f);
-                    TextView txtLabel = new TextView(currentContext);
-                    txtLabel.setTag(ql.getId());
-                    txtLabel.setTextColor(Color.parseColor("#000000"));
-                    txtLabel.setGravity(Gravity.CENTER_VERTICAL);
-                    txtLabel.setText(labelText);
-                    LinearLayout.LayoutParams txtparams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 30);
-                    txtparams.setMargins(txtLeftMargin, 0, 10, 0);
-                    txtparams.gravity = Gravity.CENTER_VERTICAL;
-                    String fieldType = ql.getFieldType();
-                    editText.setId(R.id.txtWidgetText + i);
-                    editTextParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 65);
-                    editText.setLayoutParams(editTextParams);
-                    txtLabel.setLayoutParams(txtparams);
-                    linearLayout.addView(txtLabel);
-                    if (getTypeFace() != null) {
-                        editText.setTypeface(typeface);
-                        txtLabel.setTypeface(typeface);
-                    }
-
-                    switch (fieldType) {
-                        case "number":
-                            editText.setMaxLines(1);
-                            editText.setInputType(InputType.TYPE_CLASS_PHONE);
-                            break;
-                        case "email":
-                            editText.setMaxLines(1);
-                            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                            break;
-                        default:
-                            editText.setMaxLines(3);
-                            editText.setMinLines(3);
-                            break;
-                    }
-                } else {
-                    params.gravity = Gravity.CENTER;
-                    int editTextMargin = (int) (10 * scale + 0.5f);
-                    editTextParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                    editTextParams.gravity = Gravity.CENTER;
-                    editTextParams.setMargins(editTextMargin, editTextMargin, editTextMargin, editTextMargin);
-                    editText.setLayoutParams(editTextParams);
-                    editText.setLines(3);
-                    editText.setMaxLines(3);
-                    editText.setMinLines(3);
-                }
-                i++;
-                ResponseAnswer ra = getResponseAnswer(ql.getId());
-                if (ra != null && ra.getQuestionLabelId().equals(ql.getId())) {
-                    if (ra.getResponseAnswerText() != null && ra.getResponseAnswerText().getText() != null)
-                        editText.setText(ra.getResponseAnswerText().getText());
-                }
-
-                editText.setOnTouchListener(new OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        isKeyboardShown = true;
-                        return false;
-                    }
-                });
-
-                editText.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    }
-
-                    /**
-                     * Response asnwer text will be saved in preference
-                     *
-                     * @param s      REsponse text
-                     * @param start  start index
-                     * @param before before index
-                     * @param count  count
-                     */
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if (s != null) {
-                            ResponseAnswer ra = setTextResponse(ql.getId(), new BigDecimal(1));
-                            if (ra.getResponseAnswerText() != null) {
-                                ra.getResponseAnswerText().setText(s.toString());
-                            }
-                            if (listener != null)
-                                listener.onTextviewSubmit();
-                        }
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-
-                    }
-                });
-
-                linearLayout.addView(editText);
-                llTextviewcontainer.addView(linearLayout);
+        final QuestionLabel ql = questionLabels.get(0);
+        if (ql != null) {
+            txtAnswer = new EditText(currentContext);
+            txtAnswer.setBackgroundResource(R.drawable.lg_npssquare);
+            ((GradientDrawable) txtAnswer.getBackground()).setStroke(getResources().getDimensionPixelSize(R.dimen.stroke_width), Color.parseColor(colorPrimary));
+            LinearLayout.LayoutParams editTextParams;
+            float scale = getContext().getResources().getDisplayMetrics().density;
+            int editTextMargin = (int) (20 * scale + 0.5f);
+            editTextParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            editTextParams.gravity = Gravity.CENTER;
+            editTextParams.setMargins(editTextMargin, 0, editTextMargin, editTextMargin);
+            txtAnswer.setLayoutParams(editTextParams);
+            String fieldType = ql.getFieldType();
+            if(fieldType == null) {
+                return;
             }
+            switch (fieldType) {
+                case "SHORT_ANSWER":
+                    txtAnswer.setMaxLines(1);
+                    txtAnswer.setMinLines(1);
+                    txtAnswer.setHint(staticTextes.get("INPUT_PLACEHOLDER_TEXT"));
+                    break;
+                case "PARAGRAPH":
+                    txtAnswer.setMaxLines(3);
+                    txtAnswer.setMinLines(3);
+                    txtAnswer.setHint(staticTextes.get("INPUT_PLACEHOLDER_TEXT"));
+                    break;
+                case "EMAIL":
+                    txtAnswer.setMaxLines(1);
+                    txtAnswer.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                    txtAnswer.setHint(staticTextes.get("EMAIL_ADDRESS_PLACEHOLDER_TEXT"));
+                    break;
+                case "NUMBER":
+                    txtAnswer.setMaxLines(1);
+                    txtAnswer.setInputType(InputType.TYPE_CLASS_PHONE);
+                    txtAnswer.setHint(staticTextes.get("INPUT_PLACEHOLDER_TEXT"));
+                    break;
+                default:
+                    txtAnswer.setMaxLines(3);
+                    txtAnswer.setMinLines(3);
+                    txtAnswer.setHint(staticTextes.get("INPUT_PLACEHOLDER_TEXT"));
+                    break;
+            }
+
+            ResponseAnswer ra = getResponseAnswer(ql.getId());
+            if (ra != null && ra.getQuestionLabelId().equals(ql.getId())) {
+                if (ra.getResponseAnswerText() != null && ra.getResponseAnswerText().getText() != null)
+                    txtAnswer.setText(ra.getResponseAnswerText().getText());
+            }
+
+            txtAnswer.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    isKeyboardShown = true;
+                    return false;
+                }
+            });
+
+            txtAnswer.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                /**
+                 * Response asnwer text will be saved in preference
+                 *
+                 * @param s      REsponse text
+                 * @param start  start index
+                 * @param before before index
+                 * @param count  count
+                 */
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (s != null) {
+                        ResponseAnswer ra = setTextResponse(ql.getId(), new BigDecimal(1));
+                        if (ra.getResponseAnswerText() != null) {
+                            ra.getResponseAnswerText().setText(s.toString());
+                        }
+                        if (listener != null)
+                            listener.onTextviewSubmit(s.toString());
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+            llTextviewcontainer.addView(txtAnswer);
         }
         if (loyagramCampaignView != null) {
             loyagramCampaignView.showSubView(true);
@@ -355,6 +316,30 @@ public class LoyagramTextView extends LinearLayout {
         this.language = language;
         setQuestionTitle();
         changeLabelLanguage();
+        setPlaceHolderText();
+    }
+
+    public void setPlaceHolderText() {
+        List<QuestionLabel> questionLabels = question.getLabels();
+        final QuestionLabel ql = questionLabels.get(0);
+        String fieldType = ql.getFieldType();
+        if(fieldType == null || txtAnswer == null) {
+            return;
+        }
+        switch (fieldType) {
+            case "SHORT_ANSWER":
+            case "PARAGRAPH":
+            case "NUMBER":
+                txtAnswer.setHint(staticTextes.get("INPUT_PLACEHOLDER_TEXT"));
+                break;
+            case "EMAIL":
+                txtAnswer.setHint(staticTextes.get("EMAIL_ADDRESS_PLACEHOLDER_TEXT"));
+                break;
+            default:
+                txtAnswer.setHint(staticTextes.get("INPUT_PLACEHOLDER_TEXT"));
+                break;
+        }
+
     }
 
     /**
