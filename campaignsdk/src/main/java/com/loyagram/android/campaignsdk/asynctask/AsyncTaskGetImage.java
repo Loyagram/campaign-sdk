@@ -53,7 +53,7 @@ public class AsyncTaskGetImage extends AsyncTask<String, Void, Bitmap> {
      * @param result brand logo
      */
     protected void onPostExecute(Bitmap result) {
-        if (result != null) {
+        if (result != null && !isCancelled()) {
             bmImage.setImageBitmap(result);
             bmImage.setVisibility(VISIBLE);
         }

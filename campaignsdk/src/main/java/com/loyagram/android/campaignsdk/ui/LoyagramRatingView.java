@@ -94,8 +94,8 @@ public class LoyagramRatingView extends LinearLayout {
 
     public void initLayouts() {
 
-        llratingContainer = (LinearLayout) findViewById(R.id.ratingBarContainer);
-        txtQuestion = (TextView) findViewById(R.id.qstnTitle);
+        llratingContainer = findViewById(R.id.ratingBarContainer);
+        txtQuestion = findViewById(R.id.qstnTitle);
         if (getTypeFace() != null) {
             txtQuestion.setTypeface(typeface);
         }
@@ -354,7 +354,7 @@ public class LoyagramRatingView extends LinearLayout {
                             break;
                         }
                         isTextChanged = true;
-                        TextView txtratignTitle = (TextView) findViewWithTag(ql.getId());
+                        TextView txtratignTitle = findViewWithTag(ql.getId());
                         if (txtratignTitle != null) {
                             txtratignTitle.setText(labelTranslation.getTranslation());
                         }
@@ -373,7 +373,7 @@ public class LoyagramRatingView extends LinearLayout {
         for (QuestionLabel ql : questionLabel) {
             for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
                 if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
-                    TextView txtratignTitle = (TextView) findViewWithTag(ql.getId());
+                    TextView txtratignTitle = findViewWithTag(ql.getId());
                     if (txtratignTitle != null) {
                         txtratignTitle.setText(labelTranslation.getTranslation());
                     }

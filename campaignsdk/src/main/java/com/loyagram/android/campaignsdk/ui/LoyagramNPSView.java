@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.AppCompatCheckBox;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -58,6 +59,7 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
         void enableFollowUp(Boolean enable);
 
         void setFollowUpemail(String email);
+
         void hideValidationMessage();
     }
 
@@ -79,8 +81,8 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
     LinearLayout llFollowUpContainer;
     LinearLayout llEmailFollowUpContainer;
     RelativeLayout rrReasonContainer;
-    EditText txtReason;
-    EditText txtEmail;
+    AppCompatEditText txtReason;
+    AppCompatEditText txtEmail;
     AppCompatCheckBox chkEmail;
     String currentRating;
     int ratingViewType = 0; // 0 for circle
@@ -142,12 +144,12 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
     public void setTheme() {
         if (colorPrimary != null) {
             int stroke = getResources().getDimensionPixelSize(R.dimen.stroke_width);
-            ((GradientDrawable) txtReason.getBackground()).setStroke(stroke, Color.parseColor(colorPrimary));
-            ((GradientDrawable) txtEmail.getBackground()).setStroke(stroke, Color.parseColor(colorPrimary));
+            ((GradientDrawable) txtReason.getBackground()).setStroke(stroke, Color.parseColor("#d9d9d9"));
+            txtEmail.setSupportBackgroundTintList(getColorStateList("#d9d9d9"));
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                chkEmail.setButtonTintList(getColorStateList());
+                chkEmail.setButtonTintList(getColorStateList(colorPrimary));
             } else {
-                chkEmail.setSupportButtonTintList(getColorStateList());
+                chkEmail.setSupportButtonTintList(getColorStateList(colorPrimary));
             }
         }
 
@@ -159,21 +161,24 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
      */
     public void initLayout() {
         initRatingButtons();
-        // llNPSFeedback = (LinearLayout) findViewById(R.id.npsFeedbackHeader);
-        llRatingContainer = (LinearLayout) findViewById(R.id.topRatingContainer);
-        txtReason = (EditText) findViewById(R.id.txtReason);
-        txtFeedbackQestion = (TextView) findViewById(R.id.txtFeedbackQstn);
-        txtNPSQuestion = (TextView) findViewById(R.id.npsquestion);
-        txtNotLikely = (TextView) findViewById(R.id.txtNotLikely);
-        txtVeryLikely = (TextView) findViewById(R.id.txtVeryLikely);
-        llRating = (LinearLayout) findViewById(R.id.ratingContainer);
-        rrReasonContainer = (RelativeLayout) findViewById(R.id.reasonFooter);
-        lloptionsContainer = (LinearLayout) findViewById(R.id.optionsContainer);
-        llFollowUpContainer = (LinearLayout) findViewById(R.id.followupContainer);
-        txtFollowUpQstn = (TextView) findViewById(R.id.followupQstn);
-        llEmailFollowUpContainer = (LinearLayout) findViewById(R.id.emailFollowUpContainer);
-        txtEmail = (EditText) findViewById(R.id.txtEmail);
-        chkEmail = (AppCompatCheckBox) findViewById(R.id.chkEmail);
+        llRatingContainer = findViewById(R.id.topRatingContainer);
+        txtReason = findViewById(R.id.txtReason);
+        txtFeedbackQestion =findViewById(R.id.txtFeedbackQstn);
+        txtNPSQuestion =  findViewById(R.id.npsquestion);
+        txtNotLikely =  findViewById(R.id.txtNotLikely);
+        txtVeryLikely = findViewById(R.id.txtVeryLikely);
+        llRating =  findViewById(R.id.ratingContainer);
+        rrReasonContainer = findViewById(R.id.reasonFooter);
+        lloptionsContainer =  findViewById(R.id.optionsContainer);
+        llFollowUpContainer = findViewById(R.id.followupContainer);
+        txtFollowUpQstn = findViewById(R.id.followupQstn);
+        llEmailFollowUpContainer = findViewById(R.id.emailFollowUpContainer);
+        txtEmail =  findViewById(R.id.txtEmail);
+        chkEmail =  findViewById(R.id.chkEmail);
+        txtEmail.setSingleLine(true);
+        chkEmail.setText(statictextes.get("FOLLOW_UP_REQUEST_CHECKBOX_LABEL"));
+        txtEmail.setHint(statictextes.get("EMAIL_ADDRESS_PLACEHOLDER_TEXT"));
+        txtReason.setHint(statictextes.get("INPUT_PLACEHOLDER_TEXT"));
         if (getTypeFace() != null) {
             txtReason.setTypeface(typeface);
             txtNotLikely.setTypeface(typeface);
@@ -271,6 +276,29 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
             }
         });
 
+        txtEmail.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    txtEmail.setSupportBackgroundTintList(getColorStateList(colorPrimary));
+                } else {
+                    txtEmail.setSupportBackgroundTintList(getColorStateList("#d9d9d9"));
+                }
+            }
+        });
+
+        txtReason.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                int stroke = getResources().getDimensionPixelSize(R.dimen.stroke_width);
+                if (hasFocus) {
+                    ((GradientDrawable) txtReason.getBackground()).setStroke(stroke, Color.parseColor(colorPrimary));
+                } else {
+                    ((GradientDrawable) txtReason.getBackground()).setStroke(stroke, Color.parseColor("#d9d9d9"));
+                }
+            }
+        });
+
 
     }
 
@@ -313,27 +341,27 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
      * sets click event listeners for the rating view buttons
      */
     public void initRatingButtons() {
-        TextView txtRating0 = (TextView) findViewById(R.id.ratingView0);
+        TextView txtRating0 =  findViewById(R.id.ratingView0);
         txtRating0.setOnClickListener(this);
-        TextView txtRating1 = (TextView) findViewById(R.id.ratingView1);
+        TextView txtRating1 =  findViewById(R.id.ratingView1);
         txtRating1.setOnClickListener(this);
-        TextView txtRating2 = (TextView) findViewById(R.id.ratingView2);
+        TextView txtRating2 = findViewById(R.id.ratingView2);
         txtRating2.setOnClickListener(this);
-        TextView txtRating3 = (TextView) findViewById(R.id.ratingView3);
+        TextView txtRating3 =  findViewById(R.id.ratingView3);
         txtRating3.setOnClickListener(this);
-        TextView txtRating4 = (TextView) findViewById(R.id.ratingView4);
+        TextView txtRating4 =  findViewById(R.id.ratingView4);
         txtRating4.setOnClickListener(this);
-        TextView txtRating5 = (TextView) findViewById(R.id.ratingView5);
+        TextView txtRating5 =  findViewById(R.id.ratingView5);
         txtRating5.setOnClickListener(this);
-        TextView txtRating6 = (TextView) findViewById(R.id.ratingView6);
+        TextView txtRating6 = findViewById(R.id.ratingView6);
         txtRating6.setOnClickListener(this);
-        TextView txtRating7 = (TextView) findViewById(R.id.ratingView7);
+        TextView txtRating7 =  findViewById(R.id.ratingView7);
         txtRating7.setOnClickListener(this);
-        TextView txtRating8 = (TextView) findViewById(R.id.ratingView8);
+        TextView txtRating8 = findViewById(R.id.ratingView8);
         txtRating8.setOnClickListener(this);
-        TextView txtRating9 = (TextView) findViewById(R.id.ratingView9);
+        TextView txtRating9 =  findViewById(R.id.ratingView9);
         txtRating9.setOnClickListener(this);
-        TextView txtRating10 = (TextView) findViewById(R.id.ratingView10);
+        TextView txtRating10 =  findViewById(R.id.ratingView10);
         txtRating10.setOnClickListener(this);
         if (getTypeFace() != null) {
             txtRating0.setTypeface(typeface);
@@ -406,7 +434,7 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
         currentRating = "" + rating;
         String txtTag = "" + rating;
         refreshNPS();
-        TextView selectedTextView = (TextView) findViewWithTag(txtTag);
+        TextView selectedTextView = findViewWithTag(txtTag);
         selectedTextView.setTextColor(Color.parseColor("#FFFFFF"));
         int stroke = getResources().getDimensionPixelSize(R.dimen.stroke_width);
         if (ratingViewType == 0) {
@@ -623,7 +651,6 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
     }
 
 
-
     public void showFollowUp() {
         setFollowUpQuestion();
         llRatingContainer.setVisibility(GONE);
@@ -665,9 +692,9 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
                         chk.setChecked(true);
                 }
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    chk.setButtonTintList(getColorStateList());
+                    chk.setButtonTintList(getColorStateList(colorPrimary));
                 } else {
-                    chk.setSupportButtonTintList(getColorStateList());
+                    chk.setSupportButtonTintList(getColorStateList(colorPrimary));
                 }
                 chk.setOnClickListener(new OnClickListener() {
                     @Override
@@ -694,14 +721,14 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
      *
      * @return color state list
      */
-    public ColorStateList getColorStateList() {
+    public ColorStateList getColorStateList(String color) {
         int[][] states = new int[][]{
                 new int[]{android.R.attr.state_enabled},
                 new int[]{android.R.attr.state_pressed}
         };
         int[] colors = new int[]{
-                Color.parseColor(colorPrimary),
-                Color.parseColor(colorPrimary)
+                Color.parseColor(color),
+                Color.parseColor(color)
         };
         return new ColorStateList(states, colors);
     }
@@ -803,6 +830,15 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
         if (followUpQuestion != null) {
             setFollowUpQuestion();
             changeLabelLanguage();
+        }
+        if (txtEmail != null) {
+            txtEmail.setHint(statictextes.get("EMAIL_ADDRESS_PLACEHOLDER_TEXT"));
+        }
+        if (chkEmail != null) {
+            chkEmail.setText(statictextes.get("FOLLOW_UP_REQUEST_CHECKBOX_LABEL"));
+        }
+        if(txtReason != null) {
+            txtReason.setHint(statictextes.get("INPUT_PLACEHOLDER_TEXT"));
         }
     }
 
@@ -1051,12 +1087,12 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
                         isTextChanged = true;
                         String questionType = followUpQuestion.getType();
                         if (questionType.equals("SINGLE_SELECT")) {
-                            RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
+                            RadioButton rdb =    findViewWithTag(ql.getId());
                             if (rdb != null) {
                                 rdb.setText(labelTranslation.getTranslation());
                             }
                         } else {
-                            AppCompatCheckBox chk = (AppCompatCheckBox) findViewWithTag(ql.getId());
+                            AppCompatCheckBox chk = findViewWithTag(ql.getId());
                             if (chk != null) {
                                 chk.setText(labelTranslation.getTranslation());
                             }
@@ -1077,12 +1113,12 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
                 if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
                     String questionType = followUpQuestion.getType();
                     if (questionType.equals("SINGLE_SELECT")) {
-                        RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
+                        RadioButton rdb = findViewWithTag(ql.getId());
                         if (rdb != null) {
                             rdb.setText(labelTranslation.getTranslation());
                         }
                     } else {
-                        AppCompatCheckBox chk = (AppCompatCheckBox) findViewWithTag(ql.getId());
+                        AppCompatCheckBox chk = findViewWithTag(ql.getId());
                         if (chk != null) {
                             chk.setText(labelTranslation.getTranslation());
                         }
@@ -1092,8 +1128,5 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
         }
     }
 
-    public boolean isValidEmail(CharSequence target) {
-        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-    }
 
 }

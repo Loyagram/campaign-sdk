@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name="com.loyagram.campaignsdkdemo.LoyagramApplication">
-        <activity android:name="com.loyagram.campaignsdkdemo.MainActivity">
+        <activity android:name="com.loyagram.campaignsdkdemo.MainActivity" android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

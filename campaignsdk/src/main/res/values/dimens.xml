@@ -19,5 +19,7 @@
     <dimen name="thank_you_checkmark_height">60dp</dimen>
     <dimen name="thank_you_checkmark_width">60dp</dimen>
     <dimen name="thank_you_layout_height">60dp</dimen>
+    <dimen name="edit_text_height">40dp</dimen>
+    <dimen name="edit_text__paragraph_height">70dp</dimen>
 
 </resources>

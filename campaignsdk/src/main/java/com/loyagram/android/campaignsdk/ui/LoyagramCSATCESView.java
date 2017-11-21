@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.support.v7.widget.AppCompatCheckBox;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatRadioButton;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,6 +16,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -54,8 +56,11 @@ public class LoyagramCSATCESView extends LinearLayout {
         void hideSubmitButton(Boolean show);
 
         void onCSATCESSubmit(Boolean isSubmit);
+
         void enableFollowUp(Boolean enable);
+
         void setFollowUpemail(String email);
+
         void hideValidationMessage();
     }
 
@@ -72,8 +77,8 @@ public class LoyagramCSATCESView extends LinearLayout {
     TextView txtRetry;
     TextView txtOptions;
     TextView txtFollowUpQstn;
-    EditText txtReason;
-    EditText txtEmail;
+    AppCompatEditText txtReason;
+    AppCompatEditText txtEmail;
     AppCompatCheckBox chkEmail;
     TextView txtFeedbackQuestion;
     LinearLayout llFeedbackContainer;
@@ -128,34 +133,37 @@ public class LoyagramCSATCESView extends LinearLayout {
     public void setTheme() {
         if (colorPrimary != null) {
             int stroke = getResources().getDimensionPixelSize(R.dimen.stroke_width);
-            ((GradientDrawable) txtReason.getBackground()).setStroke(stroke, Color.parseColor(colorPrimary));
+            ((GradientDrawable) txtReason.getBackground()).setStroke(stroke, Color.parseColor("#d9d9d9"));
             txtRetry.setTextColor(Color.parseColor(colorPrimary));
-            ((GradientDrawable) txtEmail.getBackground()).setStroke(stroke, Color.parseColor(colorPrimary));
+            txtEmail.setSupportBackgroundTintList(getColorStateList("#d9d9d9"));
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                chkEmail.setButtonTintList(getColorStateList());
+                chkEmail.setButtonTintList(getColorStateList(colorPrimary));
             } else {
-                chkEmail.setSupportButtonTintList(getColorStateList());
+                chkEmail.setSupportButtonTintList(getColorStateList(colorPrimary));
             }
         }
 
     }
 
     public void initLayout() {
-        txtquestion = (TextView) findViewById(R.id.csatcesQuestion);
-        txtRetry = (TextView) findViewById(R.id.btnRetry);
-        txtReason = (EditText) findViewById(R.id.txtReason);
-        txtOptions = (TextView) findViewById(R.id.txtOptions);
-        txtFeedbackQuestion = (TextView) findViewById(R.id.txtFeedbackQstn);
-        txtFollowUpQstn = (TextView) findViewById(R.id.followupQstn);
-        llFeedbackContainer = (LinearLayout) findViewById(R.id.feedbackHeader);
-        rrReasonFooter = (RelativeLayout) findViewById(R.id.reasonFooter);
-        llOptionsContainer = (LinearLayout) findViewById(R.id.optionsContainer);
-        llfollowUpContainer = (LinearLayout) findViewById(R.id.followupContainer);
-        llfolloUpOptions = (LinearLayout) findViewById(R.id.followUpOptionsContainer);
-        topOptionsContainer = (ScrollView) findViewById(R.id.topOptionsContainer);
-        llEmailFollowUpContainer = (LinearLayout)findViewById(R.id.emailFollowUpContainer);
-        txtEmail = (EditText) findViewById(R.id.txtEmail);
-        chkEmail = (AppCompatCheckBox) findViewById(R.id.chkEmail);
+        txtquestion = findViewById(R.id.csatcesQuestion);
+        txtRetry = findViewById(R.id.btnRetry);
+        txtReason = findViewById(R.id.txtReason);
+        txtOptions = findViewById(R.id.txtOptions);
+        txtFeedbackQuestion = findViewById(R.id.txtFeedbackQstn);
+        txtFollowUpQstn = findViewById(R.id.followupQstn);
+        llFeedbackContainer = findViewById(R.id.feedbackHeader);
+        rrReasonFooter = findViewById(R.id.reasonFooter);
+        llOptionsContainer = findViewById(R.id.optionsContainer);
+        llfollowUpContainer = findViewById(R.id.followupContainer);
+        llfolloUpOptions = findViewById(R.id.followUpOptionsContainer);
+        topOptionsContainer = findViewById(R.id.topOptionsContainer);
+        llEmailFollowUpContainer = findViewById(R.id.emailFollowUpContainer);
+        txtEmail = findViewById(R.id.txtEmail);
+        chkEmail = findViewById(R.id.chkEmail);
+        chkEmail.setText(staticTextes.get("FOLLOW_UP_REQUEST_CHECKBOX_LABEL"));
+        txtEmail.setHint(staticTextes.get("EMAIL_ADDRESS_PLACEHOLDER_TEXT"));
+        txtReason.setHint(staticTextes.get("INPUT_PLACEHOLDER_TEXT"));
         if (getTypeface() != null) {
             txtRetry.setTypeface(typeface);
             txtFeedbackQuestion.setTypeface(typeface);
@@ -203,12 +211,12 @@ public class LoyagramCSATCESView extends LinearLayout {
             public void onClick(View v) {
                 if (chkEmail.isChecked()) {
                     txtEmail.setVisibility(VISIBLE);
-                    if(listener != null) {
+                    if (listener != null) {
                         listener.enableFollowUp(true);
                     }
                 } else {
                     txtEmail.setVisibility(GONE);
-                    if(listener != null) {
+                    if (listener != null) {
                         listener.enableFollowUp(false);
                         listener.hideValidationMessage();
                     }
@@ -239,6 +247,29 @@ public class LoyagramCSATCESView extends LinearLayout {
             public boolean onTouch(View v, MotionEvent event) {
                 isKeyboardShown = true;
                 return false;
+            }
+        });
+
+        txtEmail.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    txtEmail.setSupportBackgroundTintList(getColorStateList(colorPrimary));
+                } else {
+                    txtEmail.setSupportBackgroundTintList(getColorStateList("#d9d9d9"));
+                }
+            }
+        });
+
+        txtReason.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                int stroke = getResources().getDimensionPixelSize(R.dimen.stroke_width);
+                if (hasFocus) {
+                    ((GradientDrawable) txtReason.getBackground()).setStroke(stroke, Color.parseColor(colorPrimary));
+                } else {
+                    ((GradientDrawable) txtReason.getBackground()).setStroke(stroke, Color.parseColor("#d9d9d9"));
+                }
             }
         });
 
@@ -320,6 +351,15 @@ public class LoyagramCSATCESView extends LinearLayout {
             setFollowUpQuestion();
             changeFollowUPLabelLanguage();
         }
+        if (txtReason != null) {
+            txtReason.setHint(staticTextes.get("INPUT_PLACEHOLDER_TEXT"));
+        }
+        if (txtEmail != null) {
+            txtEmail.setHint(staticTextes.get("EMAIL_ADDRESS_PLACEHOLDER_TEXT"));
+        }
+        if (chkEmail != null) {
+            chkEmail.setText(staticTextes.get("FOLLOW_UP_REQUEST_CHECKBOX_LABEL"));
+        }
     }
 
     public void setQuestion() {
@@ -396,16 +436,16 @@ public class LoyagramCSATCESView extends LinearLayout {
                         rdb.setChecked(true);
                 }
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    rdb.setButtonTintList(getColorStateList());
+                    rdb.setButtonTintList(getColorStateList(colorPrimary));
                 } else {
-                    rdb.setSupportButtonTintList(getColorStateList());
+                    rdb.setSupportButtonTintList(getColorStateList(colorPrimary));
                 }
                 rdb.setId(Integer.parseInt(ql.getId().toString()));
                 rdb.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
-                        final RadioButton radioButton = (RadioButton) findViewWithTag(ql.getId());
+                        final RadioButton radioButton = findViewWithTag(ql.getId());
                         ResponseAnswer sa = setCSATCESResponse(ql.getId(), new BigDecimal(1));
                         currentOption = ql.getName();
                         if (listener != null) {
@@ -502,9 +542,9 @@ public class LoyagramCSATCESView extends LinearLayout {
                         chk.setChecked(true);
                 }
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    chk.setButtonTintList(getColorStateList());
+                    chk.setButtonTintList(getColorStateList(colorPrimary));
                 } else {
-                    chk.setSupportButtonTintList(getColorStateList());
+                    chk.setSupportButtonTintList(getColorStateList(colorPrimary));
                 }
 //            if (loyagramCampaignView != null) {
 //                loyagramCampaignView.showSubView(true);
@@ -562,14 +602,14 @@ public class LoyagramCSATCESView extends LinearLayout {
     }
 
 
-    public ColorStateList getColorStateList() {
+    public ColorStateList getColorStateList(String color) {
         int[][] states = new int[][]{
                 new int[]{android.R.attr.state_enabled},
                 new int[]{android.R.attr.state_pressed}
         };
         int[] colors = new int[]{
-                Color.parseColor(colorPrimary),
-                Color.parseColor(colorPrimary)
+                Color.parseColor(color),
+                Color.parseColor(color)
         };
         return new ColorStateList(states, colors);
     }
@@ -586,7 +626,7 @@ public class LoyagramCSATCESView extends LinearLayout {
                             break;
                         }
                         isTextChanged = true;
-                        RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
+                        RadioButton rdb = findViewWithTag(ql.getId());
                         if (rdb != null) {
                             rdb.setText(labelTranslation.getTranslation());
                         }
@@ -604,7 +644,7 @@ public class LoyagramCSATCESView extends LinearLayout {
         for (QuestionLabel ql : questionLabel) {
             for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
                 if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
-                    RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
+                    RadioButton rdb = findViewWithTag(ql.getId());
                     if (rdb != null) {
                         rdb.setText(labelTranslation.getTranslation());
                     }
@@ -629,10 +669,10 @@ public class LoyagramCSATCESView extends LinearLayout {
                         isTextChanged = true;
                         String questionType = followUpQuestion.getType();
                         if (questionType.equals("SINGLE_SELECT")) {
-                            RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
+                            RadioButton rdb =  findViewWithTag(ql.getId());
                             rdb.setText(labelTranslation.getTranslation());
                         } else {
-                            CheckBox chk = (CheckBox) findViewWithTag(ql.getId());
+                            CheckBox chk =  findViewWithTag(ql.getId());
                             if (chk != null) {
                                 chk.setText(labelTranslation.getTranslation());
                             }
@@ -653,12 +693,12 @@ public class LoyagramCSATCESView extends LinearLayout {
                 if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
                     String questionType = followUpQuestion.getType();
                     if (questionType.equals("SINGLE_SELECT")) {
-                        RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
+                        RadioButton rdb = findViewWithTag(ql.getId());
                         if (rdb != null) {
                             rdb.setText(labelTranslation.getTranslation());
                         }
                     } else {
-                        CheckBox chk = (CheckBox) findViewWithTag(ql.getId());
+                        CheckBox chk =  findViewWithTag(ql.getId());
                         if (chk != null) {
                             chk.setText(labelTranslation.getTranslation());
                         }
@@ -797,7 +837,7 @@ public class LoyagramCSATCESView extends LinearLayout {
 
     public void showReasonView() {
         setFeedbackQuestion();
-        if(isEmailFollowUpEnabled) {
+        if (isEmailFollowUpEnabled) {
             llEmailFollowUpContainer.setVisibility(VISIBLE);
         }
         //txtquestion.setVisibility(GONE);
@@ -806,7 +846,6 @@ public class LoyagramCSATCESView extends LinearLayout {
         // topOptionsContainer.setVisibility(VISIBLE);
 
     }
-
 
 
     /**

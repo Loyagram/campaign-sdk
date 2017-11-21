@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainView"
     android:layout_width="match_parent"
@@ -202,16 +201,20 @@
                 android:textColor="#000000"
                 android:textSize="@dimen/text_medium" />
 
-            <EditText
+            <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/txtReason"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="70dp"
                 android:layout_below="@+id/txtFeedbackQstn"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/lg_npssquare"
                 android:gravity="start"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:inputType="textMultiLine"
                 android:lines="3"
                 android:maxLines="3"
@@ -236,23 +239,27 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:textSize="@dimen/text_medium"
-                    android:text="I would like to receive a follow up"
                     />
 
-                <EditText
+                <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/txtEmail"
-                    android:layout_width="250dp"
+                    android:layout_width="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:background="@drawable/lg_npssquare"
+                    android:layout_marginBottom="10dp"
                     android:layout_gravity="center"
-                    android:lines="1"
-                    android:maxLines="1"
-                    android:minLines="1"
                     android:inputType="textWebEmailAddress"
                     android:visibility="gone"
-                    android:hint="Enter your email..."
-                    android:textSize="@dimen/text_medium"/>
+                    android:textSize="@dimen/text_medium"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="5dp"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:maxLength="150"
+                    android:imeOptions="actionDone"/>
             </LinearLayout>
         </RelativeLayout>
     </ScrollView>

@@ -94,8 +94,8 @@ public class LoyagramSurveyView extends RelativeLayout {
     }
 
     public void initLayouts() {
-        lloptionsContainer = (LinearLayout) findViewById(R.id.optionsContainer);
-        txtQuestion = (TextView) findViewById(R.id.qstnTitle);
+        lloptionsContainer = findViewById(R.id.optionsContainer);
+        txtQuestion = findViewById(R.id.qstnTitle);
         if (getTypeFace() != null) {
             txtQuestion.setTypeface(typeface);
         }
@@ -462,10 +462,10 @@ public class LoyagramSurveyView extends RelativeLayout {
                             isTextChanged = true;
                             String questionType = question.getType();
                             if (questionType.equals("SINGLE_SELECT")) {
-                                RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
+                                RadioButton rdb = findViewWithTag(ql.getId());
                                 rdb.setText(labelTranslation.getTranslation());
                             } else {
-                                CheckBox chk = (CheckBox) findViewWithTag(ql.getId());
+                                CheckBox chk = findViewWithTag(ql.getId());
                                 chk.setText(labelTranslation.getTranslation());
                             }
                         }
@@ -487,12 +487,12 @@ public class LoyagramSurveyView extends RelativeLayout {
                 if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
                     String questionType = question.getType();
                     if (questionType.equals("SINGLE_SELECT")) {
-                        RadioButton rdb = (RadioButton) findViewWithTag(ql.getId());
+                        RadioButton rdb = findViewWithTag(ql.getId());
                         if (rdb != null) {
                             rdb.setText(labelTranslation.getTranslation());
                         }
                     } else {
-                        CheckBox chk = (CheckBox) findViewWithTag(ql.getId());
+                        CheckBox chk = findViewWithTag(ql.getId());
                         if (chk != null) {
                             chk.setText(labelTranslation.getTranslation());
                         }

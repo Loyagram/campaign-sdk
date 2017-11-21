@@ -11,6 +11,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -34,6 +35,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -164,6 +166,7 @@ public class LoyagramCampaignView extends LinearLayout {
     String textAnswer = null;
     String questionType = null;
     String currentValidationMsg = null;
+    AsyncTaskGetImage asyncTaskGetImage = null;
 
     /**
      * enumarator to define type of campaign view selected
@@ -333,19 +336,19 @@ public class LoyagramCampaignView extends LinearLayout {
     public void init(Context context) {
         currentContext = context;
         View.inflate(context, R.layout.loyagram_campaignview, this);
-        llWidgetcontainer = (LinearLayout) findViewById(R.id.widgetContainer);
-        llWidgetcontainerMain = (LinearLayout) findViewById(R.id.widgetContainerMain);
-        rrbottomButtonContainer = (RelativeLayout) findViewById(R.id.bottomButtonContainer);
-        questionCount = (TextView) findViewById(R.id.qstnCount);
-        rrCamapignView = (RelativeLayout) findViewById(R.id.campaignView);
-        rrCampaignHeader = (RelativeLayout) findViewById(R.id.campaingHeader);
-        txtFooterCredit = (TextView) findViewById(R.id.footerCredits);
-        imageViewLogo = (ImageView) findViewById(R.id.logo);
-        spinnerLang = (AppCompatSpinner) findViewById(R.id.spinnerLang);
-        spinnerContainer = (RelativeLayout) findViewById(R.id.spinnerContainer);
-        btnExit = (ImageView) findViewById(R.id.closeButton);
-        txtBrandName = (TextView) findViewById(R.id.brandName);
-        txtValidation = (TextView) findViewById(R.id.txtValidationMsg);
+        llWidgetcontainer = findViewById(R.id.widgetContainer);
+        llWidgetcontainerMain = findViewById(R.id.widgetContainerMain);
+        rrbottomButtonContainer = findViewById(R.id.bottomButtonContainer);
+        questionCount = findViewById(R.id.qstnCount);
+        rrCamapignView = findViewById(R.id.campaignView);
+        rrCampaignHeader = findViewById(R.id.campaingHeader);
+        txtFooterCredit = findViewById(R.id.footerCredits);
+        imageViewLogo = findViewById(R.id.logo);
+        spinnerLang = findViewById(R.id.spinnerLang);
+        spinnerContainer = findViewById(R.id.spinnerContainer);
+        btnExit = findViewById(R.id.closeButton);
+        txtBrandName = findViewById(R.id.brandName);
+        txtValidation = findViewById(R.id.txtValidationMsg);
         initCampaignButton();
         initCampaignStartButton();
         hideSubView();
@@ -368,7 +371,6 @@ public class LoyagramCampaignView extends LinearLayout {
         if (repeatMode) {
             btnExit.setVisibility(INVISIBLE);
         }
-
     }
 
     public void setPreviewMode(Boolean previewMode) {
@@ -390,7 +392,7 @@ public class LoyagramCampaignView extends LinearLayout {
      * Initialize campaign question navigation buttons
      */
     public void initCampaignButton() {
-        LinearLayout btnContainer = (LinearLayout) findViewById(R.id.btnContainer);
+        LinearLayout btnContainer = findViewById(R.id.btnContainer);
         btnPrev = new AppCompatButton(currentContext);
         btnNext = new AppCompatButton(currentContext);
         btnNext.setVisibility(GONE);
@@ -610,7 +612,7 @@ public class LoyagramCampaignView extends LinearLayout {
                         public void run() {
                             showNextQuestion();
                         }
-                    }, 100);
+                    }, 200);
                 }
             }
 
@@ -664,7 +666,7 @@ public class LoyagramCampaignView extends LinearLayout {
                     public void run() {
                         showNextQuestion();
                     }
-                }, 100);
+                }, 150);
 
 
             }
@@ -827,6 +829,10 @@ public class LoyagramCampaignView extends LinearLayout {
      * Loads next question. checks whether questiojn is optional or not.
      */
     public void showNextQuestion() {
+
+
+        InputMethodManager inputMethodManager = (InputMethodManager) currentContext.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(this.getWindowToken(), 0);
         if (!currentQuestion.getOptional()) {
             if (!questionAttended(currentQuestion)) {
                 //showAlertDialog("Please attend the current question");
@@ -877,7 +883,7 @@ public class LoyagramCampaignView extends LinearLayout {
                     submitCampaign();
             }
             return;
-        } else if (questionType != null) {
+        } else if (questionType != null && !currentQuestion.getOptional()) {
             //Validation for email and number
             switch (questionType) {
                 case "EMAIL":
@@ -924,6 +930,8 @@ public class LoyagramCampaignView extends LinearLayout {
      * Loads previous question
      */
     public void showPreviousQuestion() {
+        InputMethodManager inputMethodManager = (InputMethodManager) currentContext.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(this.getWindowToken(), 0);
         txtValidation.setVisibility(INVISIBLE);
         ((GradientDrawable) btnPrev.getBackground()).setColor(Color.parseColor(colorPrimary));
         btnPrev.setTextColor(Color.parseColor("#FFFFFF"));
@@ -982,6 +990,10 @@ public class LoyagramCampaignView extends LinearLayout {
      * Exits campaign
      */
     public void exitCampaign() {
+
+        if (asyncTaskGetImage.getStatus() == AsyncTask.Status.RUNNING) {
+            asyncTaskGetImage.cancel(true);
+        }
         llWidgetcontainer.removeAllViews();
         QuestionStatus.getInstance().resetQuestionStats();
         if (widgetType > -1) {
@@ -1006,7 +1018,7 @@ public class LoyagramCampaignView extends LinearLayout {
                     break;
                 case FROMXML:
                     int id = this.getId();
-                    LinearLayout v = (LinearLayout) findViewById(id);
+                    LinearLayout v = findViewById(id);
                     ViewGroup vg = (ViewGroup) findViewById(id).getParent();
                     if (v != null && vg != null) {
                         vg.removeView(v);
@@ -1415,7 +1427,7 @@ public class LoyagramCampaignView extends LinearLayout {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                AsyncTaskGetImage asyncTaskGetImage = new AsyncTaskGetImage(imageViewLogo, txtBrandName);
+                asyncTaskGetImage = new AsyncTaskGetImage(imageViewLogo, txtBrandName);
                 asyncTaskGetImage.execute(logoUrl);
             } else {
                 txtBrandName.setVisibility(VISIBLE);
@@ -1546,7 +1558,7 @@ public class LoyagramCampaignView extends LinearLayout {
         if (languageChangeListener != null) {
             languageChangeListener.onLanguageChanged(currentLanguage);
         }
-        if(currentValidationMsg != null) {
+        if (currentValidationMsg != null) {
             txtValidation.setText(staticTextes.get(currentValidationMsg));
         }
 
@@ -1608,6 +1620,7 @@ public class LoyagramCampaignView extends LinearLayout {
 
 
         if (thankYouString != null && !thankYouString.isEmpty()) {
+            txtValidation.setVisibility(GONE);
             llWidgetcontainer.removeAllViews();
             rrbottomButtonContainer.setVisibility(GONE);
             llWidgetcontainer.setVisibility(GONE);
@@ -2208,7 +2221,7 @@ public class LoyagramCampaignView extends LinearLayout {
      */
     public void showPasswordView() {
         View view = LayoutInflater.from(currentContext).inflate(R.layout.loyagram_textview_pwd, null);
-        final AppCompatEditText txtPassword = (AppCompatEditText) view.findViewById(R.id.editText);
+        final AppCompatEditText txtPassword = view.findViewById(R.id.editText);
         txtPassword.setBackgroundColor(Color.TRANSPARENT);
         dialog = new AlertDialog.Builder(currentContext)
                 .setView(view)

@@ -53,8 +53,8 @@ public class AsyncTaskSendResponse extends AsyncTask<String, Void, Void> {
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Content-type", "application/json");
-            urlConnection.setConnectTimeout(20000);
-            urlConnection.setReadTimeout(20000);
+            urlConnection.setConnectTimeout(15000);
+            urlConnection.setReadTimeout(15000);
             urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
             urlConnection.connect();

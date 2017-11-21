@@ -1,17 +1,23 @@
 package com.loyagram.android.campaignsdk.ui;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -58,7 +64,8 @@ public class LoyagramTextView extends LinearLayout {
     Typeface typeface;
     Language primaryLanguage;
     HashMap<String, String> staticTextes;
-    EditText txtAnswer = null;
+    AppCompatEditText txtAnswer = null;
+    String fieldType = null;
 
     public LoyagramTextView(Context context, Question question, Response response, LoyagramCampaignView loyagramCampaignView, String colorPrimary, Language language, HashMap<String, String> staticTextes, Language primaryLanguage) {
         super(context);
@@ -95,8 +102,8 @@ public class LoyagramTextView extends LinearLayout {
     }
 
     public void initLayouts() {
-        txtQuestion = (TextView) findViewById(R.id.qstnTitle);
-        llTextviewcontainer = (LinearLayout) findViewById(R.id.textViewContainer);
+        txtQuestion = findViewById(R.id.qstnTitle);
+        llTextviewcontainer = findViewById(R.id.textViewContainer);
         if (getTypeFace() != null) {
             txtQuestion.setTypeface(typeface);
         }
@@ -114,38 +121,55 @@ public class LoyagramTextView extends LinearLayout {
         List<QuestionLabel> questionLabels = question.getLabels();
         final QuestionLabel ql = questionLabels.get(0);
         if (ql != null) {
-            txtAnswer = new EditText(currentContext);
-            txtAnswer.setBackgroundResource(R.drawable.lg_npssquare);
-            ((GradientDrawable) txtAnswer.getBackground()).setStroke(getResources().getDimensionPixelSize(R.dimen.stroke_width), Color.parseColor(colorPrimary));
+            txtAnswer = new AppCompatEditText(currentContext);
+            txtAnswer.setImeOptions(EditorInfo.IME_ACTION_DONE);
             LinearLayout.LayoutParams editTextParams;
+            fieldType = ql.getFieldType();
+            if (fieldType == null) {
+                loyagramCampaignView.showSubView(true);
+                loyagramCampaignView.hideProgress();
+                return;
+            }
+
+            int txtHeight;
+            if (fieldType.matches("SHORT_ANSWER|EMAIL|NUMBER")) {
+                txtHeight = getResources().getDimensionPixelSize(R.dimen.edit_text_height);
+                txtAnswer.setSupportBackgroundTintList(getColorStateList("#d9d9d9"));
+            } else {
+                txtAnswer.setBackgroundResource(R.drawable.lg_npssquare);
+                ((GradientDrawable) txtAnswer.getBackground()).setStroke(getResources().getDimensionPixelSize(R.dimen.stroke_width), Color.parseColor("#d9d9d9"));
+                txtHeight = getResources().getDimensionPixelSize(R.dimen.edit_text__paragraph_height);
+            }
             float scale = getContext().getResources().getDisplayMetrics().density;
             int editTextMargin = (int) (20 * scale + 0.5f);
-            editTextParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            editTextParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, txtHeight);
             editTextParams.gravity = Gravity.CENTER;
             editTextParams.setMargins(editTextMargin, 0, editTextMargin, editTextMargin);
             txtAnswer.setLayoutParams(editTextParams);
-            String fieldType = ql.getFieldType();
-            if(fieldType == null) {
-                return;
+            if (getTypeFace() != null) {
+                txtQuestion.setTypeface(typeface);
             }
+            txtAnswer.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            txtAnswer.setPadding(30, 10, 30, 10);
+            txtAnswer.setFilters(new InputFilter[]{new InputFilter.LengthFilter(150)});
             switch (fieldType) {
                 case "SHORT_ANSWER":
-                    txtAnswer.setMaxLines(1);
-                    txtAnswer.setMinLines(1);
+                    txtAnswer.setSingleLine(true);
                     txtAnswer.setHint(staticTextes.get("INPUT_PLACEHOLDER_TEXT"));
                     break;
                 case "PARAGRAPH":
                     txtAnswer.setMaxLines(3);
                     txtAnswer.setMinLines(3);
                     txtAnswer.setHint(staticTextes.get("INPUT_PLACEHOLDER_TEXT"));
+                    txtAnswer.setGravity(Gravity.START);
                     break;
                 case "EMAIL":
-                    txtAnswer.setMaxLines(1);
+                    txtAnswer.setSingleLine(true);
                     txtAnswer.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                     txtAnswer.setHint(staticTextes.get("EMAIL_ADDRESS_PLACEHOLDER_TEXT"));
                     break;
                 case "NUMBER":
-                    txtAnswer.setMaxLines(1);
+                    txtAnswer.setSingleLine(true);
                     txtAnswer.setInputType(InputType.TYPE_CLASS_PHONE);
                     txtAnswer.setHint(staticTextes.get("INPUT_PLACEHOLDER_TEXT"));
                     break;
@@ -167,6 +191,26 @@ public class LoyagramTextView extends LinearLayout {
                 public boolean onTouch(View v, MotionEvent event) {
                     isKeyboardShown = true;
                     return false;
+                }
+            });
+
+            txtAnswer.setOnFocusChangeListener(new OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean hasFocus) {
+
+                    if (hasFocus) {
+                        if (!fieldType.equals("PARAGRAPH")) {
+                            txtAnswer.setSupportBackgroundTintList(getColorStateList(colorPrimary));
+                        } else {
+                            ((GradientDrawable) txtAnswer.getBackground()).setStroke(getResources().getDimensionPixelSize(R.dimen.stroke_width), Color.parseColor(colorPrimary));
+                        }
+                    } else {
+                        if (!fieldType.equals("PARAGRAPH")) {
+                            txtAnswer.setSupportBackgroundTintList(getColorStateList("#d9d9d9"));
+                        } else {
+                            ((GradientDrawable) txtAnswer.getBackground()).setStroke(getResources().getDimensionPixelSize(R.dimen.stroke_width), Color.parseColor("#d9d9d9"));
+                        }
+                    }
                 }
             });
 
@@ -206,6 +250,23 @@ public class LoyagramTextView extends LinearLayout {
             loyagramCampaignView.showSubView(true);
             loyagramCampaignView.hideProgress();
         }
+    }
+
+    /**
+     * create color state list from theme color and return.
+     *
+     * @return color state list
+     */
+    public ColorStateList getColorStateList(String color) {
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_enabled},
+                new int[]{android.R.attr.state_focused}
+        };
+        int[] colors = new int[]{
+                Color.parseColor(color),
+                Color.parseColor(color)
+        };
+        return new ColorStateList(states, colors);
     }
 
     /**
@@ -323,7 +384,7 @@ public class LoyagramTextView extends LinearLayout {
         List<QuestionLabel> questionLabels = question.getLabels();
         final QuestionLabel ql = questionLabels.get(0);
         String fieldType = ql.getFieldType();
-        if(fieldType == null || txtAnswer == null) {
+        if (fieldType == null || txtAnswer == null) {
             return;
         }
         switch (fieldType) {
@@ -393,7 +454,7 @@ public class LoyagramTextView extends LinearLayout {
                                 break;
                             }
                             isTextChanged = true;
-                            TextView txtratignTitle = (TextView) findViewWithTag(ql.getId());
+                            TextView txtratignTitle = findViewWithTag(ql.getId());
                             txtratignTitle.setText(labelTranslation.getTranslation());
                         }
                     }
@@ -412,7 +473,7 @@ public class LoyagramTextView extends LinearLayout {
         for (QuestionLabel ql : questionLabel) {
             for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
                 if (primaryLanguage != null && primaryLanguage.getCode().equals(labelTranslation.getCode())) {
-                    TextView txtLabelTitle = (TextView) findViewWithTag(ql.getId());
+                    TextView txtLabelTitle = findViewWithTag(ql.getId());
                     if (txtLabelTitle != null) {
                         txtLabelTitle.setText(labelTranslation.getTranslation());
                     }
