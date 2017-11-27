@@ -67,7 +67,7 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
         label.setMaxLines(1);
         label.setEllipsize(TextUtils.TruncateAt.END);
         label.setGravity(Gravity.START);
-        label.setPadding(0, 5, 0, 0);
+        label.setPadding(10, 2, 0, 0);
         ListView.LayoutParams params = new ListView.LayoutParams(200, 50);
         label.setText(spinnerItems[position]);
         label.setTextColor(Color.parseColor("#FFFFFF"));
@@ -93,7 +93,7 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
     private View getCustomView(int position, View convertView, ViewGroup parent) {
         TextView label = new TextView(context);
         label.setGravity(Gravity.CENTER_VERTICAL);
-        label.setPadding(0, 5, 0, 0);
+        label.setPadding(20, 5, 0, 0);
         label.setGravity(Gravity.START);
         ListView.LayoutParams params = new ListView.LayoutParams(300, 50);
         label.setText(spinnerItems[position]);

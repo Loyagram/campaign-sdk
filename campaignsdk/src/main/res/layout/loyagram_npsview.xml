@@ -11,7 +11,7 @@
     <TextView
         android:id="@+id/npsquestion"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_gravity="center"
         android:layout_marginEnd="10dp"
         android:layout_marginLeft="10dp"
@@ -204,7 +204,7 @@
             <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/txtReason"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="55dp"
                 android:layout_below="@+id/txtFeedbackQstn"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="10dp"

@@ -7,8 +7,8 @@ android {
         applicationId "com.loyagram.campaignsdkdemo"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 28
-        versionName "0.28"
+        versionCode 30
+        versionName "0.30"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

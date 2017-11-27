@@ -74,8 +74,8 @@ public class LoyagramCSATCESView extends LinearLayout {
     LoyagramCampaignView loyagramCampaignView;
     LoyagramCSATCESListener listener;
     TextView txtquestion;
-    TextView txtRetry;
-    TextView txtOptions;
+    //TextView txtRetry;
+    //TextView txtOptions;
     TextView txtFollowUpQstn;
     AppCompatEditText txtReason;
     AppCompatEditText txtEmail;
@@ -134,7 +134,7 @@ public class LoyagramCSATCESView extends LinearLayout {
         if (colorPrimary != null) {
             int stroke = getResources().getDimensionPixelSize(R.dimen.stroke_width);
             ((GradientDrawable) txtReason.getBackground()).setStroke(stroke, Color.parseColor("#d9d9d9"));
-            txtRetry.setTextColor(Color.parseColor(colorPrimary));
+            //txtRetry.setTextColor(Color.parseColor(colorPrimary));
             txtEmail.setSupportBackgroundTintList(getColorStateList("#d9d9d9"));
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                 chkEmail.setButtonTintList(getColorStateList(colorPrimary));
@@ -147,9 +147,9 @@ public class LoyagramCSATCESView extends LinearLayout {
 
     public void initLayout() {
         txtquestion = findViewById(R.id.csatcesQuestion);
-        txtRetry = findViewById(R.id.btnRetry);
+        //txtRetry = findViewById(R.id.btnRetry);
         txtReason = findViewById(R.id.txtReason);
-        txtOptions = findViewById(R.id.txtOptions);
+        //txtOptions = findViewById(R.id.txtOptions);
         txtFeedbackQuestion = findViewById(R.id.txtFeedbackQstn);
         txtFollowUpQstn = findViewById(R.id.followupQstn);
         llFeedbackContainer = findViewById(R.id.feedbackHeader);
@@ -165,11 +165,11 @@ public class LoyagramCSATCESView extends LinearLayout {
         txtEmail.setHint(staticTextes.get("EMAIL_ADDRESS_PLACEHOLDER_TEXT"));
         txtReason.setHint(staticTextes.get("INPUT_PLACEHOLDER_TEXT"));
         if (getTypeface() != null) {
-            txtRetry.setTypeface(typeface);
+           // txtRetry.setTypeface(typeface);
             txtFeedbackQuestion.setTypeface(typeface);
             txtquestion.setTypeface(typeface);
             txtReason.setTypeface(typeface);
-            txtOptions.setTypeface(typeface);
+            //txtOptions.setTypeface(typeface);
             chkEmail.setTypeface(typeface);
             txtEmail.setTypeface(typeface);
         }
@@ -345,7 +345,7 @@ public class LoyagramCSATCESView extends LinearLayout {
         changeLabelLanguage();
         if (currentOption != null) {
             setFeedbackQuestion();
-            setOptionText();
+            //setOptionText();
         }
         if (followUpQuestion != null) {
             setFollowUpQuestion();
@@ -1048,25 +1048,6 @@ public class LoyagramCSATCESView extends LinearLayout {
                 */
             }
         }
-    }
-
-    public void setOptionText() {
-        txtRetry.setText(staticTextes.get("CHANGE_SCORE_BUTTON_TEXT"));
-        List<QuestionLabel> questionLabels = question.getLabels();
-        if (questionLabels != null) {
-            for (final QuestionLabel ql : questionLabels) {
-                if (ql.getName().equals(currentOption)) {
-                    for (LabelTranslation labelTranslation : ql.getLabelTranslations()) {
-                        if (currentLanguage != null && currentLanguage.getCode().equals(labelTranslation.getCode())) {
-                            txtOptions.setText(labelTranslation.getTranslation());
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-
     }
 
 }

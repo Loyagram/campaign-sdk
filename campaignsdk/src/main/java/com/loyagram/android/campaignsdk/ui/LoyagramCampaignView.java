@@ -991,7 +991,7 @@ public class LoyagramCampaignView extends LinearLayout {
      */
     public void exitCampaign() {
 
-        if (asyncTaskGetImage.getStatus() == AsyncTask.Status.RUNNING) {
+        if (asyncTaskGetImage != null && asyncTaskGetImage.getStatus() == AsyncTask.Status.RUNNING) {
             asyncTaskGetImage.cancel(true);
         }
         llWidgetcontainer.removeAllViews();
