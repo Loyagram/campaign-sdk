@@ -117,8 +117,5 @@ public class AsyncTaskSendResponse extends AsyncTask<String, Void, Void> {
         String apiKey = LoyagramCampaignSdk.getInstance().getApiKey();
         String accessSecret = LoyagramCampaignSdk.getInstance().getAccessSecret();
         return  "/responses?apiKey=" + apiKey + "&secretKey=" + accessSecret;
-        // return "/in-store/" + campaignId + "?lang=all";
-
-        // return api.replaceAll("\\{" + "campaignId" + "\\}", campaignId.toString());
     }
 }

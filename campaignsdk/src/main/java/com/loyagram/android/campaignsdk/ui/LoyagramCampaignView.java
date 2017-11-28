@@ -205,8 +205,8 @@ public class LoyagramCampaignView extends LinearLayout {
     public LoyagramCampaignView(Context context, AttributeSet attr) {
         super(context, attr);
         init(context);
-        getAttributes(context, attr);
         getAppPrimaryColor();
+        getAttributes(context, attr);
         setTheme();
     }
 
@@ -227,7 +227,7 @@ public class LoyagramCampaignView extends LinearLayout {
      *
      * @param campaignCallback callback object
      */
-    public void setLoyagramCampaingListener(CampaignCallback campaignCallback) {
+    public void setLoyagramCampaignListener(CampaignCallback campaignCallback) {
         this.listener = campaignCallback;
     }
 
@@ -253,15 +253,18 @@ public class LoyagramCampaignView extends LinearLayout {
      */
     public void getAttributes(Context context, AttributeSet attributeSet) {
         TypedArray typedArray = context.obtainStyledAttributes(attributeSet, R.styleable.LoyagramCampaignView);
-        this.colorPrimary = typedArray.getText(R.styleable.LoyagramCampaignView_campaignColor).toString();
-        CharSequence campaignId = typedArray.getText(R.styleable.LoyagramCampaignView_campaignId);
+        String colorPrimary = (String)typedArray.getText(R.styleable.LoyagramCampaignView_campaignColor);
+        if(colorPrimary != null) {
+            this.colorPrimary = colorPrimary;
+        }
+        String campaignId = (String)typedArray.getText(R.styleable.LoyagramCampaignView_campaignId);
         typedArray.recycle();
         widgetType = 3;
 
         //Get campaign from preference only if no internet
 
         if (!ApiBase.isEverythingOK(context)) {
-            Campaign campaign = LoyagramCampaignManager.getCampaignFromPreference(campaignId.toString(), context);
+            Campaign campaign = LoyagramCampaignManager.getCampaignFromPreference(campaignId, context);
             if (campaign != null) {
                 setCampaign(campaign);
             } else {
@@ -271,7 +274,7 @@ public class LoyagramCampaignView extends LinearLayout {
             }
         } else {
             showProgress();
-            LoyagramCampaignManager.requestCampaignFromServer(context, campaignId.toString(), this);
+            LoyagramCampaignManager.requestCampaignFromServer(context, campaignId, this);
         }
         //Old code
       /*  Campaign campaign = LoyagramCampaignManager.getCampaignFromPreference(campaignId.toString(), context);
@@ -1231,6 +1234,8 @@ public class LoyagramCampaignView extends LinearLayout {
         }
         showSubView(false);
         hideProgress();
+        Toast.makeText(currentContext, "Campaign not found",
+                Toast.LENGTH_SHORT).show();
     }
 
     /**

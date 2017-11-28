@@ -22,8 +22,8 @@ public class CampaignActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.campaignlayout);
-        LoyagramCampaignView loyagramCampaignView = (LoyagramCampaignView) findViewById(R.id.loaygramCampaignView);
-        loyagramCampaignView.setLoyagramCampaingListener(new CampaignCallback() {
+        LoyagramCampaignView loyagramCampaignView = findViewById(R.id.loaygramCampaignView);
+        loyagramCampaignView.setLoyagramCampaignListener(new CampaignCallback() {
             @Override
             public void onSuccess() {
                 Log.i("Campaign", "Success");

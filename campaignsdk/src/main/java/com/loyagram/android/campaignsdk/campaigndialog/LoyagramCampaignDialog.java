@@ -70,7 +70,7 @@ public class LoyagramCampaignDialog extends DialogFragment {
         String singletonCampaignId = LoyagramCampaignSdk.getInstance().getCampaignId();
         CampaignCallback campaignCallback = LoyagramCampaignSdk.getInstance().getCampaignCallback();
         if (campaignCallback != null && singletonCampaignId.equals(campaignId)) {
-            loyagramCampaignView.setLoyagramCampaingListener(campaignCallback);
+            loyagramCampaignView.setLoyagramCampaignListener(campaignCallback);
         }
 
 

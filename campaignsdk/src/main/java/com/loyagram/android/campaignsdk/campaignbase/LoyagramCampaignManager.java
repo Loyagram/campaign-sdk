@@ -179,7 +179,7 @@ public class LoyagramCampaignManager {
 
     public static void showFromBottom(Context context, String campaignId, String colorPrimary, ViewGroup widgetContainer, View button, HashMap<String, String> customAttr, CampaignCallback campaignCallback) {
         LoyagramCampaignView loyagramCampaignView = new LoyagramCampaignView(context);
-        loyagramCampaignView.setLoyagramCampaingListener(campaignCallback);
+        loyagramCampaignView.setLoyagramCampaignListener(campaignCallback);
 
         //Sets campaign color if the color argument is not empty
         if (colorPrimary != null && !colorPrimary.isEmpty()) {
@@ -272,6 +272,11 @@ public class LoyagramCampaignManager {
      * @param loyagramCampaignView Campaign widget's object
      */
     public static void requestCampaignFromServer(final Context context, final String campaignId, final LoyagramCampaignView loyagramCampaignView) {
+
+        if (campaignId == null || campaignId.isEmpty()) {
+            loyagramCampaignView.setCampaign(null);
+            return;
+        }
         AsyncTasKRequestQuestion asyncTasKRequestQuestion = new AsyncTasKRequestQuestion(context.getApplicationContext());
         asyncTasKRequestQuestion.setListener(new APIResultCallback<Campaign>() {
             /**

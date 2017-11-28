@@ -35,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
     String campaignId = "1020-49bd1a50-1c51-445d-8043-fa8f907a0078";
     String colorPrimary = "#1abc9c";
     HashMap<String, String> customAttributes = new HashMap<>();
-    String apiKey = "faa733e7-a9b0-453d-8a77-aa881909bbb0";
-    String accessSecret = "3dc8b3f2-141e-44de-babb-f0eadb9b6359";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 */
-                LoyagramCampaignSdk.init(apiKey, accessSecret);
+
                 LoyagramCampaignManager.showAsActivity(MainActivity.this, campaignId, null, null);
                 //LoyagramCampaignManager.showAsRepeatMode(MainActivity.this, campaignId, null, "13bcae64-14b9-4f3d-81ea-a1bb1acf69b2", new BigDecimal(10));
 

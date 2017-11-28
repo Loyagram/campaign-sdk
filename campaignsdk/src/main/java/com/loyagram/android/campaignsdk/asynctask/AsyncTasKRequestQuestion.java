@@ -3,12 +3,8 @@ package com.loyagram.android.campaignsdk.asynctask;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.loyagram.android.campaignsdk.R;
 import com.loyagram.android.campaignsdk.globals.LoyagramCampaignSdk;
 import com.loyagram.android.campaignsdk.models.Campaign;
 import com.loyagram.android.campaignsdk.restapi.APIResultCallback;
@@ -20,10 +16,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 /**
  * Class for executing the http request in background thread to get the campaign details.
@@ -117,7 +111,6 @@ public class AsyncTasKRequestQuestion extends AsyncTask<String, Void, Void> {
         } else {
             apiResultCallback.parseResult(null, campaign);
         }
-        //Log.d("AsyncTask", "FirstonPostExecute()");
     }
 
     /**
@@ -131,13 +124,6 @@ public class AsyncTasKRequestQuestion extends AsyncTask<String, Void, Void> {
         String apiKey = LoyagramCampaignSdk.getInstance().getApiKey();
         String accessSecret = LoyagramCampaignSdk.getInstance().getAccessSecret();
         return  "/in-store/" + campaignId + "?lang=all" + "&apiKey=" + apiKey + "&secretKey=" + accessSecret;
-        // return "/in-store/" + campaignId + "?lang=all";
-
-        // return api.replaceAll("\\{" + "campaignId" + "\\}", campaignId.toString());
-    }
-
-    private static String getAppname(Context context) {
-        return context.getResources().getString(R.string.app_name);
     }
 
 }
