@@ -108,13 +108,13 @@ LoyagramCampaignManager.showFromBottom(context, campaignId, primaryColor, campai
   - primaryColor:- Theme color(Hexadecimal)
   - campaignContainer:- Campaign view container.
   - campaignButton :- Button to start campaign
-  - customAttributes:- CustomAttributes of type Hasmap
+  - customAttributes:- CustomAttributes of type Hashmap
 
   ### Advanced Usage
-  - To add callback listener for successful or unsuccessful completion of campaigns.
+  - To add callbacks for successful or unsuccessful completion of campaigns.
   ```java
   import com.loyagram.android.campaignsdk.campaigncallback.CampaignCallback;
-
+  import com.loyagram.android.campaignsdk.campaignbase.LoyagramCampaignManager;
   LoyagramCampaignManager.showAsActivity(context, campaignId, primaryColor, customAttributes, new CampaignCallback() {
             @Override
             public void onSuccess() {
@@ -130,6 +130,7 @@ LoyagramCampaignManager.showFromBottom(context, campaignId, primaryColor, campai
 - To set custom attributes.
 
 ```java
+import com.loyagram.android.campaignsdk.campaignbase.LoyagramCampaignManager;
 HashMap<String, String> customAttributes = new HashMap<>();
 customAttributes.put("userId", "123456");
 customAttributes.put("productId", "1234");
@@ -144,6 +145,7 @@ LoyagramCampaignManager.addAttribute(key2, value2);
 
 - Set attributes using the addAttributes() method.
 ```java
+import com.loyagram.android.campaignsdk.campaignbase.LoyagramCampaignManager;
 HashMap<String, String> customAttributes = new HashMap<>();
 customAttributes.put("userId", "123456");
 customAttributes.put("productId", "1234");
@@ -156,7 +158,7 @@ LoyagramCampaignManager.addAttributes(customAttributes);
 Loyagram campaign-sdk is released under the [Apache 2.0 license](LICENSE).
 
 ```
-Copyright 2017 Loyagram.
+Copyright 2017 DataFactors Software India Pvt. Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

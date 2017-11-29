@@ -1,12 +1,10 @@
-package com.loyagram.campaignsdkdemo.Activity.Survey;
-
+package com.loyagram.campaignsdkdemo.activity.nps;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
-import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -26,6 +24,9 @@ import java.math.BigDecimal;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
+import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -35,35 +36,18 @@ import static org.hamcrest.Matchers.allOf;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class SurveryActivitySingleSelTest {
-
+public class Rating5Test {
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Test
-    public void surveryActivitySingleSelTest() {
-        ViewInteraction appCompatRadioButton = onView(
-                allOf(ViewMatchers.withId(R.id.rdbSurvey), withText("Survey"),
-                        withParent(allOf(withId(R.id.radioGroup),
-                                withParent(withId(R.id.radioGroupcontainer)))),
-                        isDisplayed()));
-        appCompatRadioButton.perform(click());
-
+    public void npsActivityRating5Test() {
         ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.btnActivity), withText("Show in Activity"),
                         withParent(allOf(withId(R.id.buttoncontainer),
                                 withParent(withId(R.id.mainContianer)))),
                         isDisplayed()));
         appCompatButton.perform(click());
-
-        // Added a sleep statement to match the app's execution delay.
-        // The recommended way to handle such scenarios is to use Espresso idling resources:
-        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         ViewInteraction appCompatButton2 = onView(
                 allOf(withText("Start"),
@@ -72,53 +56,77 @@ public class SurveryActivitySingleSelTest {
         appCompatButton2.perform(click());
 
         ViewInteraction textView = onView(
-                allOf(withId(R.id.ratingView6), withText("6"),
+                allOf(withId(R.id.ratingView5), withText("5"),
                         withParent(allOf(withId(R.id.ratingContainer),
                                 withParent(withId(R.id.topRatingContainer)))),
                         isDisplayed()));
         textView.perform(click());
 
-        ViewInteraction appCompatButton4 = onView(
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ViewInteraction appCompatCheckBox = onView(
+                allOf(withText("Features"),
+                        withParent(withId(R.id.optionsContainer))));
+        appCompatCheckBox.perform(scrollTo(), click());
+
+        ViewInteraction appCompatButton3 = onView(
                 allOf(withText("Next"),
                         withParent(allOf(withId(R.id.btnContainer),
                                 withParent(withId(R.id.bottomButtonContainer)))),
                         isDisplayed()));
-        appCompatButton4.perform(click());
+        appCompatButton3.perform(click());
 
-        ViewInteraction appCompatRadioButton2 = onView(
-                withText("GOT"));
-        appCompatRadioButton2.perform(scrollTo(), click());
+        ViewInteraction appCompatEditText = onView(
+                allOf(withId(R.id.txtReason),
+                        withParent(withId(R.id.reasonFooter))));
+        appCompatEditText.perform(scrollTo(), replaceText("test"), closeSoftKeyboard());
 
-        ViewInteraction appCompatRadioButton7 = onView(
-                withText("walking dead"));
-        appCompatRadioButton7.perform(scrollTo(), click());
+        ViewInteraction appCompatCheckBox2 = onView(
+                allOf(withId(R.id.chkEmail), withText("I would like to receive a follow up."),
+                        withParent(allOf(withId(R.id.emailFollowUpContainer),
+                                withParent(withId(R.id.reasonFooter))))));
+        appCompatCheckBox2.perform(scrollTo(), click());
 
-        appCompatButton4.perform(click());
-        appCompatButton4.perform(click());
-        appCompatButton4.perform(click());
+        ViewInteraction appCompatEditText2 = onView(
+                allOf(withId(R.id.txtEmail),
+                        withParent(allOf(withId(R.id.emailFollowUpContainer),
+                                withParent(withId(R.id.reasonFooter))))));
+        appCompatEditText2.perform(scrollTo(), replaceText("test@loyagram.com"), closeSoftKeyboard());
 
-        Response response= getResponse();
+        ViewInteraction appCompatEditText3 = onView(
+                allOf(withId(R.id.txtEmail), withText("test@loyagram.com"),
+                        withParent(allOf(withId(R.id.emailFollowUpContainer),
+                                withParent(withId(R.id.reasonFooter))))));
+        appCompatEditText3.perform(pressImeActionButton());
+
+        Response response = getResponse();
         if(response.getResponseAnswers().size() == 2) {
-            if(response.getResponseAnswers().get(0).getValue().equals(new BigDecimal(6))) {
-                if(! response.getResponseAnswers().get(1).getQuestionLabelId().equals(new BigDecimal(1390))) {
-                    Assert.fail("Response mismatch");
-                }
-            } else {
-                Assert.fail("Response mismatch");
+            if(response.getResponseAnswers().get(0).getResponseAnswerText().getText().equals("test")) {
+                Assert.assertTrue(response.getResponseAnswers().get(0).getValue().equals(new BigDecimal(5)));
             }
-        } else {
+        } else{
             Assert.fail("Response mismatch");
         }
+
         ViewInteraction appCompatButton5 = onView(
                 allOf(withText("Submit"),
                         withParent(allOf(withId(R.id.btnContainer),
                                 withParent(withId(R.id.bottomButtonContainer)))),
                         isDisplayed()));
         appCompatButton5.perform(click());
-        Response responseAfterSubmit= getResponse();
+        Response responseAfterSubmit = getResponse();
         if(responseAfterSubmit != null) {
             Assert.fail("Response is not null after submit");
         }
+
+
     }
 
     public Context getContext() {
@@ -134,7 +142,6 @@ public class SurveryActivitySingleSelTest {
     }
 
     private static String getAppname() {
-        return "LoyagramSdk";
+        return "LoyagramCampaignSdkDemo";
     }
-
 }

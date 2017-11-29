@@ -253,11 +253,11 @@ public class LoyagramCampaignView extends LinearLayout {
      */
     public void getAttributes(Context context, AttributeSet attributeSet) {
         TypedArray typedArray = context.obtainStyledAttributes(attributeSet, R.styleable.LoyagramCampaignView);
-        String colorPrimary = (String)typedArray.getText(R.styleable.LoyagramCampaignView_campaignColor);
-        if(colorPrimary != null) {
+        String colorPrimary = (String) typedArray.getText(R.styleable.LoyagramCampaignView_campaignColor);
+        if (colorPrimary != null) {
             this.colorPrimary = colorPrimary;
         }
-        String campaignId = (String)typedArray.getText(R.styleable.LoyagramCampaignView_campaignId);
+        String campaignId = (String) typedArray.getText(R.styleable.LoyagramCampaignView_campaignId);
         typedArray.recycle();
         widgetType = 3;
 
@@ -1020,12 +1020,19 @@ public class LoyagramCampaignView extends LinearLayout {
                     }
                     break;
                 case FROMXML:
-                    int id = this.getId();
-                    LinearLayout v = findViewById(id);
-                    ViewGroup vg = (ViewGroup) findViewById(id).getParent();
-                    if (v != null && vg != null) {
-                        vg.removeView(v);
+                    if (this.getParent() != null) {
+                        ViewGroup viewgroup = (ViewGroup) this.getParent();
+                        viewgroup.removeView(this);
                     }
+//                    int id = this.getId();
+//                    LinearLayout v = findViewById(id);
+//                    ViewGroup cv = (ViewGroup) findViewById(id).getParent();
+//                    if(findViewById(id).getParent()!= null) {
+//                        ViewGroup vg = (ViewGroup) findViewById(id).getParent();
+//                        if (v != null && vg != null) {
+//                            vg.removeView(v);
+//                        }
+//                    }
 
             }
         }

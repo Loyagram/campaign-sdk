@@ -67,8 +67,13 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
         label.setMaxLines(1);
         label.setEllipsize(TextUtils.TruncateAt.END);
         label.setGravity(Gravity.START);
-        label.setPadding(10, 2, 0, 0);
-        ListView.LayoutParams params = new ListView.LayoutParams(200, 50);
+        int padding = 5;
+        final float scale = context.getResources().getDisplayMetrics().density;
+        int paddingTop = (int) (padding * scale + 0.5f);
+        label.setPadding(10, paddingTop, 0, 0);
+        int heightDp = 30;
+        int height = (int) (heightDp * scale + 0.5f);
+        ListView.LayoutParams params = new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
         label.setText(spinnerItems[position]);
         label.setTextColor(Color.parseColor("#FFFFFF"));
         label.setBackgroundColor(Color.TRANSPARENT);
@@ -93,9 +98,15 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
     private View getCustomView(int position, View convertView, ViewGroup parent) {
         TextView label = new TextView(context);
         label.setGravity(Gravity.CENTER_VERTICAL);
-        label.setPadding(20, 5, 0, 0);
+        int padding = 5;
+        final float scale = context.getResources().getDisplayMetrics().density;
+        int paddingTop = (int) (padding * scale + 0.5f);
+        label.setPadding(20, paddingTop, 0, 0);
         label.setGravity(Gravity.START);
-        ListView.LayoutParams params = new ListView.LayoutParams(300, 50);
+
+        int heightDp = 30;
+        int height = (int) (heightDp * scale + 0.5f);
+        ListView.LayoutParams params = new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
         label.setText(spinnerItems[position]);
         if(position == currentIndex[0]) {
             label.setTextColor(Color.parseColor(colorPrimary));
