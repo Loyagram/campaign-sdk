@@ -138,12 +138,6 @@ public class ChangeLangTest {
             e.printStackTrace();
         }
 
-        ViewInteraction imageView = onView(
-                allOf(withId(R.id.closeButton),
-                        withParent(withId(R.id.campaingHeader)),
-                        isDisplayed()));
-        imageView.perform(click());
-
     }
 
 }
