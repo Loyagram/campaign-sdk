@@ -1,5 +1,6 @@
 package com.loyagram.android.campaignsdk.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -141,6 +142,7 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
     /**
      * Method to set the layout theme. Theme will either from API request or pass via argument.
      */
+    @SuppressLint("RestrictedApi")
     public void setTheme() {
         if (colorPrimary != null) {
             int stroke = getResources().getDimensionPixelSize(R.dimen.stroke_width);
@@ -159,6 +161,7 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
     /**
      * Intialize NPS layout
      */
+    @SuppressLint("ClickableViewAccessibility")
     public void initLayout() {
         initRatingButtons();
         llRatingContainer = findViewById(R.id.topRatingContainer);
@@ -277,6 +280,7 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
         });
 
         txtEmail.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @SuppressLint("RestrictedApi")
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
@@ -452,64 +456,6 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
             listener.setRating(rating);
             //listener.onNPSSubmit(isSubmit);
         }
-        //NPS Settings based on the current rating
-
-        /*
-        Boolean isSubmit = false;
-        if (campaignType.equals("NPS")) {
-            String requestReasonType = question.getSettings().getNpsSettings().getRequestReasonSettings().getType();
-            switch (requestReasonType) {
-                case "all":
-                    showReasonView(rating);
-                    setFeedbackQuestion();
-                    if (listener != null) {
-                        listener.hideSubmitButton(true);
-                    }
-                    break;
-                case "disabled":
-                    isSubmit = true;
-                    break;
-                case "score":
-                    if (rating <= 6) {
-                        ReasonSetting reasonSetting = question.getSettings().getNpsSettings().getRequestReasonSettings().getCustom().getDetractors();
-                        if (!reasonSetting.isDisabled()) {
-                            showReasonView(rating);
-                            setFeedbackQuestion();
-                            if (listener != null) {
-                                listener.hideSubmitButton(true);
-                            }
-                        } else {
-                            isSubmit = true;
-                        }
-                    } else if (rating <= 8) {
-                        ReasonSetting reasonSetting = question.getSettings().getNpsSettings().getRequestReasonSettings().getCustom().getPassives();
-                        if (!reasonSetting.isDisabled()) {
-                            showReasonView(rating);
-                            setFeedbackQuestion();
-                            if (listener != null) {
-                                listener.hideSubmitButton(true);
-                            }
-                        } else {
-                            isSubmit = true;
-                        }
-                    } else {
-                        ReasonSetting reasonSetting = question.getSettings().getNpsSettings().getRequestReasonSettings().getCustom().getPromoters();
-                        if (!reasonSetting.isDisabled()) {
-                            showReasonView(rating);
-                            setFeedbackQuestion();
-                            if (listener != null) {
-                                listener.hideSubmitButton(true);
-                            }
-                        } else {
-                            isSubmit = true;
-                        }
-                    }
-                    break;
-            }
-        }
-
-        */
-        //showFollowUp();
     }
 
     public ResponseAnswer getMulResponseAnswer(BigDecimal id) {
@@ -651,6 +597,7 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
     }
 
 
+    @SuppressLint("RestrictedApi")
     public void showFollowUp() {
         setFollowUpQuestion();
         llRatingContainer.setVisibility(GONE);
@@ -818,16 +765,13 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
         this.language = language;
         setQuestion();
         setLikelyText();
-        if (currentRating != null) {
-            setRatingText();
-        }
 
         if (campaignType.equals("NPS")) {
-            if (responseAnswer != null) {
+            if (txtFeedbackQestion != null) {
                 setFeedbackQuestion();
             }
         }
-        if (followUpQuestion != null) {
+        if (followUpQuestion != null && txtFollowUpQstn!= null) {
             setFollowUpQuestion();
             changeLabelLanguage();
         }
@@ -1052,24 +996,6 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
         return typeface;
     }
 
-    public void setRatingText() {
-        String ratingMsg = statictextes.get("SCORE_MESSAGE_TEXT");
-        ratingMsg = ratingMsg.replaceAll("\\{" + "8" + "\\}", currentRating).replaceAll("\\{" + "10" + "\\}", "10");
-//        try {
-//            SpannableStringBuilder builder = new SpannableStringBuilder();
-//            SpannableString colorSpannable = new SpannableString(ratingMsg);
-//            //Get index of rating and max value sub string
-//            int index = ratingMsg.lastIndexOf("10");
-//            int curratingindex = ratingMsg.indexOf(currentRating);
-//            colorSpannable.setSpan(new ForegroundColorSpan(Color.RED), index, index + 2, 0);
-//            colorSpannable.setSpan(new ForegroundColorSpan(Color.parseColor("#1abc9c")), curratingindex, curratingindex + currentRating.length(), 0);
-//            builder.append(colorSpannable);
-//            txtRating.setText(builder, TextView.BufferType.SPANNABLE);
-//        } catch (Exception ignored) {
-//            txtRating.setText(ratingMsg);
-//        }
-        //txtRating.setText(ratingMsg);
-    }
 
     /**
      * Changes Languge of the text label fields

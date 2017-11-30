@@ -1,6 +1,7 @@
 package com.loyagram.android.campaignsdk.campaignactvity;
 
 import android.animation.LayoutTransition;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -141,6 +142,7 @@ public class LoyagramCampaignActivity extends Activity {
 
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);

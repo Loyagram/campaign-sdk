@@ -1,5 +1,6 @@
 package com.loyagram.android.campaignsdk.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -110,6 +111,7 @@ public class LoyagramSurveyView extends RelativeLayout {
     /**
      * shows multiple choice layouts. checkboxes for each labels will be created dynamically.
      */
+    @SuppressLint("RestrictedApi")
     public void showMultiSelect() {
         lloptionsContainer.removeAllViews();
         setQuestionText();
@@ -178,6 +180,7 @@ public class LoyagramSurveyView extends RelativeLayout {
     /**
      * shows single choice question layouts. Radio buttons for each labels will be created dynamically.
      */
+    @SuppressLint("RestrictedApi")
     public void showSingleSelect() {
         lloptionsContainer.removeAllViews();
         setQuestionText();

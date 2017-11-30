@@ -2,45 +2,9 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 group = 'com.loyagram.android'
 archivesBaseName = 'campaign-sdk'
-version = '0.0.7'
+version = '0.0.8'
 
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-def mavenUserName = properties.getProperty('mavenRepoUserName')
-def mavenPassword = properties.getProperty('mavenRepoPassword')
-def mavenWriteUrl = properties.getProperty('myMavenRepoWriteUrl')
-
-publishing {
-    repositories {
-        maven {
-            url mavenWriteUrl
-            credentials {
-                username mavenUserName
-                password mavenPassword
-            }
-        }
-    }
-
-    publications {
-        aar(MavenPublication) {
-            groupId group
-            artifactId archivesBaseName
-            version project.version
-            artifact("$buildDir/outputs/aar/${archivesBaseName}-release.aar")
-
-            pom.withXml {
-                def dependencies = asNode().appendNode('dependencies')
-                configurations.getByName("_releaseCompile").getResolvedConfiguration().getFirstLevelModuleDependencies().each {
-                    def dependency = dependencies.appendNode('dependency')
-                    dependency.appendNode('groupId', it.moduleGroup)
-                    dependency.appendNode('artifactId', it.moduleName)
-                    dependency.appendNode('version', it.moduleVersion)
-                }
-            }
-        }
-    }
-}
 ext {
     bintrayRepo = 'maven'
     bintrayName = 'campaign-sdk'
@@ -55,7 +19,7 @@ ext {
     gitUrl = 'https://github.com/Loyagram/campaign-sdk.git'
     githubRepository = 'Loyagram/campaign-sdk'
 
-    libraryVersion = '0.0.7'
+    libraryVersion = '0.0.8'
 
     developerId = 'sandhil'
     developerName = 'sandhil eldhose'
@@ -66,14 +30,14 @@ ext {
     allLicenses = ["Apache-2.0"]
 }
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion "26.0.2"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 26
-        versionCode 7
-        versionName "0.0.7"
+        targetSdkVersion 27
+        versionCode 8
+        versionName "0.8"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -88,12 +52,16 @@ android {
         disable 'RestrictedApi'
         abortOnError false
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:design:26.1.0'
+    compile 'com.android.support:appcompat-v7:27.0.2'
+    compile 'com.android.support:design:27.0.2'
     compile 'com.google.code.gson:gson:2.8.0'
 }
 

@@ -1,5 +1,6 @@
 package com.loyagram.android.campaignsdk.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -130,6 +131,7 @@ public class LoyagramCSATCESView extends LinearLayout {
     /**
      * Method to set the layout theme. Theme will either from API request or pass via argument.
      */
+    @SuppressLint("RestrictedApi")
     public void setTheme() {
         if (colorPrimary != null) {
             int stroke = getResources().getDimensionPixelSize(R.dimen.stroke_width);
@@ -145,6 +147,7 @@ public class LoyagramCSATCESView extends LinearLayout {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public void initLayout() {
         txtquestion = findViewById(R.id.csatcesQuestion);
         //txtRetry = findViewById(R.id.btnRetry);
@@ -177,7 +180,9 @@ public class LoyagramCSATCESView extends LinearLayout {
         showOptions();
         setLanguageListener();
         setSubmitListener();
+
         txtReason.setOnTouchListener(new OnTouchListener() {
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 isKeyboardShown = true;
@@ -251,6 +256,7 @@ public class LoyagramCSATCESView extends LinearLayout {
         });
 
         txtEmail.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @SuppressLint("RestrictedApi")
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
@@ -343,11 +349,11 @@ public class LoyagramCSATCESView extends LinearLayout {
         this.currentLanguage = language;
         setQuestion();
         changeLabelLanguage();
-        if (currentOption != null) {
+        if (txtFeedbackQuestion != null) {
             setFeedbackQuestion();
             //setOptionText();
         }
-        if (followUpQuestion != null) {
+        if (followUpQuestion != null && txtFollowUpQstn != null) {
             setFollowUpQuestion();
             changeFollowUPLabelLanguage();
         }
@@ -394,6 +400,7 @@ public class LoyagramCSATCESView extends LinearLayout {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     public void showOptions() {
         llOptionsContainer.removeAllViews();
         final RadioGroup radioGroup = new RadioGroup(currentContext);
@@ -501,6 +508,7 @@ public class LoyagramCSATCESView extends LinearLayout {
 
     }
 
+    @SuppressLint("RestrictedApi")
     public void showFollowUp() {
         setFollowUpQuestion();
         llOptionsContainer.setVisibility(GONE);
@@ -546,10 +554,6 @@ public class LoyagramCSATCESView extends LinearLayout {
                 } else {
                     chk.setSupportButtonTintList(getColorStateList(colorPrimary));
                 }
-//            if (loyagramCampaignView != null) {
-//                loyagramCampaignView.showSubView(true);
-//                loyagramCampaignView.hideProgress();
-//            }
                 chk.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -896,69 +900,6 @@ public class LoyagramCSATCESView extends LinearLayout {
                         txtFeedbackQuestion.setText(feedback);
                     }
 
-               /*
-                if (qReasonSettings.getType().equals("all")) {
-                    if (reasonSettings.getAll() != null) {
-                        feedback = reasonSettings.getAll().getMessage();
-                        isTextChanged = true;
-                        txtFeedbackQuestion.setText(feedback);
-                    } else {
-                        setFeedbackQuestionToPrimaryLang();
-                    }
-                    break;
-                } else if (qReasonSettings.getType().equals("custom")) {
-                    CsatCesCustomSettings customSettings = reasonSettings.getCustom();
-                    if (customSettings != null && currentOption != null) {
-                        switch (currentOption) {
-
-                            case "very_dissatisfied":
-                                feedback = customSettings.getVeryDissatisfied().getMessage();
-                                break;
-
-                            case "somewhat_dissatisfied":
-                                feedback = customSettings.getSomewhatDissatisfied().getMessage();
-                                break;
-
-                            case "neither_satisfied_nor_dissatisfied":
-                                feedback = customSettings.getNeitherSatisfiedNorDissatisfied().getMessage();
-                                break;
-
-                            case "somewhat_satisfied":
-                                feedback = customSettings.getSomewhatSatisfied().getMessage();
-                                break;
-
-                            case "very_satisfied":
-                                feedback = customSettings.getVerySatisfied().getMessage();
-                                break;
-
-                            case "neither_easy_nor_difficult":
-                                feedback = customSettings.getNeither().getMessage();
-                                break;
-
-                            case "easy":
-                                feedback = customSettings.getEasy().getMessage();
-                                break;
-
-                            case "difficult":
-                                feedback = customSettings.getDifficult().getMessage();
-                                break;
-                            case "very_easy":
-                                feedback = customSettings.getVeryEasy().getMessage();
-                                break;
-
-                            case "very_difficult":
-                                feedback = customSettings.getVeryDifficult().getMessage();
-                                break;
-
-                        }
-                        if (feedback != null) {
-                            txtFeedbackQuestion.setText(feedback);
-                            isTextChanged = true;
-                        }
-                    }
-                    break;
-                } */
-
                 }
             }
 
@@ -988,64 +929,6 @@ public class LoyagramCSATCESView extends LinearLayout {
                     feedback = reasonSettings.getAll().getMessage();
                     txtFeedbackQuestion.setText(feedback);
                 }
-                /*
-                if (qReasonSettings.getType().equals("all")) {
-                    if (reasonSettings.getAll() != null) {
-                        feedback = reasonSettings.getAll().getMessage();
-                        txtFeedbackQuestion.setText(feedback);
-                        break;
-                    }
-                } else if (qReasonSettings.getType().equals("custom")) {
-                    CsatCesCustomSettings customSettings = reasonSettings.getCustom();
-                    if (customSettings != null) {
-                        switch (currentOption) {
-
-                            case "very_dissatisfied":
-                                feedback = customSettings.getVeryDissatisfied().getMessage();
-                                break;
-
-                            case "somewhat_dissatisfied":
-                                feedback = customSettings.getSomewhatDissatisfied().getMessage();
-                                break;
-
-                            case "neither_satisfied_nor_dissatisfied":
-                                feedback = customSettings.getNeitherSatisfiedNorDissatisfied().getMessage();
-                                break;
-
-                            case "somewhat_satisfied":
-                                feedback = customSettings.getSomewhatSatisfied().getMessage();
-                                break;
-
-                            case "very_satisfied":
-                                feedback = customSettings.getVerySatisfied().getMessage();
-                                break;
-                            case "neither_easy_nor_difficult":
-                                feedback = customSettings.getNeither().getMessage();
-                                break;
-
-                            case "easy":
-                                feedback = customSettings.getEasy().getMessage();
-                                break;
-
-                            case "difficult":
-                                feedback = customSettings.getDifficult().getMessage();
-                                break;
-                            case "very_easy":
-                                feedback = customSettings.getVeryEasy().getMessage();
-                                break;
-
-                            case "very_difficult":
-                                feedback = customSettings.getVeryDifficult().getMessage();
-                                break;
-                        }
-                    }
-                    if (feedback != null) {
-                        txtFeedbackQuestion.setText(feedback);
-                    }
-                    break;
-
-                }
-                */
             }
         }
     }

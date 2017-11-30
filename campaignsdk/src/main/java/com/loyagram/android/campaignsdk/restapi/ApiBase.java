@@ -28,8 +28,13 @@ public class ApiBase {
      */
     public static boolean checkInternet(Context context) {
         final ConnectivityManager conMgr = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnected();
+        try {
+            final NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnected();
+        } catch (Exception ex) {
+            return false;
+        }
+
 
     }
 
@@ -54,7 +59,7 @@ public class ApiBase {
 
         String domainType = LoyagramCampaignSdk.getInstance().getDomainType();
 
-        if(domainType != null && domainType.equals("ex")) {
+        if (domainType != null && domainType.equals("ex")) {
             return "https://ex.loyagram.com";
         }
         return HOST;

@@ -1,5 +1,6 @@
 package com.loyagram.android.campaignsdk.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -115,6 +116,7 @@ public class LoyagramTextView extends LinearLayout {
     /**
      * show text type question and dynamicaly creates text input types corresponding to label types.
      */
+    @SuppressLint("RestrictedApi")
     public void showquestion() {
         txtQuestion.setVisibility(VISIBLE);
         setQuestionTitle();
@@ -187,6 +189,7 @@ public class LoyagramTextView extends LinearLayout {
             }
 
             txtAnswer.setOnTouchListener(new OnTouchListener() {
+                @SuppressLint("ClickableViewAccessibility")
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     isKeyboardShown = true;

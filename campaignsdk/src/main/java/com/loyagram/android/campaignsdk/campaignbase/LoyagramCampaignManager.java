@@ -277,7 +277,7 @@ public class LoyagramCampaignManager {
             loyagramCampaignView.setCampaign(null);
             return;
         }
-        AsyncTasKRequestQuestion asyncTasKRequestQuestion = new AsyncTasKRequestQuestion(context.getApplicationContext());
+        AsyncTasKRequestQuestion asyncTasKRequestQuestion = new AsyncTasKRequestQuestion();
         asyncTasKRequestQuestion.setListener(new APIResultCallback<Campaign>() {
             /**
              * Successfull receives campaign

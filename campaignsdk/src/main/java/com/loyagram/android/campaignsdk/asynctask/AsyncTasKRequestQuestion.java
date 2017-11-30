@@ -26,15 +26,13 @@ import java.net.URL;
 @SuppressWarnings("WeakerAccess")
 public class AsyncTasKRequestQuestion extends AsyncTask<String, Void, Void> {
 
-    Context context;
     APIResultCallback<Campaign> apiResultCallback;
     //public static final String api = "/js_plugin_api?campaignId={campaignId}";
     Exception exception = null;
     Campaign campaign = null;
-    SharedPreferences sharedPreferences;
 
-    public AsyncTasKRequestQuestion(Context context) {
-        this.context = context;
+    public AsyncTasKRequestQuestion() {
+
     }
 
     /**

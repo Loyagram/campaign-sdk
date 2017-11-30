@@ -1,6 +1,7 @@
 package com.loyagram.android.campaignsdk.ui;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -253,11 +254,11 @@ public class LoyagramCampaignView extends LinearLayout {
      */
     public void getAttributes(Context context, AttributeSet attributeSet) {
         TypedArray typedArray = context.obtainStyledAttributes(attributeSet, R.styleable.LoyagramCampaignView);
-        String colorPrimary = (String) typedArray.getText(R.styleable.LoyagramCampaignView_campaignColor);
-        if (colorPrimary != null) {
+        String colorPrimary = (String)typedArray.getText(R.styleable.LoyagramCampaignView_campaignColor);
+        if(colorPrimary != null) {
             this.colorPrimary = colorPrimary;
         }
-        String campaignId = (String) typedArray.getText(R.styleable.LoyagramCampaignView_campaignId);
+        String campaignId = (String)typedArray.getText(R.styleable.LoyagramCampaignView_campaignId);
         typedArray.recycle();
         widgetType = 3;
 
@@ -404,16 +405,22 @@ public class LoyagramCampaignView extends LinearLayout {
         btnNext.setAllCaps(false);
         btnPrev.setGravity(CENTER);
         btnNext.setGravity(CENTER);
-        int pxButtonHeight = (int) getResources().getDimension(R.dimen.button_height);
-        int pxButtonWidth = (int) getResources().getDimension(R.dimen.navbutton_width);
+        float scale = getContext().getResources().getDisplayMetrics().density;
+        //int pxButtonHeight = (int) getResources().getDimension(R.dimen.button_height);
+        //int pxButtonWidth = (int) getResources().getDimension(R.dimen.navbutton_width);
+        int pxButtonHeight = 30;
+        int pxButtonWidth = 100;
+        int buttonHeight = (int) (pxButtonHeight * scale + 0.5f);
+        int buttonWidth = (int) (pxButtonWidth * scale + 0.5f);
         btnPrev.setBackgroundResource(R.drawable.lg_surveybuttons);
         btnNext.setBackgroundResource(R.drawable.lg_surveybuttons);
-        LinearLayout.LayoutParams prevParams = new LinearLayout.LayoutParams(pxButtonWidth, pxButtonHeight);
+        btnNext.setPadding(0,0,0,0);
+        btnPrev.setPadding(0,0,0,0);
+        LinearLayout.LayoutParams prevParams = new LinearLayout.LayoutParams(buttonWidth, buttonHeight);
         prevParams.gravity = CENTER;
-        float scale = getContext().getResources().getDisplayMetrics().density;
         int btnRightLeftMargin = (int) (20 * scale + 0.5f);
         prevParams.setMargins(0, 0, btnRightLeftMargin, 0);
-        LinearLayout.LayoutParams nextParams = new LinearLayout.LayoutParams(pxButtonWidth, pxButtonHeight);
+        LinearLayout.LayoutParams nextParams = new LinearLayout.LayoutParams(buttonWidth, buttonHeight);
         nextParams.gravity = CENTER;
         btnPrev.setLayoutParams(prevParams);
         btnNext.setLayoutParams(nextParams);
@@ -833,9 +840,12 @@ public class LoyagramCampaignView extends LinearLayout {
      */
     public void showNextQuestion() {
 
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) currentContext.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(this.getWindowToken(), 0);
+        } catch(Exception ignored) {
 
-        InputMethodManager inputMethodManager = (InputMethodManager) currentContext.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(this.getWindowToken(), 0);
+        }
         if (!currentQuestion.getOptional()) {
             if (!questionAttended(currentQuestion)) {
                 //showAlertDialog("Please attend the current question");
@@ -933,8 +943,12 @@ public class LoyagramCampaignView extends LinearLayout {
      * Loads previous question
      */
     public void showPreviousQuestion() {
-        InputMethodManager inputMethodManager = (InputMethodManager) currentContext.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(this.getWindowToken(), 0);
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) currentContext.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(this.getWindowToken(), 0);
+        } catch(Exception ignored) {
+
+        }
         txtValidation.setVisibility(INVISIBLE);
         ((GradientDrawable) btnPrev.getBackground()).setColor(Color.parseColor(colorPrimary));
         btnPrev.setTextColor(Color.parseColor("#FFFFFF"));
@@ -1024,16 +1038,6 @@ public class LoyagramCampaignView extends LinearLayout {
                         ViewGroup viewgroup = (ViewGroup) this.getParent();
                         viewgroup.removeView(this);
                     }
-//                    int id = this.getId();
-//                    LinearLayout v = findViewById(id);
-//                    ViewGroup cv = (ViewGroup) findViewById(id).getParent();
-//                    if(findViewById(id).getParent()!= null) {
-//                        ViewGroup vg = (ViewGroup) findViewById(id).getParent();
-//                        if (v != null && vg != null) {
-//                            vg.removeView(v);
-//                        }
-//                    }
-
             }
         }
     }
@@ -1045,6 +1049,7 @@ public class LoyagramCampaignView extends LinearLayout {
     /**
      * Methods to load campaign question based on the question type.
      */
+    @SuppressLint("SetTextI18n")
     public void showQuestion(Boolean isFromRight) {
 
         llWidgetcontainer.removeAllViews();
@@ -1504,6 +1509,7 @@ public class LoyagramCampaignView extends LinearLayout {
     /**
      * Loads languages in spinner for the current campaign and sets primary language as current language.
      */
+    @SuppressLint("RestrictedApi")
     public void loadLanguage() {
         int loopCounter = 0;
         final int[] spinnerIndex = {loopCounter};
