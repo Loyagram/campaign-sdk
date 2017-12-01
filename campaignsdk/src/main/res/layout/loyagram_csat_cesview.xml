@@ -129,7 +129,7 @@
                     android:paddingRight="10dp"
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp"
-                    android:inputType="textMultiLine"
+                    android:inputType="textFilter|textMultiLine"
                     android:lines="3"
                     android:maxLines="3"
                     android:minLines="3"
@@ -146,12 +146,12 @@
 
                     <android.support.v7.widget.AppCompatCheckBox
                         android:id="@+id/chkEmail"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginBottom="0dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
                         android:textSize="@dimen/text_medium" />
 
                     <android.support.v7.widget.AppCompatEditText
@@ -159,7 +159,7 @@
                         android:layout_width="match_parent"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:layout_marginBottom="5dp"
                         android:inputType="textWebEmailAddress"

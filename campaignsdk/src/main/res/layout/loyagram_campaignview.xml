@@ -15,7 +15,8 @@
             android:id="@+id/campaingHeader"
             android:layout_width="match_parent"
             android:layout_height="120dp"
-            android:background="@drawable/lg_campaignviewtop">
+            android:background="@drawable/lg_campaignviewtop"
+            android:animateLayoutChanges="true">
 
             <ImageView
                 android:id="@+id/closeButton"

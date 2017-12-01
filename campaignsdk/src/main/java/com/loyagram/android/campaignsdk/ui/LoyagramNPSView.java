@@ -244,6 +244,7 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
                     if (listener != null) {
                         listener.enableFollowUp(true);
                     }
+                    txtEmail.requestFocus();
                 } else {
                     txtEmail.setVisibility(GONE);
                     if (listener != null) {

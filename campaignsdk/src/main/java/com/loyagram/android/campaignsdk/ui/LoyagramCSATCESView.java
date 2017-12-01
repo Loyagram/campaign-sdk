@@ -219,6 +219,7 @@ public class LoyagramCSATCESView extends LinearLayout {
                     if (listener != null) {
                         listener.enableFollowUp(true);
                     }
+                    txtEmail.requestFocus();
                 } else {
                     txtEmail.setVisibility(GONE);
                     if (listener != null) {
