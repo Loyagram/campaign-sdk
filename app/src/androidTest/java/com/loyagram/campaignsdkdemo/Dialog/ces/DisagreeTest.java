@@ -2,6 +2,7 @@ package com.loyagram.campaignsdkdemo.Dialog.ces;
 
 
 import android.support.test.espresso.ViewInteraction;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -22,26 +23,24 @@ import org.junit.runner.RunWith;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
-import static android.support.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class ChangeLang {
+public class DisagreeTest {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Test
-    public void changeLang() {
+    public void disagreeTest() {
         ViewInteraction appCompatRadioButton = onView(
-                allOf(withId(R.id.rdbCes), withText("CES"),
+                allOf(ViewMatchers.withId(R.id.rdbCes), withText("CES"),
                         childAtPosition(
                                 allOf(withId(R.id.radioGroup),
                                         childAtPosition(
@@ -62,17 +61,8 @@ public class ChangeLang {
                         isDisplayed()));
         appCompatButton.perform(click());
 
-        ViewInteraction appCompatSpinner2 = onView(
-                allOf(withId(R.id.spinnerLang),
-                        withParent(allOf(withId(R.id.spinnerContainer),
-                                withParent(withId(R.id.campaingHeader)))),
-                        isDisplayed()));
-        appCompatSpinner2.perform(click());
-        onView(withText("Español")).inRoot(isPlatformPopup()).perform(click());
-
-
         ViewInteraction appCompatButton2 = onView(
-                allOf(withText("Inicio"),
+                allOf(withText("Start"),
                         childAtPosition(
                                 allOf(withId(R.id.widgetContainerMain),
                                         childAtPosition(
@@ -83,12 +73,12 @@ public class ChangeLang {
         appCompatButton2.perform(click());
 
         ViewInteraction appCompatRadioButton2 = onView(
-                allOf(withText("Ni de acuerdo ni en desacuerdo"),
+                allOf(withText("Disagree"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.optionsContainer),
                                         0),
-                                2)));
+                                4)));
         appCompatRadioButton2.perform(scrollTo(), click());
 
         // Added a sleep statement to match the app's execution delay.
@@ -100,17 +90,18 @@ public class ChangeLang {
             e.printStackTrace();
         }
 
-        ViewInteraction appCompatSpinner = onView(
-                allOf(withId(R.id.spinnerLang),
-                        withParent(allOf(withId(R.id.spinnerContainer),
-                                withParent(withId(R.id.campaingHeader)))),
-                        isDisplayed()));
-        appCompatSpinner.perform(click());
-        onView(withText("Português")).inRoot(isPlatformPopup()).perform(click());
-
+        ViewInteraction appCompatCheckBox = onView(
+                allOf(withText("Service"),
+                        childAtPosition(
+                                allOf(withId(R.id.followUpOptionsContainer),
+                                        childAtPosition(
+                                                withClassName(is("android.widget.ScrollView")),
+                                                0)),
+                                0)));
+        appCompatCheckBox.perform(scrollTo(), click());
 
         ViewInteraction appCompatButton3 = onView(
-                allOf(withText("Seguinte"),
+                allOf(withText("Next"),
                         childAtPosition(
                                 allOf(withId(R.id.btnContainer),
                                         childAtPosition(
@@ -121,7 +112,7 @@ public class ChangeLang {
         appCompatButton3.perform(click());
 
         ViewInteraction appCompatButton4 = onView(
-                allOf(withText("Enviar"),
+                allOf(withText("Submit"),
                         childAtPosition(
                                 allOf(withId(R.id.btnContainer),
                                         childAtPosition(

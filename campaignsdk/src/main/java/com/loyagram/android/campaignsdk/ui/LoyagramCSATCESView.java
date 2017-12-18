@@ -226,6 +226,7 @@ public class LoyagramCSATCESView extends LinearLayout {
                         listener.enableFollowUp(false);
                         listener.hideValidationMessage();
                     }
+                    //txtReason.requestFocus();
                 }
 
             }
@@ -265,6 +266,7 @@ public class LoyagramCSATCESView extends LinearLayout {
                 } else {
                     txtEmail.setSupportBackgroundTintList(getColorStateList("#d9d9d9"));
                 }
+
             }
         });
 
@@ -277,6 +279,7 @@ public class LoyagramCSATCESView extends LinearLayout {
                 } else {
                     ((GradientDrawable) txtReason.getBackground()).setStroke(stroke, Color.parseColor("#d9d9d9"));
                 }
+
             }
         });
 

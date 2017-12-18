@@ -15,7 +15,6 @@ import com.loyagram.campaignsdkdemo.R;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,8 +22,6 @@ import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
@@ -41,9 +38,9 @@ public class SomewhatTest {
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Test
-    public void somewhatTest() {
+    public void saomewhatTest() {
         ViewInteraction appCompatRadioButton = onView(
-                allOf(withId(R.id.rdbCes), withText("CES"),
+                allOf(ViewMatchers.withId(R.id.rdbCes), withText("CES"),
                         childAtPosition(
                                 allOf(withId(R.id.radioGroup),
                                         childAtPosition(
@@ -94,13 +91,13 @@ public class SomewhatTest {
         }
 
         ViewInteraction appCompatCheckBox = onView(
-                allOf(withText("Pricing"),
+                allOf(withText("Service"),
                         childAtPosition(
                                 allOf(withId(R.id.followUpOptionsContainer),
                                         childAtPosition(
                                                 withClassName(is("android.widget.ScrollView")),
                                                 0)),
-                                1)));
+                                0)));
         appCompatCheckBox.perform(scrollTo(), click());
 
         ViewInteraction appCompatButton3 = onView(
@@ -114,37 +111,7 @@ public class SomewhatTest {
                         isDisplayed()));
         appCompatButton3.perform(click());
 
-        ViewInteraction appCompatEditText = onView(
-                allOf(withId(R.id.txtReason),
-                        childAtPosition(
-                                allOf(withId(R.id.reasonFooter),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.ScrollView")),
-                                                0)),
-                                1)));
-        appCompatEditText.perform(scrollTo(), replaceText("test"), closeSoftKeyboard());
-
-        ViewInteraction appCompatCheckBox2 = onView(
-                allOf(withId(R.id.chkEmail), withText("I would like to receive a follow up."),
-                        childAtPosition(
-                                allOf(withId(R.id.emailFollowUpContainer),
-                                        childAtPosition(
-                                                withId(R.id.reasonFooter),
-                                                2)),
-                                0)));
-        appCompatCheckBox2.perform(scrollTo(), click());
-
-        ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.txtEmail),
-                        childAtPosition(
-                                allOf(withId(R.id.emailFollowUpContainer),
-                                        childAtPosition(
-                                                withId(R.id.reasonFooter),
-                                                2)),
-                                1)));
-        appCompatEditText2.perform(scrollTo(), replaceText("demo@loyagra.com"), closeSoftKeyboard());
-
-        ViewInteraction appCompatButton5 = onView(
+        ViewInteraction appCompatButton4 = onView(
                 allOf(withText("Submit"),
                         childAtPosition(
                                 allOf(withId(R.id.btnContainer),
@@ -153,7 +120,7 @@ public class SomewhatTest {
                                                 0)),
                                 1),
                         isDisplayed()));
-        appCompatButton5.perform(click());
+        appCompatButton4.perform(click());
 
     }
 

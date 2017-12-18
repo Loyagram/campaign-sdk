@@ -251,6 +251,7 @@ public class LoyagramNPSView extends LinearLayout implements View.OnClickListene
                         listener.enableFollowUp(false);
                         listener.hideValidationMessage();
                     }
+                    txtReason.requestFocus();
                 }
 
             }

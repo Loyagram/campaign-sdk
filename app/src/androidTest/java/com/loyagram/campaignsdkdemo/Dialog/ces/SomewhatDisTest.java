@@ -1,5 +1,6 @@
 package com.loyagram.campaignsdkdemo.Dialog.ces;
 
+
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
@@ -14,7 +15,6 @@ import com.loyagram.campaignsdkdemo.R;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,8 +22,6 @@ import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
@@ -41,9 +39,8 @@ public class SomewhatDisTest {
 
     @Test
     public void somewhatDisTest() {
-
         ViewInteraction appCompatRadioButton = onView(
-                allOf(withId(R.id.rdbCes), withText("CES"),
+                allOf(ViewMatchers.withId(R.id.rdbCes), withText("CES"),
                         childAtPosition(
                                 allOf(withId(R.id.radioGroup),
                                         childAtPosition(
@@ -103,7 +100,6 @@ public class SomewhatDisTest {
                                 0)));
         appCompatCheckBox.perform(scrollTo(), click());
 
-
         ViewInteraction appCompatButton3 = onView(
                 allOf(withText("Next"),
                         childAtPosition(
@@ -114,36 +110,6 @@ public class SomewhatDisTest {
                                 1),
                         isDisplayed()));
         appCompatButton3.perform(click());
-
-        ViewInteraction appCompatEditText = onView(
-                allOf(withId(R.id.txtReason),
-                        childAtPosition(
-                                allOf(withId(R.id.reasonFooter),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.ScrollView")),
-                                                0)),
-                                1)));
-        appCompatEditText.perform(scrollTo(), replaceText("test"), closeSoftKeyboard());
-
-        ViewInteraction appCompatCheckBox2 = onView(
-                allOf(withId(R.id.chkEmail), withText("I would like to receive a follow up."),
-                        childAtPosition(
-                                allOf(withId(R.id.emailFollowUpContainer),
-                                        childAtPosition(
-                                                withId(R.id.reasonFooter),
-                                                2)),
-                                0)));
-        appCompatCheckBox2.perform(scrollTo(), click());
-
-        ViewInteraction appCompatEditText2 = onView(
-                allOf(withId(R.id.txtEmail),
-                        childAtPosition(
-                                allOf(withId(R.id.emailFollowUpContainer),
-                                        childAtPosition(
-                                                withId(R.id.reasonFooter),
-                                                2)),
-                                1)));
-        appCompatEditText2.perform(scrollTo(), replaceText("demo@loyagra.com"), closeSoftKeyboard());
 
         ViewInteraction appCompatButton4 = onView(
                 allOf(withText("Submit"),

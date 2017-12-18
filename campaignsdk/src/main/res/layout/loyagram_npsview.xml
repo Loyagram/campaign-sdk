@@ -249,7 +249,7 @@
                     android:layout_height="30dp"
                     android:layout_marginBottom="5dp"
                     android:layout_gravity="center"
-                    android:inputType="textWebEmailAddress"
+                    android:inputType="textEmailAddress|textFilter"
                     android:visibility="gone"
                     android:textSize="@dimen/text_medium"
                     android:paddingLeft="10dp"

@@ -15,7 +15,6 @@ import com.loyagram.campaignsdkdemo.R;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,6 +23,7 @@ import org.junit.runner.RunWith;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -41,9 +41,9 @@ public class AgreeTest {
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Test
-    public void mainActivityTest() {
+    public void agreeTest() {
         ViewInteraction appCompatRadioButton = onView(
-                allOf(withId(R.id.rdbCes), withText("CES"),
+                allOf(ViewMatchers.withId(R.id.rdbCes), withText("CES"),
                         childAtPosition(
                                 allOf(withId(R.id.radioGroup),
                                         childAtPosition(
@@ -143,6 +143,16 @@ public class AgreeTest {
                                                 2)),
                                 1)));
         appCompatEditText2.perform(scrollTo(), replaceText("demo@loyagram.com"), closeSoftKeyboard());
+
+        ViewInteraction appCompatEditText3 = onView(
+                allOf(withId(R.id.txtEmail), withText("demo@loyagram.com"),
+                        childAtPosition(
+                                allOf(withId(R.id.emailFollowUpContainer),
+                                        childAtPosition(
+                                                withId(R.id.reasonFooter),
+                                                2)),
+                                1)));
+        appCompatEditText3.perform(pressImeActionButton());
 
         ViewInteraction appCompatButton4 = onView(
                 allOf(withText("Submit"),
