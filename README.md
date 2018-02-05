@@ -7,7 +7,7 @@ In your build.gradle:
 
 ```java
 dependencies {
-	compile 'com.loyagram.android:campaign-sdk:0.0.4'
+	compile 'com.loyagram.android:campaign-sdk:0.0.9'
 }
 ```
 
